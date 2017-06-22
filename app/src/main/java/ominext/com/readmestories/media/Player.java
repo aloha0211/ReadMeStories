@@ -12,6 +12,8 @@ import android.text.style.BackgroundColorSpan;
 import android.util.Log;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 /**
  * Created by LuongHH on 6/22/2017.
  */
@@ -33,7 +35,7 @@ public class Player {
         this.mContext = context;
     }
 
-    public void readBook(@NonNull final TextView textView, @NonNull final String content, @RawRes int audio, final double[] timeFrame) {
+    public void readBook(@NonNull final TextView textView, @NonNull final String content, @NonNull String audioPath, final double[] timeFrame) {
 
 //        final String content = contentText.replaceAll("\"", "").replaceAll("&quot;", "").replaceAll(",", "").replaceAll("\\.", "").replaceAll("\\?", "");
         final String[] contents = content.split(" ");
@@ -72,9 +74,15 @@ public class Player {
         mHandler.postDelayed(mSpanTextRunnable, DELAY_TIME + (long) (timeFrame[0] * 1000));
         mHandler.postDelayed(mPlayMediaRunnable, DELAY_TIME - 100 + (long) (timeFrame[0] * 1000));
 
-        mMediaPlayer = MediaPlayer.create(mContext, audio);
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mDuration = mMediaPlayer.getDuration();
+        mMediaPlayer = new MediaPlayer();
+        try {
+            mMediaPlayer.setDataSource(audioPath);
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mMediaPlayer.prepare();
+            mDuration = mMediaPlayer.getDuration();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void spanTextView(@NonNull TextView textView, @NonNull String content, int startIndex, int endIndex) {

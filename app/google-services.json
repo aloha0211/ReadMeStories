@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "387085751482",
+    "firebase_url": "https://readmestories-2c388.firebaseio.com",
+    "project_id": "readmestories-2c388",
+    "storage_bucket": "readmestories-2c388.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:387085751482:android:56824775c2d20e8f",
+        "android_client_info": {
+          "package_name": "ominext.com.readmestories"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "387085751482-873pcqdh7flmutpa3s4hgtncqdq8ahva.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ominext.com.readmestories",
+            "certificate_hash": "e90407e261fb6205f9852ce51e544c86e83ab5ca"
+          }
+        },
+        {
+          "client_id": "387085751482-muugdqgkj09duc4p32fb74b1neu4p239.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRP2D0Dc6OI87kRwvFTfUwSczNCZj_KpY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "387085751482-muugdqgkj09duc4p32fb74b1neu4p239.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

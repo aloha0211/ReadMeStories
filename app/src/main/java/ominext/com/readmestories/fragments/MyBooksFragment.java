@@ -14,7 +14,7 @@ import ominext.com.readmestories.R;
 import ominext.com.readmestories.adapters.BookAdapter;
 import ominext.com.readmestories.adapters.SimpleDividerItemDecoration;
 
-public class MyBooksFragment extends Fragment {
+public class MyBooksFragment extends BaseFragment {
 
     private RecyclerView mRecyclerView;
     private BookAdapter mBookAdapter;

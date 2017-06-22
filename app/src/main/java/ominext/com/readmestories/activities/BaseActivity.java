@@ -11,7 +11,7 @@ import ominext.com.readmestories.R;
  * Created by LuongHH on 6/21/2017.
  */
 
-public class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
     protected void replaceFragment(Fragment fragment) {
         FragmentManager fm = getSupportFragmentManager();
