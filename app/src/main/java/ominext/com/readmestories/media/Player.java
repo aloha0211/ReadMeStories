@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RawRes;
 import android.text.SpannableString;
 import android.text.style.BackgroundColorSpan;
+import android.util.Log;
 import android.widget.TextView;
 
 /**
@@ -32,9 +33,9 @@ public class Player {
         this.mContext = context;
     }
 
-    public void readBook(@NonNull final TextView textView, @NonNull String contentText, @RawRes int audio, final double[] timeFrame) {
+    public void readBook(@NonNull final TextView textView, @NonNull final String content, @RawRes int audio, final double[] timeFrame) {
 
-        final String content = contentText.replaceAll("\"", "").replaceAll("&quot;", "").replaceAll(",", "").replaceAll("\\.", "").replaceAll("\\?", "");
+//        final String content = contentText.replaceAll("\"", "").replaceAll("&quot;", "").replaceAll(",", "").replaceAll("\\.", "").replaceAll("\\?", "");
         final String[] contents = content.split(" ");
 
         final int[] index = {0, 0};
@@ -42,8 +43,10 @@ public class Player {
             @Override
             public void run() {
                 if (index[0] < timeFrame.length) {
-                    int startIndex = content.indexOf(contents[index[0]], index[1] /*filter text from Index*/);
-                    int endIndex = startIndex + contents[index[0]].length();
+                    String textToSpan = contents[index[0]];
+                    textToSpan = textToSpan.replaceAll("\"", "").replaceAll(",", "").replaceAll("\\.", "").replaceAll("\\?", "");
+                    int startIndex = content.indexOf(textToSpan, index[1] /*filter text from Index*/);
+                    int endIndex = startIndex + textToSpan.length();
                     spanTextView(textView, content, startIndex, endIndex);
 
                     int period;
@@ -52,6 +55,7 @@ public class Player {
                     } else {
                         period = (int) ((timeFrame[index[0] + 1] - timeFrame[index[0]]) * 1000);
                     }
+                    Log.e("read", textToSpan + " - " + period);
                     mHandler.postDelayed(this, period);
                     index[0]++;
                     index[1] = endIndex;        // set fromIndex

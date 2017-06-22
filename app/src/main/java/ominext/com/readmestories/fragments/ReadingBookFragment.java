@@ -17,6 +17,7 @@ public class ReadingBookFragment extends Fragment {
     private TextView mTextView;
     private Player mPlayer;
     final double[] timeFrame = {0.08, 0.15, 0.59, 0.98, 1.72, 2.18, 2.39, 2.89, 3.18, 4.50, 4.74, 4.98, 5.24, 5.52, 5.89, 6.16, 7.12, 7.33, 8.68, 8.99, 9.57, 9.87, 10.00, 10.95, 11.30, 12.09, 12.33, 12.45, 13.46, 13.75, 14.62, 14.90, 15.05, 16.48, 16.71, 17.03, 17.36, 17.50, 17.71, 18.79, 19.06, 19.16, 19.49, 19.65};
+    private String example = "A little red hen found a grain of wheat. \"Who will help me plant this wheat?\" she said. \"I won\'t,\" said  the dog. \"I won\'t,\" said  the cat. \"I won\'t,\" said the pig. \"Then I will do it alone,\" said  the little red hen.";
 
     public ReadingBookFragment() {
         // Required empty public constructor
@@ -49,7 +50,8 @@ public class ReadingBookFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mPlayer.readBook(mTextView, getString(R.string.content_example), R.raw._1, timeFrame);
+        example = example.trim().replaceAll("  ", " ");
+        mPlayer.readBook(mTextView, example, R.raw._1, timeFrame);
     }
 
     @Override

@@ -24,7 +24,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="3"
                 android:background="@color/color_white"
-                android:text="@string/content_example"
+                android:text="A little red hen found a grain of wheat. &quot;Who will help me plant this wheat?&quot; she said. &quot;I won&#39;t,&quot; said  the dog. &quot;I won&#39;t,&quot; said  the cat. &quot;I won&#39;t,&quot; said  the pig. &quot;Then I will do it alone,&quot; said  the little red hen."
                 android:textAlignment="textStart"
                 android:gravity="start|center"
                 android:padding="@dimen/_4sdp"
