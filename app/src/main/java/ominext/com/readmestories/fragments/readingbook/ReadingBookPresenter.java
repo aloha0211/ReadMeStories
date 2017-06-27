@@ -1,4 +1,4 @@
-package ominext.com.readmestories.fragments;
+package ominext.com.readmestories.fragments.readingbook;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_margin="@dimen/_3sdp">
 
     <data>
         <variable
@@ -18,20 +19,19 @@
         android:layout_height="wrap_content"
         card_view:cardBackgroundColor="@color/color_white"
         card_view:cardCornerRadius="@dimen/_4sdp"
-        card_view:cardElevation="@dimen/_2sdp"
-        card_view:cardUseCompatPadding="true">
+        card_view:cardElevation="@dimen/_2sdp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:onClick="@{(v) -> handlers.onBookClick(v, book)}"
-            android:paddingBottom="@dimen/_8sdp">
+            android:onClick="@{(v) -> handlers.onBookClick(v, book)}">
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/item_book_height"
-                app:url="@{book.imageUrl}"/>
+                android:scaleType="fitXY"
+                app:imagePath="@{String.valueOf(book.getId().intValue())}"/>
 
             <TextView
                 android:id="@+id/tv_book_name"
@@ -42,7 +42,9 @@
                 android:paddingLeft="@dimen/_8sdp"
                 android:paddingRight="@dimen/_8sdp"
                 android:paddingStart="@dimen/_8sdp"
-                android:text="@{book.title}"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_8sdp"
+                android:text="@{book.getTitle()}"
                 android:textSize="@dimen/_12sdp"
                 android:textStyle="bold"/>
         </LinearLayout>

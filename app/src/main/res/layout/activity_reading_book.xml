@@ -4,6 +4,6 @@
     android:id="@+id/fr_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ominext.com.readmestories.fragments.ReadingBookFragment">
+    tools:context="ominext.com.readmestories.fragments.readingbook.ReadingBookFragment">
 
 </FrameLayout>

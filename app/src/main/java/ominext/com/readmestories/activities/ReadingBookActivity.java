@@ -3,7 +3,7 @@ package ominext.com.readmestories.activities;
 import android.os.Bundle;
 
 import ominext.com.readmestories.R;
-import ominext.com.readmestories.fragments.ReadingBookFragment;
+import ominext.com.readmestories.fragments.readingbook.ReadingBookFragment;
 
 public class ReadingBookActivity extends BaseActivity {
 

@@ -6,5 +6,5 @@
     <dimen name="nav_header_height">160dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
 
-    <dimen name="item_book_height">@dimen/_150sdp</dimen>
+    <dimen name="item_book_height">@dimen/_192sdp</dimen>
 </resources>

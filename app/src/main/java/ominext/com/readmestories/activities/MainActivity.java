@@ -10,7 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import ominext.com.readmestories.R;
-import ominext.com.readmestories.fragments.MyBooksFragment;
+import ominext.com.readmestories.fragments.mybooks.MyBooksFragment;
 
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
