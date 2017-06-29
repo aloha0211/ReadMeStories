@@ -13,6 +13,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by LuongHH on 6/22/2017.
@@ -35,16 +36,15 @@ public class Player {
         this.mContext = context;
     }
 
-    public void readBook(@NonNull final TextView textView, @NonNull final String content, @NonNull String audioPath, final double[] timeFrame) {
+    public void readBook(@NonNull final TextView textView, @NonNull final String content, @NonNull String audioPath, final List<Double> timeFrame, MediaPlayer.OnCompletionListener listener) {
 
-//        final String content = contentText.replaceAll("\"", "").replaceAll("&quot;", "").replaceAll(",", "").replaceAll("\\.", "").replaceAll("\\?", "");
-        final String[] contents = content.split(" ");
+        final String[] contents = content.trim().replaceAll("  ", " ").split(" ");
 
         final int[] index = {0, 0};
         mSpanTextRunnable = new Runnable() {
             @Override
             public void run() {
-                if (index[0] < timeFrame.length) {
+                if (index[0] < timeFrame.size()) {
                     String textToSpan = contents[index[0]];
                     textToSpan = textToSpan.replaceAll("\"", "").replaceAll(",", "").replaceAll("\\.", "").replaceAll("\\?", "");
                     int startIndex = content.indexOf(textToSpan, index[1] /*filter text from Index*/);
@@ -52,10 +52,10 @@ public class Player {
                     spanTextView(textView, content, startIndex, endIndex);
 
                     int period;
-                    if (index[0] + 1 == timeFrame.length) {
-                        period = mDuration > timeFrame[index[0]] * 1000 ? mDuration - (int) (timeFrame[index[0]] * 1000) : 0;
+                    if (index[0] + 1 == timeFrame.size()) {
+                        period = mDuration > timeFrame.get(index[0]) * 1000 ? mDuration - (int) (timeFrame.get(index[0]) * 1000) : 0;
                     } else {
-                        period = (int) ((timeFrame[index[0] + 1] - timeFrame[index[0]]) * 1000);
+                        period = (int) ((timeFrame.get(index[0] + 1) - timeFrame.get(index[0])) * 1000);
                     }
                     Log.e("read", textToSpan + " - " + period);
                     mHandler.postDelayed(this, period);
@@ -71,14 +71,37 @@ public class Player {
             }
         };
 
-        mHandler.postDelayed(mSpanTextRunnable, DELAY_TIME + (long) (timeFrame[0] * 1000));
-        mHandler.postDelayed(mPlayMediaRunnable, DELAY_TIME - 100 + (long) (timeFrame[0] * 1000));
+        mHandler.postDelayed(mSpanTextRunnable, DELAY_TIME + (long) (timeFrame.get(0) * 1000));
+        mHandler.postDelayed(mPlayMediaRunnable, DELAY_TIME - 300 + (long) (timeFrame.get(0) * 1000));
 
         mMediaPlayer = new MediaPlayer();
         try {
             mMediaPlayer.setDataSource(audioPath);
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.prepare();
+            mMediaPlayer.setOnCompletionListener(listener);
+            mDuration = mMediaPlayer.getDuration();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void readBook(@NonNull String audioPath, MediaPlayer.OnCompletionListener listener) {
+
+        mPlayMediaRunnable = new Runnable() {
+            @Override
+            public void run() {
+                mMediaPlayer.start();
+            }
+        };
+        mHandler.postDelayed(mPlayMediaRunnable, DELAY_TIME);
+
+        mMediaPlayer = new MediaPlayer();
+        try {
+            mMediaPlayer.setDataSource(audioPath);
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mMediaPlayer.prepare();
+            mMediaPlayer.setOnCompletionListener(listener);
             mDuration = mMediaPlayer.getDuration();
         } catch (IOException e) {
             e.printStackTrace();

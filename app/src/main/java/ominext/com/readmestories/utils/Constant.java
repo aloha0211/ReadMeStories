@@ -8,4 +8,11 @@ public class Constant {
 
     public static final String KEY_BOOK = "book";
     public static final String KEY_DATA = "data";
+
+    public static final String AUDIO = "audio";
+    public static final String IMAGE = "image";
+    public static final String THUMBNAIL = "thumbnail";
+    public static final String MP3_EXTENSION = ".mp3";
+    public static final String BACK_COVER = "backCover";
+    public static final String COVER = "cover";
 }

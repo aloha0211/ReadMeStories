@@ -1,50 +1,66 @@
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
-    tools:context="ominext.com.readmestories.fragments.readingbook.ReadingBookFragment">
+    tools:context="ominext.com.readmestories.fragments.ReadingBookFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:layout_weight="1"
-        android:background="@drawable/bg_cloud_in_the_sky">
+        >
 
-        <Space
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:background="@drawable/bg_cloud_in_the_sky">
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
 
             <TextView
-                android:id="@+id/tv_book_content"
+                android:id="@+id/tv_content"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="3"
                 android:background="@color/color_white"
-                android:text="A little red hen found a grain of wheat. &quot;Who will help me plant this wheat?&quot; she said. &quot;I won&#39;t,&quot; said  the dog. &quot;I won&#39;t,&quot; said  the cat. &quot;I won&#39;t,&quot; said  the pig. &quot;Then I will do it alone,&quot; said  the little red hen."
                 android:textAlignment="textStart"
                 android:gravity="start|center"
                 android:padding="@dimen/_4sdp"
                 />
-    </LinearLayout>
+        </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:weightSum="4"
-        android:layout_weight="1"
-        android:background="@drawable/bg_cloud_in_the_sky">
-
-        <ImageView
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/cover"
-            android:scaleType="centerCrop"
-            android:layout_weight="3"/>
+            android:orientation="horizontal"
+            android:weightSum="4"
+            android:layout_weight="1"
+            android:background="@drawable/bg_cloud_in_the_sky">
+
+            <ImageView
+                android:id="@+id/iv_content"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/background"
+                android:scaleType="centerCrop"
+                android:layout_weight="3"/>
+        </LinearLayout>
     </LinearLayout>
 
-</LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:layout_width="@dimen/_50sdp"
+            android:layout_height="@dimen/_50sdp"
+            android:src="@drawable/pause_circle"
+            android:layout_centerVertical="true"/>
+    </RelativeLayout>
+
+</FrameLayout>

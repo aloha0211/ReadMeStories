@@ -1,6 +1,7 @@
 package ominext.com.readmestories.fragments.mybooks;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -13,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import ominext.com.readmestories.models.Book;
-import ominext.com.readmestories.models.BookResponse;
 
 /**
  * Created by LuongHH on 6/23/2017.
@@ -46,7 +46,7 @@ class MyBooksPresenter {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("Get List Book", databaseError.getMessage());
             }
         });
     }

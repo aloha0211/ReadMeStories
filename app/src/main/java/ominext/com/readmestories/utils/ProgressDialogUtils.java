@@ -3,6 +3,8 @@ package ominext.com.readmestories.utils;
 import android.app.ProgressDialog;
 import android.content.Context;
 
+import ominext.com.readmestories.R;
+
 /**
  * Created by Vinh on 10/28/2016.
  */

@@ -9,10 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ominext.com.readmestories.R;
-import ominext.com.readmestories.adapters.BookAdapter;
+import ominext.com.readmestories.adapters.BooksAdapter;
 import ominext.com.readmestories.adapters.SimpleDividerItemDecoration;
 import ominext.com.readmestories.fragments.BaseFragment;
 import ominext.com.readmestories.models.Book;
@@ -22,7 +23,8 @@ import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
 public class MyBooksFragment extends BaseFragment implements MyBooksView {
 
     private RecyclerView mRecyclerView;
-    private BookAdapter mBookAdapter;
+    private BooksAdapter mBookAdapter;
+    private List<Book> mBookList;
 
     private MyBooksPresenter mPresenter;
 
@@ -31,8 +33,7 @@ public class MyBooksFragment extends BaseFragment implements MyBooksView {
     }
 
     public static MyBooksFragment newInstance() {
-        MyBooksFragment fragment = new MyBooksFragment();
-        return fragment;
+        return new MyBooksFragment();
     }
 
     @Override
@@ -57,14 +58,17 @@ public class MyBooksFragment extends BaseFragment implements MyBooksView {
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getContext()));
+        mBookList = new ArrayList<>();
+        mBookAdapter = new BooksAdapter(getContext(), mBookList);
+        mRecyclerView.setAdapter(mBookAdapter);
 
         mPresenter.getListBook();
     }
 
     @Override
     public void onSuccessful(List<Book> bookList) {
-        mBookAdapter = new BookAdapter(getContext(), bookList);
-        mRecyclerView.setAdapter(mBookAdapter);
+        mBookList.addAll(bookList);
+        mBookAdapter.notifyDataSetChanged();
     }
 
     @Override

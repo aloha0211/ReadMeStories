@@ -62,11 +62,11 @@ public class Book implements Parcelable {
         this.content = content;
     }
 
-    public List<List<Double>> getTimeFrame() {
+    public List<List<Double>> gettime_frame() {
         return timeFrame;
     }
 
-    public void setTimeFrame(List<List<Double>> timeFrame) {
+    public void settime_frame(List<List<Double>> timeFrame) {
         this.timeFrame = timeFrame;
     }
 
