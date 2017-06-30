@@ -20,7 +20,7 @@ import java.util.List;
 
 public class Player {
 
-    private static final long DELAY_TIME = 1500;
+    private static final long DELAY_TIME = 1000;
 
     private Context mContext;
     private MediaPlayer mMediaPlayer;
@@ -30,6 +30,9 @@ public class Player {
     private Runnable mPlayMediaRunnable;
 
     private int mDuration;
+    private int mTimeIndex;
+    private int mTextSpanFromIndex;
+    private boolean mIsFirstRun;
 
     public Player(Context context) {
         this.mContext = context;
@@ -37,41 +40,41 @@ public class Player {
 
     public void readBook(@NonNull final TextView textView, @NonNull final String content, @NonNull String audioPath, final List<Double> timeFrame, MediaPlayer.OnCompletionListener listener) {
 
-        final String[] contents = content.trim().replaceAll("  ", " ").split(" ");
+        final String[] contents = content.trim().replaceAll("-", " ").replaceAll("  ", " ").replaceAll("  ", " ").replaceAll(" \" ", " ").split(" ");
 
-        final int[] index = {0, 0};
+        mTimeIndex = 0;
+        mTextSpanFromIndex = 0;
+        mIsFirstRun = true;
         mSpanTextRunnable = new Runnable() {
             @Override
             public void run() {
-                if (index[0] < timeFrame.size()) {
-                    String textToSpan = contents[index[0]];
-                    textToSpan = textToSpan.replaceAll("\"", "").replaceAll(",", "").replaceAll("\\.", "").replaceAll("\\?", "");
-                    int startIndex = content.indexOf(textToSpan, index[1] /*filter text from Index*/);
+                if (mTimeIndex < timeFrame.size() && mTimeIndex < contents.length) {
+                    String textToSpan = contents[mTimeIndex];
+                    textToSpan = textToSpan.replaceAll("\"", "").replaceAll(",", "").replaceAll("\\.", "").replaceAll("\\?", "").replace("!", "");
+                    int startIndex = content.indexOf(textToSpan, mTextSpanFromIndex /*filter text from Index*/);
                     int endIndex = startIndex + textToSpan.length();
                     spanTextView(textView, content, startIndex, endIndex);
 
+                    if (mIsFirstRun) {
+                        mMediaPlayer.start();
+                        mIsFirstRun = false;
+                    }
+
                     int period;
-                    if (index[0] + 1 == timeFrame.size()) {
-                        period = mDuration > timeFrame.get(index[0]) * 1000 ? mDuration - (int) (timeFrame.get(index[0]) * 1000) : 0;
+                    if (mTimeIndex + 1 == timeFrame.size()) {
+                        period = mDuration > timeFrame.get(mTimeIndex) * 1000 ? mDuration - (int) (timeFrame.get(mTimeIndex) * 1000) : 0;
                     } else {
-                        period = (int) ((timeFrame.get(index[0] + 1) - timeFrame.get(index[0])) * 1000);
+                        period = (int) ((timeFrame.get(mTimeIndex + 1) - timeFrame.get(mTimeIndex)) * 1000);
                     }
                     Log.e("read", textToSpan + " - " + period);
                     mHandler.postDelayed(this, period);
-                    index[0]++;
-                    index[1] = endIndex;        // set fromIndex
+                    mTimeIndex++;
+                    mTextSpanFromIndex = endIndex;        // set fromIndex
                 }
-            }
-        };
-        mPlayMediaRunnable = new Runnable() {
-            @Override
-            public void run() {
-                mMediaPlayer.start();
             }
         };
 
         mHandler.postDelayed(mSpanTextRunnable, DELAY_TIME + (long) (timeFrame.get(0) * 1000));
-        mHandler.postDelayed(mPlayMediaRunnable, DELAY_TIME - 300 + (long) (timeFrame.get(0) * 1000));
 
         mMediaPlayer = new MediaPlayer();
         try {
@@ -117,6 +120,14 @@ public class Player {
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
             mMediaPlayer.release();
+        }
+        mHandler.removeCallbacks(mSpanTextRunnable);
+        mHandler.removeCallbacks(mPlayMediaRunnable);
+    }
+
+    public void pausePlaying() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.pause();
         }
         mHandler.removeCallbacks(mSpanTextRunnable);
         mHandler.removeCallbacks(mPlayMediaRunnable);

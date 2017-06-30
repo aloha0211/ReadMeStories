@@ -79,6 +79,11 @@ public class ReadingBookFragment extends BaseFragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
     public void onDestroy() {
         mPlayer.release();
         super.onDestroy();

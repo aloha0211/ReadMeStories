@@ -38,12 +38,10 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
     public void onCompletionReadingPage(String fileName) {
         if (fileName.equalsIgnoreCase(Constant.COVER)) {
             mViewPager.setCurrentItem(1, true);
-            mPagerAdapter.getFragment(1).startReading();
         } else if (!fileName.equalsIgnoreCase(Constant.BACK_COVER)) {
             try {
                 int position = Integer.parseInt(fileName) + 1;
                 mViewPager.setCurrentItem(position, true);
-                mPagerAdapter.getFragment(position).startReading();
             } catch (Exception e) {
 
             }
