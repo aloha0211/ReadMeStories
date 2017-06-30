@@ -80,11 +80,11 @@ public class ReadingBookFragment extends BaseFragment {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         mPlayer.release();
+        super.onDestroy();
     }
 
-    public void readBook() {
+    public void startReading() {
         String audioPath = getContext().getCacheDir().getPath() + "/" + mBookId + "/" + Constant.AUDIO + "/" + mFileName + Constant.MP3_EXTENSION;
         MediaPlayer.OnCompletionListener listener = new MediaPlayer.OnCompletionListener() {
             @Override
@@ -99,5 +99,10 @@ public class ReadingBookFragment extends BaseFragment {
         } else {
             mPlayer.readBook(mTvContent, mContent, audioPath, mTimeFrame, listener);
         }
+    }
+
+    public void stopReading() {
+        mTvContent.setText(mContent);
+        mPlayer.stopPlaying();
     }
 }

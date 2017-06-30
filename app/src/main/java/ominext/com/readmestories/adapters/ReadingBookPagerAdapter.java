@@ -19,6 +19,7 @@ public class ReadingBookPagerAdapter extends FragmentStatePagerAdapter {
 
     private Book mBook;
     private SparseArrayCompat<ReadingBookFragment> mSparseArray = new SparseArrayCompat<>();
+
     public ReadingBookPagerAdapter(FragmentManager fm, Book book) {
         super(fm);
         this.mBook = book;
@@ -44,10 +45,10 @@ public class ReadingBookPagerAdapter extends FragmentStatePagerAdapter {
     }
 
     @Override
-    public void setPrimaryItem(ViewGroup container, int position, Object object) {
-        ReadingBookFragment fragment = (ReadingBookFragment) object;
+    public Object instantiateItem(ViewGroup container, int position) {
+        ReadingBookFragment fragment = (ReadingBookFragment) super.instantiateItem(container, position);
         mSparseArray.put(position, fragment);
-        super.setPrimaryItem(container, position, object);
+        return fragment;
     }
 
     @Override

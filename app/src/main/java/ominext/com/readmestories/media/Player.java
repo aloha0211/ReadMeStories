@@ -6,7 +6,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.annotation.RawRes;
 import android.text.SpannableString;
 import android.text.style.BackgroundColorSpan;
 import android.util.Log;
@@ -116,9 +115,17 @@ public class Player {
 
     public void release() {
         if (mMediaPlayer != null) {
-            if (mMediaPlayer.isPlaying())
-                mMediaPlayer.stop();
+            mMediaPlayer.stop();
             mMediaPlayer.release();
+        }
+        mHandler.removeCallbacks(mSpanTextRunnable);
+        mHandler.removeCallbacks(mPlayMediaRunnable);
+    }
+
+    public void stopPlaying() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.setOnCompletionListener(null);
+            mMediaPlayer.stop();
         }
         mHandler.removeCallbacks(mSpanTextRunnable);
         mHandler.removeCallbacks(mPlayMediaRunnable);
