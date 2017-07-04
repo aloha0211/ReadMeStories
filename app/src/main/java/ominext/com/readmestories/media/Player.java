@@ -1,6 +1,5 @@
 package ominext.com.readmestories.media;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -22,24 +21,29 @@ public class Player {
 
     private static final long DELAY_TIME = 1000;
 
-    private Context mContext;
     private MediaPlayer mMediaPlayer;
+    private MediaPlayer.OnCompletionListener mListener;
 
     private Handler mHandler = new Handler();
     private Runnable mSpanTextRunnable;
-    private Runnable mPlayMediaRunnable;
 
     private int mDuration;
     private int mTimeIndex;
     private int mTextSpanFromIndex;
-    private boolean mIsFirstRun;
 
-    public Player(Context context) {
-        this.mContext = context;
+    private boolean mIsFirstRun;
+    private boolean mIsPlaying;
+
+    private List<Double> mTimeFrame;
+
+    public Player() {
+
     }
 
     public void readBook(@NonNull final TextView textView, @NonNull final String content, @NonNull String audioPath, final List<Double> timeFrame, MediaPlayer.OnCompletionListener listener) {
 
+        mTimeFrame = timeFrame;
+        mListener = listener;
         final String[] contents = content.trim().replaceAll("-", " ").replaceAll("  ", " ").replaceAll("  ", " ").replaceAll(" \" ", " ").split(" ");
 
         mTimeIndex = 0;
@@ -57,6 +61,7 @@ public class Player {
 
                     if (mIsFirstRun) {
                         mMediaPlayer.start();
+                        mIsPlaying = true;
                         mIsFirstRun = false;
                     }
 
@@ -89,14 +94,13 @@ public class Player {
     }
 
     public void readBook(@NonNull String audioPath, MediaPlayer.OnCompletionListener listener) {
-
-        mPlayMediaRunnable = new Runnable() {
+        mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 mMediaPlayer.start();
+                mIsPlaying = true;
             }
-        };
-        mHandler.postDelayed(mPlayMediaRunnable, DELAY_TIME);
+        }, DELAY_TIME);
 
         mMediaPlayer = new MediaPlayer();
         try {
@@ -117,28 +121,41 @@ public class Player {
     }
 
     public void release() {
+        mHandler.removeCallbacks(mSpanTextRunnable);
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
             mMediaPlayer.release();
+            mIsPlaying = false;
         }
-        mHandler.removeCallbacks(mSpanTextRunnable);
-        mHandler.removeCallbacks(mPlayMediaRunnable);
     }
 
-    public void pausePlaying() {
+    public void pause() {
+        mHandler.removeCallbacks(mSpanTextRunnable);
         if (mMediaPlayer != null) {
             mMediaPlayer.pause();
         }
-        mHandler.removeCallbacks(mSpanTextRunnable);
-        mHandler.removeCallbacks(mPlayMediaRunnable);
     }
 
-    public void stopPlaying() {
+    public void resume() {
+        mIsFirstRun = true;
+        if (mTimeIndex < mTimeFrame.size()) {
+            mMediaPlayer.seekTo((int) (mTimeFrame.get(mTimeIndex) * 1000));
+            mHandler.post(mSpanTextRunnable);
+        } else {
+            mListener.onCompletion(mMediaPlayer);
+        }
+    }
+
+    public void stop() {
         if (mMediaPlayer != null) {
             mMediaPlayer.setOnCompletionListener(null);
             mMediaPlayer.stop();
+            mIsPlaying = false;
         }
         mHandler.removeCallbacks(mSpanTextRunnable);
-        mHandler.removeCallbacks(mPlayMediaRunnable);
+    }
+
+    public boolean isPlaying() {
+        return mIsPlaying;
     }
 }

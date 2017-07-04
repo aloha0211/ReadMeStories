@@ -1,6 +1,5 @@
 package ominext.com.readmestories.fragments;
 
-import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ominext.com.readmestories.R;
@@ -61,32 +59,18 @@ public class ReadingBookFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         mTvContent = (TextView) view.findViewById(R.id.tv_content);
         mIvContent = (ImageView) view.findViewById(R.id.iv_content);
 
+        mPlayer = new Player();
+
         Utils.loadImage(mIvContent, String.valueOf(mBookId), mFileName);
 
-        if (mContent!= null) {
+        if (mContent != null) {
             mContent = mContent.replaceAll("&quot;", "\"").replaceAll("&#39;", "\'");
             mTvContent.setText(mContent);
         }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mPlayer = new Player(context);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        mPlayer.release();
-        super.onDestroy();
     }
 
     public void startReading() {
@@ -95,7 +79,7 @@ public class ReadingBookFragment extends BaseFragment {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 if (isAdded()) {
-                    ((ReadingBookActivity) getActivity()).onCompletionReadingPage(mFileName);
+                    ((ReadingBookActivity) getActivity()).onCompletionReadingPage(mediaPlayer, mFileName);
                 }
             }
         };
@@ -106,8 +90,24 @@ public class ReadingBookFragment extends BaseFragment {
         }
     }
 
+    public void pauseReading() {
+        mPlayer.pause();
+    }
+
+    public void resumeReading() {
+        mPlayer.resume();
+    }
+
     public void stopReading() {
         mTvContent.setText(mContent);
-        mPlayer.stopPlaying();
+        mPlayer.stop();
+    }
+
+    public boolean isReading() {
+        return mPlayer.isPlaying();
+    }
+
+    public void release() {
+        mPlayer.release();
     }
 }
