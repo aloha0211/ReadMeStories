@@ -1,9 +1,9 @@
 package ominext.com.readmestories.utils;
 
 import android.content.Context;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -15,7 +15,6 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.io.IOException;
 
-import ominext.com.readmestories.R;
 import ominext.com.readmestories.glidemodule.GlideApp;
 import ominext.com.readmestories.listeners.DownloadFileListener;
 
@@ -25,24 +24,34 @@ import ominext.com.readmestories.listeners.DownloadFileListener;
 
 public class Utils {
 
+//
+//public static void loadImage(final ImageView imageView, String bookId, String fileName) {
+//        FirebaseStorage storage = FirebaseStorage.getInstance();
+//        StorageReference storageRef = storage.getReference();
+//        final StorageReference imageRef = storageRef.child(bookId + "/image/" + fileName);
+//        imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//            @Override
+//            public void onSuccess(Uri uri) {
+//                GlideApp.with(imageView.getContext().getApplicationContext())
+//                        .load(uri)
+//                        .placeholder(R.drawable.background)
+//                        .into(imageView);
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                Log.e("Firebase", "Load Image failed: " + e.getMessage());
+//            }
+//        });
+//    }
+
     public static void loadImage(final ImageView imageView, String bookId, String fileName) {
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        final StorageReference imageRef = storageRef.child(bookId + "/image/" + fileName);
-        imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                GlideApp.with(imageView.getContext().getApplicationContext())
-                        .load(uri)
-                        .placeholder(R.drawable.background)
-                        .into(imageView);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e("Firebase", "Load Image failed: " + e.getMessage());
-            }
-        });
+        String imagePath = imageView.getContext().getCacheDir().getPath() + "/" + bookId + "/" + Constant.IMAGE + "/" + fileName;
+        File imgFile = new File(imagePath);
+        if (imgFile.exists()) {
+            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            imageView.setImageBitmap(myBitmap);
+        }
     }
 
     public static void download(Context context, String filePath, String fileName, final DownloadFileListener listener) {
@@ -77,5 +86,9 @@ public class Utils {
                 }
             });
         }
+    }
+
+    public static int setResource(Context context, String name, String Type) {
+        return context.getResources().getIdentifier(name, Type, context.getPackageName());
     }
 }

@@ -15,6 +15,7 @@ import java.util.List;
 
 import ominext.com.readmestories.BR;
 import ominext.com.readmestories.R;
+import ominext.com.readmestories.activities.ReadingActivity;
 import ominext.com.readmestories.activities.ReadingBookActivity;
 import ominext.com.readmestories.listeners.DownloadFileListener;
 import ominext.com.readmestories.models.Book;
@@ -61,12 +62,15 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.BookViewHold
         mDialog.show();
         mBook = book;
         mFileDownloadedCount = 0;
-        mTotalFile = book.getContent().size() + 2;
+        mTotalFile = 2 * (book.getContent().size() + 2);
         for (int i = 1; i <= book.getContent().size(); i++) {
             Utils.download(mContext, book.getId() + "/" + Constant.AUDIO, i + Constant.MP3_EXTENSION, mListener);
+            Utils.download(mContext, book.getId() + "/" + Constant.IMAGE, String.valueOf(i), mListener);
         }
         Utils.download(mContext, book.getId() + "/" + Constant.AUDIO, Constant.BACK_COVER + Constant.MP3_EXTENSION, mListener);
         Utils.download(mContext, book.getId() + "/" + Constant.AUDIO, Constant.COVER + Constant.MP3_EXTENSION, mListener);
+        Utils.download(mContext, book.getId() + "/" + Constant.IMAGE, Constant.BACK_COVER, mListener);
+        Utils.download(mContext, book.getId() + "/" + Constant.IMAGE, Constant.COVER, mListener);
     }
 
     private int mFileDownloadedCount;
@@ -79,7 +83,7 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.BookViewHold
         public void onDownloadSuccessful(String audioPath) {
             mFileDownloadedCount++;
             if (mFileDownloadedCount == mTotalFile) {
-                Intent intent = new Intent(mContext, ReadingBookActivity.class);
+                Intent intent = new Intent(mContext, ReadingActivity.class);
                 Bundle data = new Bundle();
                 data.putParcelable(Constant.KEY_BOOK, mBook);
                 intent.putExtra(Constant.KEY_DATA, data);

@@ -3,6 +3,7 @@
           package="ominext.com.readmestories">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -24,6 +25,11 @@
         </activity>
         <activity
             android:name=".activities.ReadingBookActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="landscape">
+        </activity>
+        <activity
+            android:name=".activities.ReadingActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="landscape">
         </activity>
