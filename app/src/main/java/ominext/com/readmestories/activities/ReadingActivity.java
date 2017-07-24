@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.listeners.OnPageChangeListener;
-import ominext.com.readmestories.media.Player;
 import ominext.com.readmestories.models.Book;
 import ominext.com.readmestories.utils.Constant;
 import ominext.com.readmestories.view.BookPageProvider;
@@ -20,7 +19,6 @@ import ominext.com.readmestories.view.CurlView;
 public class ReadingActivity extends AppCompatActivity implements OnPageChangeListener {
 
     private CurlView mCurlView;
-    private Player mPlayer;
     private BookPageProvider mPageProvider;
     private Book mBook;
 
@@ -49,8 +47,6 @@ public class ReadingActivity extends AppCompatActivity implements OnPageChangeLi
         // This is something somewhat experimental. Before uncommenting next
         // line, please see method comments in CurlView.
         // mCurlView.setEnableTouchPressure(true);
-
-        mPlayer = new Player();
     }
 
     @Override
@@ -81,6 +77,7 @@ public class ReadingActivity extends AppCompatActivity implements OnPageChangeLi
         mediaPlayer.setOnCompletionListener(null);
         if (mediaPlayer.getDuration() != 0) {
             if (fileName.equalsIgnoreCase(Constant.COVER)) {
+                mCurlView.curlToNextPage();
 //                mViewPager.setCurrentItem(1, true);
             } else if (!fileName.equalsIgnoreCase(Constant.BACK_COVER)) {
                 try {

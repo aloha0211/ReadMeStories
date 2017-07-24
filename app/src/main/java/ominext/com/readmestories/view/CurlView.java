@@ -18,17 +18,14 @@ package ominext.com.readmestories.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.opengl.GLSurfaceView;
+import android.os.SystemClock;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 
-import ominext.com.readmestories.R;
 import ominext.com.readmestories.listeners.OnPageChangeListener;
 
 /**
@@ -234,6 +231,8 @@ public class CurlView extends GLSurfaceView implements View.OnTouchListener,
         mPageCurl.resetTexture();
     }
 
+    private boolean isAutoCurl;
+
     @Override
     public boolean onTouch(View view, MotionEvent me) {
         // No dragging during animation at the moment.
@@ -338,19 +337,22 @@ public class CurlView extends GLSurfaceView implements View.OnTouchListener,
                             || mViewMode == SHOW_TWO_PAGES
                             && mPointerPos.mPos.x > rightRect.left) {
                         // On right side target is always right page's right border.
+                        if (isAutoCurl)
+                            mDragStartPos.x = 0;
                         mAnimationTarget.set(mDragStartPos);
-                        mAnimationTarget.x = mRenderer
-                                .getPageRect(CurlRenderer.PAGE_RIGHT).right;
-                        mAnimationTargetEvent = SET_CURL_TO_RIGHT;
+                        mAnimationTarget.x = isAutoCurl ? mRenderer.getPageRect(CurlRenderer.PAGE_LEFT).left : mRenderer.getPageRect(CurlRenderer.PAGE_RIGHT).right;
+                        mAnimationTargetEvent = isAutoCurl ? SET_CURL_TO_LEFT : SET_CURL_TO_RIGHT;
                     } else {
                         // On left side target depends on visible pages.
+                        if (isAutoCurl)
+                            mDragStartPos.x = rightRect.right;
                         mAnimationTarget.set(mDragStartPos);
                         if (mCurlState == CURL_RIGHT || mViewMode == SHOW_TWO_PAGES) {
-                            mAnimationTarget.x = leftRect.left;
+                            mAnimationTarget.x = isAutoCurl ? rightRect.right : leftRect.left;
                         } else {
                             mAnimationTarget.x = rightRect.left;
                         }
-                        mAnimationTargetEvent = SET_CURL_TO_LEFT;
+                        mAnimationTargetEvent = isAutoCurl ? SET_CURL_TO_RIGHT : SET_CURL_TO_LEFT;
                     }
                     mAnimate = true;
                     requestRender();
@@ -360,6 +362,31 @@ public class CurlView extends GLSurfaceView implements View.OnTouchListener,
         }
 
         return true;
+    }
+
+    public void curlToNextPage() {
+        int x = getWidth();
+        int y = getHeight() / 2;
+
+        isAutoCurl = true;
+        MotionEvent me = MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, x, y, 0);
+        onTouch(this, me);
+        for (int i = 0; i < getWidth() / 5; i++) {
+            x += i;// restamos xq vamos pa la derecha
+            me = MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, x, y, 0);
+            onTouch(this, me);
+            try {
+                Thread.sleep(10L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
+        me = MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, x, y, 0);
+        onTouch(this, me);
+        ++mCurrentIndex;
+        mPageChangeListener.onPageSelected(mCurrentIndex);
+        isAutoCurl = false;
     }
 
     /**

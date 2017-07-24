@@ -41,14 +41,21 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.BookViewHold
     @Override
     public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(mContext).inflate(R.layout.item_book, parent, false);
-        return new BookViewHolder(itemView);
+        final BookViewHolder holder = new BookViewHolder(itemView);
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Book book = mBooks.get(holder.getAdapterPosition());
+                onBookClick(book);
+            }
+        });
+        return holder;
     }
 
     @Override
     public void onBindViewHolder(BookViewHolder holder, int position) {
         Book book = mBooks.get(position);
         holder.mBinding.setVariable(BR.book, book);
-        holder.mBinding.setVariable(BR.handlers, this);
         holder.mBinding.executePendingBindings();
     }
 
@@ -57,7 +64,7 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.BookViewHold
         return mBooks == null ? 0 : mBooks.size();
     }
 
-    public void onBookClick(View view, Book book) {
+    private void onBookClick(Book book) {
         mDialog = ProgressDialogUtils.create(mContext, mContext.getString(R.string.loading_data));
         mDialog.show();
         mBook = book;

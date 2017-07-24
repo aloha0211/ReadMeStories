@@ -64,7 +64,8 @@ public class ReadingBookManager {
     }
 
     public void stopReading() {
-        mTvContent.setText(mContent);
+        if (mTvContent != null)
+            mTvContent.setText(mContent);
         mPlayer.stop();
     }
 

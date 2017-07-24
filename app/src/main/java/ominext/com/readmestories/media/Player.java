@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.text.SpannableString;
 import android.text.style.BackgroundColorSpan;
@@ -24,7 +25,7 @@ public class Player {
     private MediaPlayer mMediaPlayer;
     private MediaPlayer.OnCompletionListener mListener;
 
-    private Handler mHandler = new Handler();
+    private Handler mHandler;
     private Runnable mSpanTextRunnable;
 
     private int mDuration;
@@ -42,6 +43,7 @@ public class Player {
 
     public void readBook(@NonNull final TextView textView, @NonNull final String content, @NonNull String audioPath, final List<Double> timeFrame, MediaPlayer.OnCompletionListener listener) {
 
+        mHandler = new Handler(Looper.getMainLooper());
         mTimeFrame = timeFrame;
         mListener = listener;
         final String[] contents = content.trim().replaceAll("-", " ").replaceAll("  ", " ").replaceAll("  ", " ").replaceAll(" \" ", " ").split(" ");
@@ -79,7 +81,7 @@ public class Player {
             }
         };
 
-        mHandler.postDelayed(mSpanTextRunnable, DELAY_TIME + (long) (timeFrame.get(0) * 1000));
+//        mHandler.postDelayed(mSpanTextRunnable, DELAY_TIME + (long) (timeFrame.get(0) * 1000));
 
         mMediaPlayer = new MediaPlayer();
         try {
@@ -94,6 +96,7 @@ public class Player {
     }
 
     public void readBook(@NonNull String audioPath, MediaPlayer.OnCompletionListener listener) {
+        mHandler = new Handler(Looper.getMainLooper());
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -121,7 +124,8 @@ public class Player {
     }
 
     public void release() {
-        mHandler.removeCallbacks(mSpanTextRunnable);
+        if (mHandler != null)
+            mHandler.removeCallbacks(mSpanTextRunnable);
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
             mMediaPlayer.release();
@@ -130,7 +134,8 @@ public class Player {
     }
 
     public void pause() {
-        mHandler.removeCallbacks(mSpanTextRunnable);
+        if (mHandler != null)
+            mHandler.removeCallbacks(mSpanTextRunnable);
         if (mMediaPlayer != null) {
             mMediaPlayer.pause();
         }
@@ -140,7 +145,8 @@ public class Player {
         mIsFirstRun = true;
         if (mTimeIndex < mTimeFrame.size()) {
             mMediaPlayer.seekTo((int) (mTimeFrame.get(mTimeIndex) * 1000));
-            mHandler.post(mSpanTextRunnable);
+            if (mHandler != null)
+                mHandler.post(mSpanTextRunnable);
         } else {
             mListener.onCompletion(mMediaPlayer);
         }
@@ -152,7 +158,8 @@ public class Player {
             mMediaPlayer.stop();
             mIsPlaying = false;
         }
-        mHandler.removeCallbacks(mSpanTextRunnable);
+        if (mHandler != null)
+            mHandler.removeCallbacks(mSpanTextRunnable);
     }
 
     public boolean isPlaying() {
