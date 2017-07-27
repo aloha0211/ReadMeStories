@@ -28,24 +28,27 @@ public class ReadingBookFragment extends BaseFragment {
     private String mContent;
     private String mFileName;
     private List<Double> mTimeFrame;
+    private View.OnClickListener mListener;
 
     public ReadingBookFragment() {
         // Required empty public constructor
     }
 
-    public static ReadingBookFragment newInstance(int bookId, String content, String fileName, List<Double> timeFrame) {
+    public static ReadingBookFragment newInstance(int bookId, String content, String fileName, List<Double> timeFrame, View.OnClickListener listener) {
         ReadingBookFragment fragment = new ReadingBookFragment();
         fragment.mContent = content;
         fragment.mTimeFrame = timeFrame;
         fragment.mBookId = bookId;
         fragment.mFileName = fileName;
+        fragment.mListener = listener;
         return fragment;
     }
 
-    public static ReadingBookFragment newInstance(int bookId, String fileName) {
+    public static ReadingBookFragment newInstance(int bookId, String fileName,  View.OnClickListener listener) {
         ReadingBookFragment fragment = new ReadingBookFragment();
         fragment.mBookId = bookId;
         fragment.mFileName = fileName;
+        fragment.mListener = listener;
         return fragment;
     }
 
@@ -71,6 +74,8 @@ public class ReadingBookFragment extends BaseFragment {
             mContent = mContent.replaceAll("&quot;", "\"").replaceAll("&#39;", "\'");
             mTvContent.setText(mContent);
         }
+
+        view.setOnClickListener(mListener);
     }
 
     public void startReading() {

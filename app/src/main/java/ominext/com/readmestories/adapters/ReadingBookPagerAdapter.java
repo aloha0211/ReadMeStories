@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.util.SparseArrayCompat;
+import android.view.View;
 import android.view.ViewGroup;
 
 import ominext.com.readmestories.fragments.ReadingBookFragment;
@@ -19,28 +20,29 @@ public class ReadingBookPagerAdapter extends FragmentStatePagerAdapter {
 
     private Book mBook;
     private SparseArrayCompat<ReadingBookFragment> mSparseArray = new SparseArrayCompat<>();
+    private View.OnClickListener mListener;
 
-    public ReadingBookPagerAdapter(FragmentManager fm, Book book) {
+    public ReadingBookPagerAdapter(FragmentManager fm, Book book, View.OnClickListener listener) {
         super(fm);
         this.mBook = book;
+        this.mListener = listener;
     }
 
     @Override
     public Fragment getItem(int position) {
         ReadingBookFragment fragment;
         if (position == getCount() - 1) {
-            fragment = ReadingBookFragment.newInstance(mBook.getId(), getFileName(position));
+            fragment = ReadingBookFragment.newInstance(mBook.getId(), getFileName(position), mListener);
         } else if (position == 0) {
-            fragment = ReadingBookFragment.newInstance(mBook.getId(), getFileName(position));
+            fragment = ReadingBookFragment.newInstance(mBook.getId(), getFileName(position), mListener);
         } else {
-            fragment = ReadingBookFragment.newInstance(mBook.getId(), mBook.getContent().get(position - 1), getFileName(position), mBook.gettime_frame().get(position - 1));
+            fragment = ReadingBookFragment.newInstance(mBook.getId(), mBook.getContent().get(position - 1), getFileName(position), mBook.gettime_frame().get(position - 1), mListener);
         }
         return fragment;
     }
 
     @Override
     public int getCount() {
-
         return mBook.getContent().size() + 2;
     }
 

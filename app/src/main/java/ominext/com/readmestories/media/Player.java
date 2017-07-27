@@ -133,11 +133,16 @@ public class Player {
         mHandler.removeCallbacks(mSpanTextRunnable);
         if (mMediaPlayer != null) {
             mMediaPlayer.pause();
+            mIsPlaying = false;
         }
     }
 
     public void resume() {
         mIsFirstRun = true;
+        if (mTimeFrame == null) {
+            mMediaPlayer.start();
+            return;
+        }
         if (mTimeIndex < mTimeFrame.size()) {
             mMediaPlayer.seekTo((int) (mTimeFrame.get(mTimeIndex) * 1000));
             mHandler.post(mSpanTextRunnable);
