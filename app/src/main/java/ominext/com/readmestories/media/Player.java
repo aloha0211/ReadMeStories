@@ -13,6 +13,8 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.List;
 
+import ominext.com.readmestories.listeners.OnStartedListener;
+
 /**
  * Created by LuongHH on 6/22/2017.
  */
@@ -31,8 +33,7 @@ public class Player {
     private int mTimeIndex;
     private int mTextSpanFromIndex;
 
-    private boolean mIsFirstRun;
-    private boolean mIsPlaying;
+    private boolean isFirstRun;
 
     private List<Double> mTimeFrame;
 
@@ -40,15 +41,17 @@ public class Player {
 
     }
 
-    public void readBook(@NonNull final TextView textView, @NonNull final String content, @NonNull String audioPath, final List<Double> timeFrame, MediaPlayer.OnCompletionListener listener) {
+    public void readBook(@NonNull final TextView textView, @NonNull final String content, @NonNull String audioPath
+                         ,final List<Double> timeFrame, MediaPlayer.OnCompletionListener onCompletionListener
+    ,final OnStartedListener onStartedListener) {
 
         mTimeFrame = timeFrame;
-        mListener = listener;
+        mListener = onCompletionListener;
         final String[] contents = content.trim().replaceAll("-", " ").replaceAll("  ", " ").replaceAll("  ", " ").replaceAll(" \" ", " ").split(" ");
 
         mTimeIndex = 0;
         mTextSpanFromIndex = 0;
-        mIsFirstRun = true;
+        isFirstRun = true;
         mSpanTextRunnable = new Runnable() {
             @Override
             public void run() {
@@ -59,10 +62,10 @@ public class Player {
                     int endIndex = startIndex + textToSpan.length();
                     spanTextView(textView, content, startIndex, endIndex);
 
-                    if (mIsFirstRun) {
+                    if (isFirstRun) {
                         mMediaPlayer.start();
-                        mIsPlaying = true;
-                        mIsFirstRun = false;
+                        onStartedListener.onStart();
+                        isFirstRun = false;
                     }
 
                     int period;
@@ -86,19 +89,19 @@ public class Player {
             mMediaPlayer.setDataSource(audioPath);
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.prepare();
-            mMediaPlayer.setOnCompletionListener(listener);
+            mMediaPlayer.setOnCompletionListener(onCompletionListener);
             mDuration = mMediaPlayer.getDuration();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void readBook(@NonNull String audioPath, MediaPlayer.OnCompletionListener listener) {
+    public void readBook(@NonNull String audioPath, MediaPlayer.OnCompletionListener onCompletionListener, final OnStartedListener onStartedListener) {
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 mMediaPlayer.start();
-                mIsPlaying = true;
+                onStartedListener.onStart();
             }
         }, DELAY_TIME);
 
@@ -107,7 +110,7 @@ public class Player {
             mMediaPlayer.setDataSource(audioPath);
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.prepare();
-            mMediaPlayer.setOnCompletionListener(listener);
+            mMediaPlayer.setOnCompletionListener(onCompletionListener);
             mDuration = mMediaPlayer.getDuration();
         } catch (IOException e) {
             e.printStackTrace();
@@ -125,7 +128,7 @@ public class Player {
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
             mMediaPlayer.release();
-            mIsPlaying = false;
+            mMediaPlayer = null;
         }
     }
 
@@ -133,12 +136,11 @@ public class Player {
         mHandler.removeCallbacks(mSpanTextRunnable);
         if (mMediaPlayer != null) {
             mMediaPlayer.pause();
-            mIsPlaying = false;
         }
     }
 
     public void resume() {
-        mIsFirstRun = true;
+        isFirstRun = true;
         if (mTimeFrame == null) {
             mMediaPlayer.start();
             return;
@@ -155,12 +157,11 @@ public class Player {
         if (mMediaPlayer != null) {
             mMediaPlayer.setOnCompletionListener(null);
             mMediaPlayer.stop();
-            mIsPlaying = false;
         }
         mHandler.removeCallbacks(mSpanTextRunnable);
     }
 
     public boolean isPlaying() {
-        return mIsPlaying;
+        return mMediaPlayer != null && mMediaPlayer.isPlaying();
     }
 }

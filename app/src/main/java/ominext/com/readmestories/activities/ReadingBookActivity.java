@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.adapters.ReadingBookPagerAdapter;
 import ominext.com.readmestories.fragments.ReadingBookFragment;
+import ominext.com.readmestories.listeners.OnStartedListener;
 import ominext.com.readmestories.models.Book;
 import ominext.com.readmestories.utils.Constant;
 
@@ -23,7 +24,8 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
     private ImageView mPlayButton;
 
     private int mLastPageIndex = 0;
-    boolean isEnabled = true;
+    boolean isSettlingProcess;
+    boolean isMediaPlayerStarted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +52,12 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
                 if (fragment.isReading()) {
                     fragment.resumeReading();
                 } else {
-                    fragment.startReading();
+                    fragment.startReading(new OnStartedListener() {
+                        @Override
+                        public void onStart() {
+
+                        }
+                    });
                 }
             }
         });
@@ -98,11 +105,17 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
 
     @Override
     public void onPageSelected(final int position) {
+        isMediaPlayerStarted = true;
         mPagerAdapter.getFragment(mLastPageIndex).stopReading();
         mViewPager.post(new Runnable() {
             @Override
             public void run() {
-                mPagerAdapter.getFragment(position).startReading();
+                mPagerAdapter.getFragment(position).startReading(new OnStartedListener() {
+                    @Override
+                    public void onStart() {
+                        isMediaPlayerStarted = false;
+                    }
+                });
             }
         });
         mLastPageIndex = position;
@@ -110,57 +123,18 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
 
     @Override
     public void onPageScrollStateChanged(int state) {
-
+        if (state == ViewPager.SCROLL_STATE_SETTLING) {
+            isSettlingProcess = true;
+        } else if (state == ViewPager.SCROLL_STATE_IDLE) {
+            isSettlingProcess = false;
+        }
     }
 
     @Override
     public void onClick(View view) {
-        if (isEnabled) {
-            isEnabled = false;
+        if (!isSettlingProcess && !isMediaPlayerStarted) {
             ReadingBookFragment fragment = mPagerAdapter.getFragment(mViewPager.getCurrentItem());
-            mPlayButton.setVisibility(View.VISIBLE);
-            if (fragment.isReading()) {
-                mPlayButton.setImageResource(R.drawable.play_circle);
-                fragment.pauseReading();
-            } else {
-                mPlayButton.setImageResource(R.drawable.pause_circle);
-                fragment.resumeReading();
-            }
-            final Animation fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
-            final Animation fadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out);
-            Animation.AnimationListener fadeInAnimationListener = new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    mPlayButton.startAnimation(fadeOutAnimation);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-                }
-            };
-            Animation.AnimationListener fadeOutAnimationListener = new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    mPlayButton.setVisibility(View.GONE);
-                    isEnabled = true;
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-                }
-            };
-            fadeInAnimation.setAnimationListener(fadeInAnimationListener);
-            fadeOutAnimation.setAnimationListener(fadeOutAnimationListener);
-            mPlayButton.startAnimation(fadeInAnimation);
+            fragment.onPlayClick();
         }
     }
 }

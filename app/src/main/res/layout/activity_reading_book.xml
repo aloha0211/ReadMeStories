@@ -35,12 +35,4 @@
             android:layout_height="match_parent"
             android:layout_weight="3"/>
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/iv_play"
-        android:layout_width="@dimen/_100sdp"
-        android:layout_height="@dimen/_100sdp"
-        android:src="@drawable/pause_circle"
-        android:layout_gravity="center"
-        android:visibility="gone"/>
 </FrameLayout>
