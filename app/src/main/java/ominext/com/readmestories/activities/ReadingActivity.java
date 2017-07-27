@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.listeners.OnPageChangeListener;
+import ominext.com.readmestories.manager.ReadingBookManager;
 import ominext.com.readmestories.models.Book;
 import ominext.com.readmestories.utils.Constant;
 import ominext.com.readmestories.view.BookPageProvider;
@@ -38,7 +39,6 @@ public class ReadingActivity extends AppCompatActivity implements OnPageChangeLi
             index = (Integer) getLastNonConfigurationInstance();
         }
 
-        mCurlView.setOnPageChangeListener(this);
         mCurlView.setPageProvider(mPageProvider);
         mCurlView.setViewMode(CurlView.SHOW_TWO_PAGES);
         mCurlView.setCurrentIndex(index);
@@ -59,6 +59,20 @@ public class ReadingActivity extends AppCompatActivity implements OnPageChangeLi
     public void onResume() {
         super.onResume();
         mCurlView.onResume();
+        mCurlView.setOnPageChangeListener(this);
+       mCurlView.postDelayed(new Runnable() {
+           @Override
+           public void run() {
+               ReadingBookManager readingBookManager = mPageProvider.getCurrentReading(mCurlView.getCurrentIndex());
+               if (readingBookManager == null)
+                   return;
+               if (readingBookManager.isReading()) {
+                   readingBookManager.resumeReading();
+               } else {
+                   readingBookManager.startReading();
+               }
+           }
+       }, 500);
     }
 
     @Override
@@ -81,8 +95,8 @@ public class ReadingActivity extends AppCompatActivity implements OnPageChangeLi
 //                mViewPager.setCurrentItem(1, true);
             } else if (!fileName.equalsIgnoreCase(Constant.BACK_COVER)) {
                 try {
-                    int position = Integer.parseInt(fileName) + 1;
-//                    mViewPager.setCurrentItem(position, true);
+                    int index = Integer.parseInt(fileName) + 1;
+                    mCurlView.setCurrentIndex(index);
                 } catch (Exception e) {
 
                 }

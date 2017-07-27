@@ -380,12 +380,9 @@ public class CurlView extends GLSurfaceView implements View.OnTouchListener,
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }
         me = MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, x, y, 0);
         onTouch(this, me);
-        ++mCurrentIndex;
-        mPageChangeListener.onPageSelected(mCurrentIndex);
         isAutoCurl = false;
     }
 

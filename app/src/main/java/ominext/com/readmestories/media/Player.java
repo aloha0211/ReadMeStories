@@ -81,7 +81,7 @@ public class Player {
             }
         };
 
-//        mHandler.postDelayed(mSpanTextRunnable, DELAY_TIME + (long) (timeFrame.get(0) * 1000));
+        mHandler.postDelayed(mSpanTextRunnable, DELAY_TIME + (long) (timeFrame.get(0) * 1000));
 
         mMediaPlayer = new MediaPlayer();
         try {

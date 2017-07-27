@@ -44,14 +44,13 @@ public class BookPageProvider implements CurlView.PageProvider {
         // Bitmap resources.
         int bitmapId;
         View v;
-        Log.v("BookPageProvider", " - " + index);
         if (isFront) {
-            bitmapId = Utils.setResource(mContext, "image_curl_view", "layout");
+            bitmapId = R.layout.image_curl_view;
             v = inflater.inflate(bitmapId, null, true);
             ImageView ivContent = (ImageView) v.findViewById(R.id.iv_content);
             Utils.loadImage(ivContent, String.valueOf(mBook.getId()), getFileName(index));
         } else {
-            bitmapId = Utils.setResource(mContext, "content_curl_view", "layout");
+            bitmapId = R.layout.content_curl_view;
             v = inflater.inflate(bitmapId, null, true);
             TextView tvContent = (TextView) v.findViewById(R.id.tv_content);
             if (index < getPageCount() - 2) {
@@ -67,6 +66,7 @@ public class BookPageProvider implements CurlView.PageProvider {
             } else {
                 readingBookManager = new ReadingBookManager(mContext, mBook.getId(), mBook.getContent().get(index - 1), getFileName(index), mBook.gettime_frame().get(index - 1));
             }
+            readingBookManager.setTextView(tvContent);
             mSparseArray.put(index, readingBookManager);
         }
         v.measure(
