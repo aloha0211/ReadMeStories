@@ -5,9 +5,6 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.adapters.ReadingBookPagerAdapter;
@@ -21,11 +18,10 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
     private ViewPager mViewPager;
     private ReadingBookPagerAdapter mPagerAdapter;
 
-    private ImageView mPlayButton;
-
     private int mLastPageIndex = 0;
+    boolean isFirstTime;
     boolean isSettlingProcess;
-    boolean isMediaPlayerStarted;
+    boolean isMediaPlayerStarted;  // for play/pause button
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,31 +29,30 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
         setContentView(R.layout.activity_reading_book);
 
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
-        mPlayButton = (ImageView) findViewById(R.id.iv_play);
 
         Book book = getIntent().getBundleExtra(Constant.KEY_DATA).getParcelable(Constant.KEY_BOOK);
         mPagerAdapter = new ReadingBookPagerAdapter(getSupportFragmentManager(), book, this);
         mViewPager.setAdapter(mPagerAdapter);
         findViewById(R.id.ll_root_view).setOnClickListener(this);
+
+        isFirstTime = true;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        isMediaPlayerStarted = true;
         mViewPager.addOnPageChangeListener(this);
         mViewPager.post(new Runnable() {
             @Override
             public void run() {
                 ReadingBookFragment fragment = mPagerAdapter.getFragment(mViewPager.getCurrentItem());
-                if (fragment.isReading()) {
-                    fragment.resumeReading();
+                if (isFirstTime) {
+                    fragment.startReading(null);
                 } else {
-                    fragment.startReading(new OnStartedListener() {
-                        @Override
-                        public void onStart() {
-
-                        }
-                    });
+                    if (!fragment.isStatePausing()) {
+                        fragment.resumeReading();
+                    }
                 }
             }
         });
@@ -65,20 +60,16 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
 
     @Override
     protected void onPause() {
-        super.onPause();
+        isFirstTime = false;
         mViewPager.clearOnPageChangeListeners();
-        mViewPager.post(new Runnable() {
-            @Override
-            public void run() {
-                mPagerAdapter.getFragment(mViewPager.getCurrentItem()).pauseReading();
-            }
-        });
+        mPagerAdapter.getFragment(mViewPager.getCurrentItem()).pauseReading();
+        super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         mPagerAdapter.getFragment(mViewPager.getCurrentItem()).release();
+        super.onDestroy();
     }
 
     public void onCompletionReadingPage(MediaPlayer mediaPlayer, String fileName) {
@@ -105,15 +96,18 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
 
     @Override
     public void onPageSelected(final int position) {
-        isMediaPlayerStarted = true;
-        mPagerAdapter.getFragment(mLastPageIndex).stopReading();
+        isMediaPlayerStarted = false;
+        ReadingBookFragment previousPage = mPagerAdapter.getFragment(mLastPageIndex);
+        if (previousPage != null) {
+            previousPage.stopReading();
+        }
         mViewPager.post(new Runnable() {
             @Override
             public void run() {
                 mPagerAdapter.getFragment(position).startReading(new OnStartedListener() {
                     @Override
                     public void onStart() {
-                        isMediaPlayerStarted = false;
+                        isMediaPlayerStarted = true;
                     }
                 });
             }
@@ -132,7 +126,7 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
 
     @Override
     public void onClick(View view) {
-        if (!isSettlingProcess && !isMediaPlayerStarted) {
+        if (!isSettlingProcess && isMediaPlayerStarted) {
             ReadingBookFragment fragment = mPagerAdapter.getFragment(mViewPager.getCurrentItem());
             fragment.onPlayClick();
         }

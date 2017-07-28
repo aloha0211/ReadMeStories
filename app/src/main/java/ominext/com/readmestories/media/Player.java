@@ -38,12 +38,11 @@ public class Player {
     private List<Double> mTimeFrame;
 
     public Player() {
-
     }
 
     public void readBook(@NonNull final TextView textView, @NonNull final String content, @NonNull String audioPath
-                         ,final List<Double> timeFrame, MediaPlayer.OnCompletionListener onCompletionListener
-    ,final OnStartedListener onStartedListener) {
+            , final List<Double> timeFrame, MediaPlayer.OnCompletionListener onCompletionListener
+            , final OnStartedListener onStartedListener) {
 
         mTimeFrame = timeFrame;
         mListener = onCompletionListener;
@@ -64,7 +63,8 @@ public class Player {
 
                     if (isFirstRun) {
                         mMediaPlayer.start();
-                        onStartedListener.onStart();
+                        if (onStartedListener != null)
+                            onStartedListener.onStart();
                         isFirstRun = false;
                     }
 
@@ -101,7 +101,8 @@ public class Player {
             @Override
             public void run() {
                 mMediaPlayer.start();
-                onStartedListener.onStart();
+                if (onStartedListener != null)
+                    onStartedListener.onStart();
             }
         }, DELAY_TIME);
 
@@ -134,16 +135,20 @@ public class Player {
 
     public void pause() {
         mHandler.removeCallbacks(mSpanTextRunnable);
-        if (mMediaPlayer != null) {
+        if (isPlaying()) {
             mMediaPlayer.pause();
         }
     }
 
-    public void resume() {
+    // false mean mMediaPlayer is null , we need to start reading first
+    public boolean resume() {
+        if (mMediaPlayer == null) {
+            return false;
+        }
         isFirstRun = true;
         if (mTimeFrame == null) {
             mMediaPlayer.start();
-            return;
+            return true;
         }
         if (mTimeIndex < mTimeFrame.size()) {
             mMediaPlayer.seekTo((int) (mTimeFrame.get(mTimeIndex) * 1000));
@@ -151,6 +156,7 @@ public class Player {
         } else {
             mListener.onCompletion(mMediaPlayer);
         }
+        return true;
     }
 
     public void stop() {

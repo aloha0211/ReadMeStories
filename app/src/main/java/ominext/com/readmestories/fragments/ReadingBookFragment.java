@@ -33,6 +33,7 @@ public class ReadingBookFragment extends BaseFragment {
     private String mFileName;
 
     private boolean isClickable = true;
+    private boolean isStatePausing;
 
     private List<Double> mTimeFrame;
     private View.OnClickListener mListener;
@@ -51,7 +52,7 @@ public class ReadingBookFragment extends BaseFragment {
         return fragment;
     }
 
-    public static ReadingBookFragment newInstance(int bookId, String fileName,  View.OnClickListener listener) {
+    public static ReadingBookFragment newInstance(int bookId, String fileName, View.OnClickListener listener) {
         ReadingBookFragment fragment = new ReadingBookFragment();
         fragment.mBookId = bookId;
         fragment.mFileName = fileName;
@@ -90,12 +91,14 @@ public class ReadingBookFragment extends BaseFragment {
         if (isClickable) {
             isClickable = false;
             mPlayButton.setVisibility(View.VISIBLE);
-            if (isReading()) {
+            if (mPlayer.isPlaying()) {
                 mPlayButton.setImageResource(R.drawable.play_circle);
                 pauseReading();
+                isStatePausing = true;
             } else {
                 mPlayButton.setImageResource(R.drawable.pause_circle);
                 resumeReading();
+                isStatePausing = false;
             }
             final Animation fadeInAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
             final Animation fadeOutAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
@@ -157,7 +160,9 @@ public class ReadingBookFragment extends BaseFragment {
     }
 
     public void resumeReading() {
-        mPlayer.resume();
+        if (!mPlayer.resume()) {
+            startReading(null);
+        }
     }
 
     public void stopReading() {
@@ -165,8 +170,8 @@ public class ReadingBookFragment extends BaseFragment {
         mPlayer.stop();
     }
 
-    public boolean isReading() {
-        return mPlayer.isPlaying();
+    public boolean isStatePausing() {
+        return isStatePausing;
     }
 
     public void release() {
