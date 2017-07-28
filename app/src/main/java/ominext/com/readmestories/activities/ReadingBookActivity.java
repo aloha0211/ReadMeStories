@@ -50,7 +50,7 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
                 if (isFirstTime) {
                     fragment.startReading(null);
                 } else {
-                    if (!fragment.isStatePausing()) {
+                    if (!fragment.isOnStatePausing()) {
                         fragment.resumeReading();
                     }
                 }
@@ -96,22 +96,29 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
 
     @Override
     public void onPageSelected(final int position) {
-        isMediaPlayerStarted = false;
-        ReadingBookFragment previousPage = mPagerAdapter.getFragment(mLastPageIndex);
-        if (previousPage != null) {
-            previousPage.stopReading();
+        ReadingBookFragment lastPage = mPagerAdapter.getFragment(mLastPageIndex);
+        boolean isOnStatePausing = false;
+        if (lastPage != null) {
+            lastPage.stopReading();
+            isOnStatePausing = lastPage.isOnStatePausing();
         }
-        mViewPager.post(new Runnable() {
-            @Override
-            public void run() {
-                mPagerAdapter.getFragment(position).startReading(new OnStartedListener() {
-                    @Override
-                    public void onStart() {
-                        isMediaPlayerStarted = true;
-                    }
-                });
-            }
-        });
+        final ReadingBookFragment currentPage = mPagerAdapter.getFragment(position);
+        currentPage.setOnStatePausing(isOnStatePausing);
+        currentPage.setHasPageJustSelected(true);
+        if (!isOnStatePausing) {
+            isMediaPlayerStarted = false;
+            mViewPager.post(new Runnable() {
+                @Override
+                public void run() {
+                    currentPage.startReading(new OnStartedListener() {
+                        @Override
+                        public void onStart() {
+                            isMediaPlayerStarted = true;
+                        }
+                    });
+                }
+            });
+        }
         mLastPageIndex = position;
     }
 

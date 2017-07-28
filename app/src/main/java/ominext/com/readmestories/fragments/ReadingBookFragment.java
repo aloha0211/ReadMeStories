@@ -33,7 +33,8 @@ public class ReadingBookFragment extends BaseFragment {
     private String mFileName;
 
     private boolean isClickable = true;
-    private boolean isStatePausing;
+    private boolean isOnStatePausing;
+    private boolean hasPageJustSelected;
 
     private List<Double> mTimeFrame;
     private View.OnClickListener mListener;
@@ -91,15 +92,20 @@ public class ReadingBookFragment extends BaseFragment {
         if (isClickable) {
             isClickable = false;
             mPlayButton.setVisibility(View.VISIBLE);
-            if (mPlayer.isPlaying()) {
+            if (!isOnStatePausing) {
                 mPlayButton.setImageResource(R.drawable.play_circle);
                 pauseReading();
-                isStatePausing = true;
+                isOnStatePausing = true;
             } else {
                 mPlayButton.setImageResource(R.drawable.pause_circle);
-                resumeReading();
-                isStatePausing = false;
+                if (hasPageJustSelected) {
+                    startReading(null);
+                } else {
+                    resumeReading();
+                }
+                isOnStatePausing = false;
             }
+            hasPageJustSelected = false;
             final Animation fadeInAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
             final Animation fadeOutAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
             Animation.AnimationListener fadeInAnimationListener = new Animation.AnimationListener() {
@@ -170,8 +176,16 @@ public class ReadingBookFragment extends BaseFragment {
         mPlayer.stop();
     }
 
-    public boolean isStatePausing() {
-        return isStatePausing;
+    public boolean isOnStatePausing() {
+        return isOnStatePausing;
+    }
+
+    public void setOnStatePausing(boolean onStatePausing) {
+        isOnStatePausing = onStatePausing;
+    }
+
+    public void setHasPageJustSelected(boolean hasPageJustSelected) {
+        this.hasPageJustSelected = hasPageJustSelected;
     }
 
     public void release() {

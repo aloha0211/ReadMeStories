@@ -140,9 +140,9 @@ public class Player {
         }
     }
 
-    // false mean mMediaPlayer is null , we need to start reading first
+    // false mean MediaPlayer is not playing or is null , we need to start reading first
     public boolean resume() {
-        if (mMediaPlayer == null) {
+        if (mMediaPlayer == null || !mMediaPlayer.isPlaying() && mMediaPlayer.getCurrentPosition() <= 0) {
             return false;
         }
         isFirstRun = true;
@@ -167,7 +167,7 @@ public class Player {
         mHandler.removeCallbacks(mSpanTextRunnable);
     }
 
-    public boolean isPlaying() {
+    private boolean isPlaying() {
         return mMediaPlayer != null && mMediaPlayer.isPlaying();
     }
 }
