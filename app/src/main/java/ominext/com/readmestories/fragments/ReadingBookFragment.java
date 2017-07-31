@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class ReadingBookFragment extends BaseFragment {
     private Player mPlayer;
 
     private int mBookId;
+    private int mPageIndex = -1;
     private String mContent;
     private String mFileName;
 
@@ -38,6 +40,8 @@ public class ReadingBookFragment extends BaseFragment {
 
     private List<Double> mTimeFrame;
     private View.OnClickListener mListener;
+
+    private boolean isAutoRead = true;
 
     public ReadingBookFragment() {
         // Required empty public constructor
@@ -53,19 +57,25 @@ public class ReadingBookFragment extends BaseFragment {
         return fragment;
     }
 
-    public static ReadingBookFragment newInstance(int bookId, String fileName, View.OnClickListener listener) {
+    public static ReadingBookFragment newInstance(int pageIndex, int bookId, String fileName, View.OnClickListener listener) {
         ReadingBookFragment fragment = new ReadingBookFragment();
         fragment.mBookId = bookId;
+        fragment.mPageIndex = pageIndex;
         fragment.mFileName = fileName;
         fragment.mListener = listener;
         return fragment;
+    }
+
+    public void setAutoRead(boolean autoRead) {
+        isAutoRead = autoRead;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_reading_book, container, false);
+        int resourceId = mPageIndex > 0 ? R.layout.fragment_reading_book_reverse_page : R.layout.fragment_reading_book;  // mPageIndex > 0 <=> last page
+        return inflater.inflate(resourceId, container, false);
     }
 
     @Override
@@ -86,10 +96,25 @@ public class ReadingBookFragment extends BaseFragment {
         }
 
         view.setOnClickListener(mListener);
+
+        if (mPageIndex >= 0) {
+            ImageView ivRead = (ImageView) view.findViewById(R.id.iv_read);
+            RelativeLayout rlRead = (RelativeLayout) view.findViewById(R.id.rl_read);
+            view.findViewById(R.id.tv_content).setVisibility(View.GONE);
+            rlRead.setVisibility(View.VISIBLE);
+            if (mPageIndex == 0) {              // first page or cover page
+                ivRead.setImageResource(R.drawable.bg_read_it_myselft);
+                ivRead.setTag(Constant.COVER);
+            } else if (mPageIndex > 0) {        // last page
+                ivRead.setImageResource(R.drawable.bg_read_it_again);
+                ivRead.setTag(Constant.BACK_COVER);
+            }
+            ivRead.setOnClickListener(mListener);
+        }
     }
 
     public void onPlayClick() {
-        if (isClickable) {
+        if (isClickable && isAutoRead) {
             isClickable = false;
             mPlayButton.setVisibility(View.VISIBLE);
             if (!isOnStatePausing) {
@@ -145,35 +170,40 @@ public class ReadingBookFragment extends BaseFragment {
     }
 
     public void startReading(final OnStartedListener onStartedListener) {
-        String audioPath = getContext().getCacheDir().getPath() + "/" + mBookId + "/" + Constant.AUDIO + "/" + mFileName + Constant.MP3_EXTENSION;
-        MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                if (isAdded()) {
-                    ((ReadingBookActivity) getActivity()).onCompletionReadingPage(mediaPlayer, mFileName);
+        if (isAutoRead) {
+            String audioPath = getContext().getCacheDir().getPath() + "/" + mBookId + "/" + Constant.AUDIO + "/" + mFileName + Constant.MP3_EXTENSION;
+            MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    if (isAdded()) {
+                        ((ReadingBookActivity) getActivity()).onCompletionReadingPage(mediaPlayer, mFileName);
+                    }
                 }
+            };
+            if (mContent == null) {
+                mPlayer.readBook(audioPath, onCompletionListener, onStartedListener);
+            } else {
+                mPlayer.readBook(mTvContent, mContent, audioPath, mTimeFrame, onCompletionListener, onStartedListener);
             }
-        };
-        if (mContent == null) {
-            mPlayer.readBook(audioPath, onCompletionListener, onStartedListener);
-        } else {
-            mPlayer.readBook(mTvContent, mContent, audioPath, mTimeFrame, onCompletionListener, onStartedListener);
         }
     }
 
     public void pauseReading() {
-        mPlayer.pause();
+        if (isAutoRead)
+            mPlayer.pause();
     }
 
     public void resumeReading() {
-        if (!mPlayer.resume()) {
+        if (isAutoRead && !mPlayer.resume()) {
             startReading(null);
         }
     }
 
     public void stopReading() {
-        mTvContent.setText(mContent);
-        mPlayer.stop();
+        if (isAutoRead) {
+            mTvContent.setText(mContent);
+            mPlayer.stop();
+        }
     }
 
     public boolean isOnStatePausing() {
@@ -189,6 +219,7 @@ public class ReadingBookFragment extends BaseFragment {
     }
 
     public void release() {
-        mPlayer.release();
+        if (isAutoRead)
+            mPlayer.release();
     }
 }

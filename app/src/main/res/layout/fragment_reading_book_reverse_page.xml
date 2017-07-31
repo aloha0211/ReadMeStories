@@ -19,6 +19,14 @@
             android:textAlignment="textStart"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"/>
 
+        <ImageView
+            android:id="@+id/iv_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:scaleType="centerCrop"
+            android:src="@drawable/background"/>
+
         <RelativeLayout
             android:id="@+id/rl_read"
             android:layout_width="0dp"
@@ -32,14 +40,6 @@
                 android:layout_centerInParent="true"
                 android:background="@drawable/bg_read_it_again"/>
         </RelativeLayout>
-
-        <ImageView
-            android:id="@+id/iv_content"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:scaleType="centerCrop"
-            android:src="@drawable/background"/>
     </LinearLayout>
 
     <ImageView

@@ -31,7 +31,7 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
 
         Book book = getIntent().getBundleExtra(Constant.KEY_DATA).getParcelable(Constant.KEY_BOOK);
-        mPagerAdapter = new ReadingBookPagerAdapter(getSupportFragmentManager(), book, this);
+        mPagerAdapter = new ReadingBookPagerAdapter(getSupportFragmentManager(), book, this, true);
         mViewPager.setAdapter(mPagerAdapter);
         findViewById(R.id.ll_root_view).setOnClickListener(this);
 
@@ -133,6 +133,30 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
 
     @Override
     public void onClick(View view) {
+        if (view.getId() == R.id.iv_read) {
+            Book book = getIntent().getBundleExtra(Constant.KEY_DATA).getParcelable(Constant.KEY_BOOK);
+            if (view.getTag().equals(Constant.COVER)) {
+                mPagerAdapter = new ReadingBookPagerAdapter(getSupportFragmentManager(), book, this, false);
+                mViewPager.setCurrentItem(1, true);
+            } else {
+                mPagerAdapter = new ReadingBookPagerAdapter(getSupportFragmentManager(), book, this, true);
+                mViewPager.setCurrentItem(0, true);
+                mViewPager.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        ReadingBookFragment fragment = mPagerAdapter.getFragment(mViewPager.getCurrentItem());
+                        if (isFirstTime) {
+                            fragment.startReading(null);
+                        } else {
+                            if (!fragment.isOnStatePausing()) {
+                                fragment.resumeReading();
+                            }
+                        }
+                    }
+                });
+            }
+            return;
+        }
         if (!isSettlingProcess && isMediaPlayerStarted) {
             ReadingBookFragment fragment = mPagerAdapter.getFragment(mViewPager.getCurrentItem());
             fragment.onPlayClick();

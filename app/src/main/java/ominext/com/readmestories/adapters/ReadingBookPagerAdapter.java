@@ -2,7 +2,6 @@ package ominext.com.readmestories.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.util.SparseArrayCompat;
 import android.view.View;
@@ -22,22 +21,24 @@ public class ReadingBookPagerAdapter extends FragmentStatePagerAdapter {
     private SparseArrayCompat<ReadingBookFragment> mSparseArray = new SparseArrayCompat<>();
     private View.OnClickListener mListener;
 
-    public ReadingBookPagerAdapter(FragmentManager fm, Book book, View.OnClickListener listener) {
+    private boolean isAutoRead;
+
+    public ReadingBookPagerAdapter(FragmentManager fm, Book book, View.OnClickListener listener, boolean isAutoRead) {
         super(fm);
         this.mBook = book;
         this.mListener = listener;
+        this.isAutoRead = isAutoRead;
     }
 
     @Override
     public Fragment getItem(int position) {
         ReadingBookFragment fragment;
-        if (position == getCount() - 1) {
-            fragment = ReadingBookFragment.newInstance(mBook.getId(), getFileName(position), mListener);
-        } else if (position == 0) {
-            fragment = ReadingBookFragment.newInstance(mBook.getId(), getFileName(position), mListener);
+        if (position == 0 || position == getCount() - 1) {
+            fragment = ReadingBookFragment.newInstance(position, mBook.getId(), getFileName(position), mListener);
         } else {
             fragment = ReadingBookFragment.newInstance(mBook.getId(), mBook.getContent().get(position - 1), getFileName(position), mBook.gettime_frame().get(position - 1), mListener);
         }
+        fragment.setAutoRead(isAutoRead);
         return fragment;
     }
 
