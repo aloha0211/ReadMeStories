@@ -21,7 +21,7 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
     private int mLastPageIndex = 0;
     boolean isFirstTime;
     boolean isSettlingProcess;
-    boolean isMediaPlayerStarted;  // for play/pause button
+    boolean isMediaPlayerStarted;  // for enable or disable play/pause button when media player has not started yet
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

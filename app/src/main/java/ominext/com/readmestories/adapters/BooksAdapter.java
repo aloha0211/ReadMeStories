@@ -1,6 +1,5 @@
 package ominext.com.readmestories.adapters;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -15,19 +14,18 @@ import java.util.List;
 
 import ominext.com.readmestories.BR;
 import ominext.com.readmestories.R;
+import ominext.com.readmestories.activities.BaseActivity;
 import ominext.com.readmestories.activities.ReadingBookActivity;
 import ominext.com.readmestories.listeners.DownloadFileListener;
 import ominext.com.readmestories.models.Book;
 import ominext.com.readmestories.utils.Constant;
-import ominext.com.readmestories.utils.DialogUtils;
-import ominext.com.readmestories.utils.ProgressDialogUtils;
 import ominext.com.readmestories.utils.Utils;
 
 /**
  * Created by LuongHH on 6/21/2017.
  */
 
-public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.BookViewHolder>{
+public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.BookViewHolder> {
 
     private Context mContext;
     private List<Book> mBooks;
@@ -57,8 +55,7 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.BookViewHold
     }
 
     public void onBookClick(View view, Book book) {
-        mDialog = ProgressDialogUtils.create(mContext, mContext.getString(R.string.loading_data));
-        mDialog.show();
+        ((BaseActivity) mContext).showProgressDialog(mContext.getString(R.string.loading_data));
         mBook = book;
         mFileDownloadedCount = 0;
         mTotalFile = book.getContent().size() + 2;
@@ -72,7 +69,6 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.BookViewHold
     private int mFileDownloadedCount;
     private int mTotalFile;
     private Book mBook;
-    private ProgressDialog mDialog;
 
     private DownloadFileListener mListener = new DownloadFileListener() {
         @Override
@@ -84,14 +80,14 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.BookViewHold
                 data.putParcelable(Constant.KEY_BOOK, mBook);
                 intent.putExtra(Constant.KEY_DATA, data);
                 mContext.startActivity(intent);
-                mDialog.dismiss();
+                ((BaseActivity) mContext).dissmissProgressDialog();
             }
         }
 
         @Override
         public void onDownloadFailed() {
-            mDialog.dismiss();
-            DialogUtils.showAlertDialog(mContext, mContext.getString(R.string.error), mContext.getString(R.string.load_data_err_msg));
+            ((BaseActivity) mContext).dissmissProgressDialog();
+            ((BaseActivity) mContext).showAlertDialog(mContext.getString(R.string.error), mContext.getString(R.string.load_data_err_msg));
         }
     };
 

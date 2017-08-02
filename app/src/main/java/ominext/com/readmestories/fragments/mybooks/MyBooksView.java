@@ -11,5 +11,5 @@ import ominext.com.readmestories.models.Book;
 public interface MyBooksView {
 
     void onSuccessful(List<Book> bookList);
-    void onFailed();
+    void onFailed(String message);
 }

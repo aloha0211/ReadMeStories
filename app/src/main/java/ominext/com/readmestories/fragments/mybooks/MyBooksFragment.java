@@ -3,16 +3,19 @@ package ominext.com.readmestories.fragments.mybooks;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ominext.com.readmestories.R;
+import ominext.com.readmestories.activities.BaseActivity;
 import ominext.com.readmestories.adapters.BooksAdapter;
 import ominext.com.readmestories.adapters.SimpleDividerItemDecoration;
 import ominext.com.readmestories.fragments.BaseFragment;
@@ -23,6 +26,9 @@ import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
 public class MyBooksFragment extends BaseFragment implements MyBooksView {
 
     private RecyclerView mRecyclerView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private LinearLayout llNoInternetConnecttion;
+
     private BooksAdapter mBookAdapter;
     private List<Book> mBookList;
 
@@ -62,17 +68,53 @@ public class MyBooksFragment extends BaseFragment implements MyBooksView {
         mBookAdapter = new BooksAdapter(getContext(), mBookList);
         mRecyclerView.setAdapter(mBookAdapter);
 
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                llNoInternetConnecttion.setVisibility(View.GONE);
+                mSwipeRefreshLayout.setVisibility(View.VISIBLE);
+                mPresenter.getListBook();
+            }
+        });
+
+        llNoInternetConnecttion = (LinearLayout) view.findViewById(R.id.ll_no_internet_connection);
+        view.findViewById(R.id.btn_try_again).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                llNoInternetConnecttion.setVisibility(View.GONE);
+                mSwipeRefreshLayout.setVisibility(View.VISIBLE);
+                ((BaseActivity) getActivity()).showProgressDialog("");
+                mPresenter.getListBook();
+            }
+        });
+
+        ((BaseActivity) getActivity()).showProgressDialog("");
         mPresenter.getListBook();
     }
 
     @Override
     public void onSuccessful(List<Book> bookList) {
-        mBookList.addAll(bookList);
-        mBookAdapter.notifyDataSetChanged();
+        if (isAdded()) {
+            mSwipeRefreshLayout.setRefreshing(false);
+            ((BaseActivity) getActivity()).dissmissProgressDialog();
+            mBookList.clear();
+            mBookList.addAll(bookList);
+            mBookAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
-    public void onFailed() {
-
+    public void onFailed(String message) {
+        if (isAdded()) {
+            mSwipeRefreshLayout.setRefreshing(false);
+            ((BaseActivity) getActivity()).dissmissProgressDialog();
+            if (message.equalsIgnoreCase(getString(R.string.no_connection_message))) {
+                llNoInternetConnecttion.setVisibility(View.VISIBLE);
+                mSwipeRefreshLayout.setVisibility(View.GONE);
+            } else {
+                ((BaseActivity) getActivity()).showAlertDialog("Error", message);
+            }
+        }
     }
 }
