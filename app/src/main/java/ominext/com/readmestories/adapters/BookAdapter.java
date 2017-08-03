@@ -54,41 +54,13 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
     }
 
     public void onBookClick(View view, Book book) {
-//        ((BaseActivity) mContext).showProgressDialog(mContext.getString(R.string.loading_data));
-//        mBook = book;
-//        mFileDownloadedCount = 0;
-//        mTotalFile = book.getContent().size() + 2;
-//        for (int i = 1; i <= book.getContent().size(); i++) {
-//            Utils.download(mContext, book.getId() + "/" + Constant.AUDIO, i + Constant.MP3_EXTENSION, mListener);
-//        }
-//        Utils.download(mContext, book.getId() + "/" + Constant.AUDIO, Constant.BACK_COVER + Constant.MP3_EXTENSION, mListener);
-//        Utils.download(mContext, book.getId() + "/" + Constant.AUDIO, Constant.COVER + Constant.MP3_EXTENSION, mListener);
+        Intent intent = new Intent(mContext, ReadingBookActivity.class);
+        Bundle data = new Bundle();
+        data.putParcelable(Constant.KEY_BOOK, book);
+        intent.putExtra(Constant.IS_FROM_ASSET, true);
+        intent.putExtra(Constant.KEY_DATA, data);
+        mContext.startActivity(intent);
     }
-
-    private int mFileDownloadedCount;
-    private int mTotalFile;
-    private Book mBook;
-
-    private DownloadFileListener mListener = new DownloadFileListener() {
-        @Override
-        public void onDownloadSuccessful(String audioPath) {
-            mFileDownloadedCount++;
-            if (mFileDownloadedCount == mTotalFile) {
-                Intent intent = new Intent(mContext, ReadingBookActivity.class);
-                Bundle data = new Bundle();
-                data.putParcelable(Constant.KEY_BOOK, mBook);
-                intent.putExtra(Constant.KEY_DATA, data);
-                mContext.startActivity(intent);
-                ((BaseActivity) mContext).dissmissProgressDialog();
-            }
-        }
-
-        @Override
-        public void onDownloadFailed() {
-            ((BaseActivity) mContext).dissmissProgressDialog();
-            ((BaseActivity) mContext).showAlertDialog(mContext.getString(R.string.error), mContext.getString(R.string.load_data_err_msg));
-        }
-    };
 
     class BookViewHolder extends RecyclerView.ViewHolder {
 

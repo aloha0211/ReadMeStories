@@ -1,5 +1,6 @@
 package ominext.com.readmestories.fragments;
 
+import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.util.List;
 
 import ominext.com.readmestories.R;
@@ -42,27 +44,30 @@ public class ReadingBookFragment extends BaseFragment {
     private View.OnClickListener mListener;
 
     private boolean isAutoRead = true;
+    private boolean isFromAsset;
 
     public ReadingBookFragment() {
         // Required empty public constructor
     }
 
-    public static ReadingBookFragment newInstance(int bookId, String content, String fileName, List<Double> timeFrame, View.OnClickListener listener) {
+    public static ReadingBookFragment newInstance(int bookId, String content, String fileName, List<Double> timeFrame, View.OnClickListener listener, boolean isFromAsset) {
         ReadingBookFragment fragment = new ReadingBookFragment();
         fragment.mContent = content;
         fragment.mTimeFrame = timeFrame;
         fragment.mBookId = bookId;
         fragment.mFileName = fileName;
         fragment.mListener = listener;
+        fragment.isFromAsset = isFromAsset;
         return fragment;
     }
 
-    public static ReadingBookFragment newInstance(int pageIndex, int bookId, String fileName, View.OnClickListener listener) {
+    public static ReadingBookFragment newInstance(int pageIndex, int bookId, String fileName, View.OnClickListener listener, boolean isFromAsset) {
         ReadingBookFragment fragment = new ReadingBookFragment();
         fragment.mBookId = bookId;
         fragment.mPageIndex = pageIndex;
         fragment.mFileName = fileName;
         fragment.mListener = listener;
+        fragment.isFromAsset = isFromAsset;
         return fragment;
     }
 
@@ -180,10 +185,23 @@ public class ReadingBookFragment extends BaseFragment {
                     }
                 }
             };
-            if (mContent == null) {
-                mPlayer.readBook(audioPath, onCompletionListener, onStartedListener);
+            if (isFromAsset) {
+                try {
+                    AssetFileDescriptor descriptor = getContext().getAssets().openFd(mBookId + "/" + Constant.AUDIO + "/" + mFileName + Constant.MP3_EXTENSION);
+                    if (mContent == null) {
+                        mPlayer.readBook(descriptor, onCompletionListener, onStartedListener);
+                    } else {
+                        mPlayer.readBook(mTvContent, mContent, descriptor, mTimeFrame, onCompletionListener, onStartedListener);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             } else {
-                mPlayer.readBook(mTvContent, mContent, audioPath, mTimeFrame, onCompletionListener, onStartedListener);
+                if (mContent == null) {
+                    mPlayer.readBook(audioPath, onCompletionListener, onStartedListener);
+                } else {
+                    mPlayer.readBook(mTvContent, mContent, audioPath, mTimeFrame, onCompletionListener, onStartedListener);
+                }
             }
         }
     }

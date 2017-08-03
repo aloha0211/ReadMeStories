@@ -31,7 +31,7 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
 
         Book book = getIntent().getBundleExtra(Constant.KEY_DATA).getParcelable(Constant.KEY_BOOK);
-        mPagerAdapter = new ReadingBookPagerAdapter(getSupportFragmentManager(), book, this, true);
+        mPagerAdapter = new ReadingBookPagerAdapter(getSupportFragmentManager(), book, this, true, getIntent().getBooleanExtra(Constant.IS_FROM_ASSET, true));
         mViewPager.setAdapter(mPagerAdapter);
         findViewById(R.id.ll_root_view).setOnClickListener(this);
 
@@ -137,13 +137,13 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
             Book book = getIntent().getBundleExtra(Constant.KEY_DATA).getParcelable(Constant.KEY_BOOK);
             if (view.getTag().equals(Constant.COVER)) {
                 // read it myself
-                mPagerAdapter = new ReadingBookPagerAdapter(getSupportFragmentManager(), book, this, false);
+                mPagerAdapter = new ReadingBookPagerAdapter(getSupportFragmentManager(), book, this, false, getIntent().getBooleanExtra(Constant.IS_FROM_ASSET, true));
                 mViewPager.setAdapter(mPagerAdapter);
                 mLastPageIndex = 0;
                 mViewPager.setCurrentItem(1, true);
             } else {
                 // read it again
-                mPagerAdapter = new ReadingBookPagerAdapter(getSupportFragmentManager(), book, this, true);
+                mPagerAdapter = new ReadingBookPagerAdapter(getSupportFragmentManager(), book, this, true, getIntent().getBooleanExtra(Constant.IS_FROM_ASSET, true));
                 mViewPager.setAdapter(mPagerAdapter);
                 mViewPager.setCurrentItem(0, true);
                 mViewPager.post(new Runnable() {

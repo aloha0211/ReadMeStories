@@ -30,6 +30,8 @@ import ominext.com.readmestories.R;
 import ominext.com.readmestories.listeners.DownloadFileListener;
 import ominext.com.readmestories.models.Book;
 
+import static ominext.com.readmestories.utils.Constant.ASSET_FILE_NAME;
+
 /**
  * Created by LuongHH on 6/27/2017.
  */
@@ -39,7 +41,7 @@ public class Utils {
     public static void loadImage(final ImageView imageView, String bookId, String fileName) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        final StorageReference imageRef = storageRef.child(bookId + "/image/" + fileName);
+        final StorageReference imageRef = storageRef.child(bookId + "/" + Constant.IMAGE + "/" + fileName);
         imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
@@ -58,7 +60,7 @@ public class Utils {
 
     public static void loadLocalImage(final ImageView imageView, String bookId, String fileName) {
         try {
-            InputStream is = imageView.getContext().getAssets().open(bookId + "/image/" + fileName);
+            InputStream is = imageView.getContext().getAssets().open(bookId + "/" + Constant.IMAGE + "/" + fileName);
             imageView.setImageDrawable(Drawable.createFromStream(is, null));
         } catch (IOException e) {
             e.printStackTrace();
@@ -120,7 +122,7 @@ public class Utils {
     }
 
     public static List<Book> getLocalBooks(Context context) {
-        String jsonData = loadAssetText(context, "data.json");
+        String jsonData = loadAssetText(context, ASSET_FILE_NAME);
         Type type = new TypeToken<ArrayList<Book>>() {}.getType();
         return new Gson().<ArrayList<Book>>fromJson(jsonData, type);
     }
