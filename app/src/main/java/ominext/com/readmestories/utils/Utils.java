@@ -2,6 +2,7 @@ package ominext.com.readmestories.utils;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ImageView;
@@ -45,6 +46,7 @@ public class Utils {
         });
     }
 
+    private static boolean isConnected;
     public static void download(Context context, String filePath, String fileName, final DownloadFileListener listener) {
         File cDir = context.getCacheDir();
         File cachingFolder = new File(cDir.getPath() + "/" + filePath);
@@ -62,20 +64,38 @@ public class Utils {
             StorageReference storageRef = storage.getReference();
 //            StorageReference storageRef = storage.getReferenceFromUrl("gs://readmestories-2c388.appspot.com");
             StorageReference pathReference = storageRef.child(filePath + "/" + fileName);
-            pathReference.getFile(tempFile)
-                    .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                            // Successfully downloaded data to local file
-                            listener.onDownloadSuccessful(tempFile.getPath());
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
+            isConnected = false;
+            final FileDownloadTask downloadTask = pathReference.getFile(tempFile);
+            final OnSuccessListener onSuccessListener = new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    // Successfully downloaded data to local file
+                    isConnected = true;
+                    listener.onDownloadSuccessful(tempFile.getPath());
+                }
+            };
+            final OnFailureListener onFailureListener = new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
+                    isConnected = true;
                     // Handle failed download
                     listener.onDownloadFailed();
+                    tempFile.delete();
                 }
-            });
+            };
+            downloadTask.addOnSuccessListener(onSuccessListener);
+            downloadTask.addOnFailureListener(onFailureListener);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (!isConnected) {
+                        downloadTask.removeOnFailureListener(onFailureListener);
+                        downloadTask.removeOnSuccessListener(onSuccessListener);
+                        listener.onDownloadFailed();
+                        tempFile.delete();
+                    }
+                }
+            }, 30000);
         }
     }
 }

@@ -16,7 +16,7 @@ public class ProgressDialogUtils {
     }
 
     public static ProgressDialog create(Context context, String message) {
-        return create(context, message, true);
+        return create(context, message, false);
     }
 
     public static ProgressDialog create(Context context, String message, Boolean cancelable) {
