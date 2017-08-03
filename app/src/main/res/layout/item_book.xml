@@ -9,7 +9,7 @@
             type="ominext.com.readmestories.models.Book"/>
         <variable
             name="handlers"
-            type="ominext.com.readmestories.adapters.BooksAdapter"/>
+            type="ominext.com.readmestories.adapters.BookAdapter"/>
     </data>
 
     <android.support.v7.widget.CardView
@@ -30,6 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/item_book_height"
                 android:scaleType="fitXY"
+                android:tag="local"
                 app:bookId="@{String.valueOf(book.getId().intValue())}"/>
 
             <TextView

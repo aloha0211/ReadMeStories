@@ -15,4 +15,6 @@ public class Constant {
     public static final String MP3_EXTENSION = ".mp3";
     public static final String BACK_COVER = "backCover";
     public static final String COVER = "cover";
+
+    public static final String ID = "id";
 }

@@ -13,6 +13,10 @@ public class ViewBindingAdapter {
 
     @BindingAdapter({"app:bookId"})
     public static void loadImage(final ImageView imageView, String bookId) {
-        Utils.loadImage(imageView, bookId, "cover");
+        if (imageView.getTag().equals("local")) {
+            Utils.loadLocalImage(imageView, bookId, "cover");
+        } else {
+            Utils.loadImage(imageView, bookId, "cover");
+        }
     }
 }

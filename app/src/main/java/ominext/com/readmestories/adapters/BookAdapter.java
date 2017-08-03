@@ -19,18 +19,17 @@ import ominext.com.readmestories.activities.ReadingBookActivity;
 import ominext.com.readmestories.listeners.DownloadFileListener;
 import ominext.com.readmestories.models.Book;
 import ominext.com.readmestories.utils.Constant;
-import ominext.com.readmestories.utils.Utils;
 
 /**
  * Created by LuongHH on 6/21/2017.
  */
 
-public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.BookViewHolder> {
+public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder> {
 
     private Context mContext;
     private List<Book> mBooks;
 
-    public BooksAdapter(Context context, List<Book> list) {
+    public BookAdapter(Context context, List<Book> list) {
         this.mContext = context;
         this.mBooks = list;
     }
@@ -55,15 +54,15 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.BookViewHold
     }
 
     public void onBookClick(View view, Book book) {
-        ((BaseActivity) mContext).showProgressDialog(mContext.getString(R.string.loading_data));
-        mBook = book;
-        mFileDownloadedCount = 0;
-        mTotalFile = book.getContent().size() + 2;
-        for (int i = 1; i <= book.getContent().size(); i++) {
-            Utils.download(mContext, book.getId() + "/" + Constant.AUDIO, i + Constant.MP3_EXTENSION, mListener);
-        }
-        Utils.download(mContext, book.getId() + "/" + Constant.AUDIO, Constant.BACK_COVER + Constant.MP3_EXTENSION, mListener);
-        Utils.download(mContext, book.getId() + "/" + Constant.AUDIO, Constant.COVER + Constant.MP3_EXTENSION, mListener);
+//        ((BaseActivity) mContext).showProgressDialog(mContext.getString(R.string.loading_data));
+//        mBook = book;
+//        mFileDownloadedCount = 0;
+//        mTotalFile = book.getContent().size() + 2;
+//        for (int i = 1; i <= book.getContent().size(); i++) {
+//            Utils.download(mContext, book.getId() + "/" + Constant.AUDIO, i + Constant.MP3_EXTENSION, mListener);
+//        }
+//        Utils.download(mContext, book.getId() + "/" + Constant.AUDIO, Constant.BACK_COVER + Constant.MP3_EXTENSION, mListener);
+//        Utils.download(mContext, book.getId() + "/" + Constant.AUDIO, Constant.COVER + Constant.MP3_EXTENSION, mListener);
     }
 
     private int mFileDownloadedCount;

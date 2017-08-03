@@ -1,4 +1,4 @@
-package ominext.com.readmestories.fragments.mybooks;
+package ominext.com.readmestories.fragments.library;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -16,36 +16,36 @@ import java.util.List;
 
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.activities.BaseActivity;
-import ominext.com.readmestories.adapters.BooksAdapter;
+import ominext.com.readmestories.adapters.BookAdapter;
 import ominext.com.readmestories.adapters.SimpleDividerItemDecoration;
 import ominext.com.readmestories.fragments.BaseFragment;
 import ominext.com.readmestories.models.Book;
 
 import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
 
-public class MyBooksFragment extends BaseFragment implements MyBooksView {
+public class LibraryFragment extends BaseFragment implements LibraryView {
 
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private LinearLayout llNoInternetConnecttion;
 
-    private BooksAdapter mBookAdapter;
+    private BookAdapter mBookAdapter;
     private List<Book> mBookList;
 
-    private MyBooksPresenter mPresenter;
+    private LibraryPresenter mPresenter;
 
-    public MyBooksFragment() {
+    public LibraryFragment() {
         // Required empty public constructor
     }
 
-    public static MyBooksFragment newInstance() {
-        return new MyBooksFragment();
+    public static LibraryFragment newInstance() {
+        return new LibraryFragment();
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mPresenter = new MyBooksPresenter(context, this);
+        mPresenter = new LibraryPresenter(context, this);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class MyBooksFragment extends BaseFragment implements MyBooksView {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getContext()));
         mBookList = new ArrayList<>();
-        mBookAdapter = new BooksAdapter(getContext(), mBookList);
+        mBookAdapter = new BookAdapter(getContext(), mBookList);
         mRecyclerView.setAdapter(mBookAdapter);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);

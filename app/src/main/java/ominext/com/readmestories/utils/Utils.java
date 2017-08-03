@@ -1,6 +1,7 @@
 package ominext.com.readmestories.utils;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -12,13 +13,22 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.squareup.picasso.Picasso;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import ominext.com.readmestories.R;
-import ominext.com.readmestories.glidemodule.GlideApp;
 import ominext.com.readmestories.listeners.DownloadFileListener;
+import ominext.com.readmestories.models.Book;
 
 /**
  * Created by LuongHH on 6/27/2017.
@@ -33,7 +43,7 @@ public class Utils {
         imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                GlideApp.with(imageView.getContext().getApplicationContext())
+                Picasso.with(imageView.getContext().getApplicationContext())
                         .load(uri)
                         .placeholder(R.drawable.background)
                         .into(imageView);
@@ -46,7 +56,17 @@ public class Utils {
         });
     }
 
+    public static void loadLocalImage(final ImageView imageView, String bookId, String fileName) {
+        try {
+            InputStream is = imageView.getContext().getAssets().open(bookId + "/image/" + fileName);
+            imageView.setImageDrawable(Drawable.createFromStream(is, null));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static boolean isConnected;
+
     public static void download(Context context, String filePath, String fileName, final DownloadFileListener listener) {
         File cDir = context.getCacheDir();
         File cachingFolder = new File(cDir.getPath() + "/" + filePath);
@@ -97,5 +117,36 @@ public class Utils {
                 }
             }, 30000);
         }
+    }
+
+    public static List<Book> getLocalBooks(Context context) {
+        String jsonData = loadAssetText(context, "data.json");
+        Type type = new TypeToken<ArrayList<Book>>() {}.getType();
+        return new Gson().<ArrayList<Book>>fromJson(jsonData, type);
+    }
+
+    private static String loadAssetText(Context context, String fileName) {
+        StringBuilder buf = new StringBuilder();
+        InputStream is = null;
+        try {
+            is = context.getAssets().open(fileName);
+            BufferedReader in = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            String str;
+            while ((str = in.readLine()) != null) {
+                buf.append(str);
+            }
+            return buf.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return "";
     }
 }
