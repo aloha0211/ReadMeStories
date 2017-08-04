@@ -17,6 +17,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -182,5 +187,41 @@ public class Utils {
             }
         }
         return "";
+    }
+
+    public static Book parseHtml(String htmlContentInStringFormat) {
+
+        List<String> contentList = new ArrayList<>();
+        List<List<Double>> timeFrame = new ArrayList<>();
+
+        Document htmlDocument = Jsoup.parse(htmlContentInStringFormat);
+        Element head = htmlDocument.head();
+        String data = head.children().get(4).data();
+
+        String keyText1 = "MeeGenius.Settings.bookId =";
+        int bookIdBeginIndex = data.indexOf(keyText1) + keyText1.length();
+        String bookIdText = data.substring(bookIdBeginIndex, data.indexOf(",", bookIdBeginIndex)).trim();
+
+        String keyText2 = "MeeGenius.Settings.cues = [[],";
+        int timeFrameBeginIndex = data.indexOf(keyText2) + keyText2.length();
+        String timeFrameText = data.substring(timeFrameBeginIndex, data.indexOf(", []]", timeFrameBeginIndex));
+        String[] timeFrameList = timeFrameText.split("],");
+        for (String item: timeFrameList) {
+            String[] timeFrameItemList = item.substring(1, item.length() - 1).split(",");
+            List<Double> doubleList = new ArrayList<>();
+            doubleList.add(Double.valueOf(timeFrameItemList[0].substring(1)));
+            for (int i = 1 ; i < timeFrameItemList.length; i++) {
+                doubleList.add(Double.valueOf(timeFrameItemList[i]));
+            }
+            timeFrame.add(doubleList);
+        }
+
+        Element body = htmlDocument.body();
+        Elements contents = body.children();
+        for (int i = 1; i < contents.size() - 1; i++) {
+            Element content = contents.get(i);
+            contentList.add(content.getElementsByClass("valign").get(0).text());
+        }
+        return new Book(Integer.parseInt(bookIdText), "", contentList, timeFrame);
     }
 }

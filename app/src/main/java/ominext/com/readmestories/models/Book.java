@@ -30,6 +30,13 @@ public class Book implements Parcelable {
 
     public Book() {}
 
+    public Book(Integer id, String title, List<String> content, List<List<Double>> timeFrame) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.timeFrame = timeFrame;
+    }
+
     protected Book(Parcel in) {
         id = in.readInt();
         title = in.readString();
