@@ -91,14 +91,15 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.BookView
                 intent.putExtra(Constant.IS_FROM_ASSET, false);
                 intent.putExtra(Constant.KEY_DATA, data);
                 mContext.startActivity(intent);
-                ((BaseActivity) mContext).dissmissProgressDialog();
+                ((BaseActivity) mContext).dismissProgressDialog();
             }
         }
 
         @Override
         public void onDownloadFailed() {
-            ((BaseActivity) mContext).dissmissProgressDialog();
+            ((BaseActivity) mContext).dismissProgressDialog();
             ((BaseActivity) mContext).showAlertDialog(mContext.getString(R.string.error), mContext.getString(R.string.load_data_err_msg));
+            Utils.deleteCacheDir(mContext, Constant.STORY + "/" + mSelectedBook.getId());
         }
     };
 

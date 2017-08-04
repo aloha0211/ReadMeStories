@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +17,6 @@ import ominext.com.readmestories.BR;
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.activities.BaseActivity;
 import ominext.com.readmestories.activities.ReadingBookActivity;
-import ominext.com.readmestories.listeners.DownloadFileListener;
 import ominext.com.readmestories.models.Book;
 import ominext.com.readmestories.utils.Constant;
 
@@ -53,13 +53,20 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
         return mBooks == null ? 0 : mBooks.size();
     }
 
-    public void onBookClick(View view, Book book) {
-        Intent intent = new Intent(mContext, ReadingBookActivity.class);
-        Bundle data = new Bundle();
-        data.putParcelable(Constant.KEY_BOOK, book);
-        intent.putExtra(Constant.IS_FROM_ASSET, true);
-        intent.putExtra(Constant.KEY_DATA, data);
-        mContext.startActivity(intent);
+    public void onBookClick(View view, final Book book) {
+        ((BaseActivity) mContext).showProgressDialog(mContext.getString(R.string.loading_data));
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ((BaseActivity) mContext).dismissProgressDialog();
+                Intent intent = new Intent(mContext, ReadingBookActivity.class);
+                Bundle data = new Bundle();
+                data.putParcelable(Constant.KEY_BOOK, book);
+                intent.putExtra(Constant.IS_FROM_ASSET, true);
+                intent.putExtra(Constant.KEY_DATA, data);
+                mContext.startActivity(intent);
+            }
+        }, 500);
     }
 
     class BookViewHolder extends RecyclerView.ViewHolder {

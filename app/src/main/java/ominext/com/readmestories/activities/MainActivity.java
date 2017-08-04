@@ -11,6 +11,8 @@ import android.view.MenuItem;
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.fragments.MyBooksFragment;
 import ominext.com.readmestories.fragments.library.LibraryFragment;
+import ominext.com.readmestories.utils.Constant;
+import ominext.com.readmestories.utils.Utils;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -33,6 +35,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setTitle(R.string.my_books);
 
         replaceFragment(MyBooksFragment.newInstance());
+    }
+
+    @Override
+    protected void onDestroy() {
+        Utils.deleteCacheDir(this, Constant.STORY);
+        super.onDestroy();
     }
 
     @Override

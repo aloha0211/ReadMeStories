@@ -180,7 +180,7 @@ public class ReadingBookFragment extends BaseFragment {
 
     public void startReading(final OnStartedListener onStartedListener) {
         if (isAutoRead) {
-            String audioPath = getContext().getCacheDir().getPath() + "/" + mBookId + "/" + Constant.AUDIO + "/" + mFileName + Constant.MP3_EXTENSION;
+            String audioPath = getContext().getCacheDir().getPath() + "/" + Constant.STORY + "/" + mBookId + "/" + Constant.AUDIO + "/" + mFileName + Constant.MP3_EXTENSION;
             MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {

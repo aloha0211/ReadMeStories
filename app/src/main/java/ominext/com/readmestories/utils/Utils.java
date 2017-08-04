@@ -69,25 +69,21 @@ public class Utils {
     }
 
     public static void loadImageFromCache(final ImageView imageView, String bookId, String fileName) {
-        try {
-            File cDir = imageView.getContext().getCacheDir();
-            String filePath = cDir.getPath() + "/" + bookId + "/" + Constant.IMAGE + "/" + fileName;
-            InputStream is = imageView.getContext().getAssets().open(bookId + "/" + Constant.IMAGE + "/" + fileName);
-            imageView.setImageDrawable(Drawable.createFromPath(filePath));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        File cDir = imageView.getContext().getCacheDir();
+        String filePath = cDir.getPath() + "/" + Constant.STORY + "/" + bookId + "/" + Constant.IMAGE + "/" + fileName;
+        imageView.setImageDrawable(Drawable.createFromPath(filePath));
     }
 
     public static void download(Context context, String filePath, String fileName, final DownloadFileListener listener) {
 
         File cDir = context.getCacheDir();
-        final File cacheFolder = new File(cDir.getPath() + "/" + filePath);
-        cacheFolder.mkdirs();
+        File cacheFolder = new File(cDir.getPath() + "/" + Constant.STORY + "/" + filePath);
+        if (!cacheFolder.exists()) {
+            cacheFolder.mkdirs();
+        }
 
         if (!Connectivity.isConnected(context)) {
             listener.onDownloadFailed();
-            cacheFolder.delete();
             return;
         }
 
@@ -124,7 +120,6 @@ public class Utils {
                 isConnected[0] = true;
                 // Handle failed download
                 listener.onDownloadFailed();
-                cacheFolder.delete();
             }
         };
         downloadTask.addOnSuccessListener(onSuccessListener);
@@ -136,16 +131,25 @@ public class Utils {
                     downloadTask.removeOnFailureListener(onFailureListener);
                     downloadTask.removeOnSuccessListener(onSuccessListener);
                     listener.onDownloadFailed();
-                    cacheFolder.delete();
                 }
             }
         }, 30000);
     }
 
-    public static void deleteCacheFile(Context context, String filePath) {
+    public static void deleteCacheDir(Context context, String filePath) {
         File cDir = context.getCacheDir();
         File cacheFile = new File(cDir.getPath() + "/" + filePath);
-        cacheFile.delete();
+        deleteDir(cacheFile);
+    }
+
+    public static void deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                deleteDir(new File(dir, children[i]));
+            }
+        }
+        dir.delete();
     }
 
     public static List<Book> getLocalBooks(Context context) {

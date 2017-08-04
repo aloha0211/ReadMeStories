@@ -73,7 +73,7 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
     @Override
     protected void onDestroy() {
         mPagerAdapter.getFragment(mViewPager.getCurrentItem()).release();
-        Utils.deleteCacheFile(this, String.valueOf(mBookId));
+        Utils.deleteCacheDir(this, Constant.STORY + "/" + mBookId);
         super.onDestroy();
     }
 

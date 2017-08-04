@@ -20,6 +20,8 @@ import ominext.com.readmestories.adapters.LibraryAdapter;
 import ominext.com.readmestories.adapters.SimpleDividerItemDecoration;
 import ominext.com.readmestories.fragments.BaseFragment;
 import ominext.com.readmestories.models.Book;
+import ominext.com.readmestories.utils.Constant;
+import ominext.com.readmestories.utils.Utils;
 
 import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
 
@@ -93,10 +95,16 @@ public class LibraryFragment extends BaseFragment implements LibraryView {
     }
 
     @Override
+    public void onDestroy() {
+        Utils.deleteCacheDir(getContext(), Constant.STORY);
+        super.onDestroy();
+    }
+
+    @Override
     public void onSuccessful(List<Book> bookList) {
         if (isAdded()) {
             mSwipeRefreshLayout.setRefreshing(false);
-            ((BaseActivity) getActivity()).dissmissProgressDialog();
+            ((BaseActivity) getActivity()).dismissProgressDialog();
             mBookList.clear();
             mBookList.addAll(bookList);
             mBookAdapter.notifyDataSetChanged();
@@ -107,7 +115,7 @@ public class LibraryFragment extends BaseFragment implements LibraryView {
     public void onFailed(String message) {
         if (isAdded()) {
             mSwipeRefreshLayout.setRefreshing(false);
-            ((BaseActivity) getActivity()).dissmissProgressDialog();
+            ((BaseActivity) getActivity()).dismissProgressDialog();
             if (message.equalsIgnoreCase(getString(R.string.no_connection_message))) {
                 llNoInternetConnection.setVisibility(View.VISIBLE);
                 mSwipeRefreshLayout.setVisibility(View.GONE);
