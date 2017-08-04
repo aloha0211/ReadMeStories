@@ -93,7 +93,11 @@ public class ReadingBookFragment extends BaseFragment {
 
         mPlayer = new Player();
 
-        Utils.loadImage(mIvContent, String.valueOf(mBookId), mFileName);
+        if (isFromAsset) {
+            Utils.loadImageFromAssets(mIvContent, String.valueOf(mBookId), mFileName);
+        } else {
+            Utils.loadImageFromCache(mIvContent, String.valueOf(mBookId), mFileName);
+        }
 
         if (mContent != null) {
             mContent = mContent.replaceAll("&quot;", "\"").replaceAll("&#39;", "\'");

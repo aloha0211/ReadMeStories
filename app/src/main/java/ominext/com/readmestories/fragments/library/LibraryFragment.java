@@ -16,7 +16,7 @@ import java.util.List;
 
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.activities.BaseActivity;
-import ominext.com.readmestories.adapters.BookAdapter;
+import ominext.com.readmestories.adapters.LibraryAdapter;
 import ominext.com.readmestories.adapters.SimpleDividerItemDecoration;
 import ominext.com.readmestories.fragments.BaseFragment;
 import ominext.com.readmestories.models.Book;
@@ -25,11 +25,10 @@ import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
 
 public class LibraryFragment extends BaseFragment implements LibraryView {
 
-    private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private LinearLayout llNoInternetConnecttion;
+    private LinearLayout llNoInternetConnection;
 
-    private BookAdapter mBookAdapter;
+    private LibraryAdapter mBookAdapter;
     private List<Book> mBookList;
 
     private LibraryPresenter mPresenter;
@@ -52,37 +51,37 @@ public class LibraryFragment extends BaseFragment implements LibraryView {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_books, container, false);
+        return inflater.inflate(R.layout.fragment_library, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_my_books);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.rv_my_books);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2, VERTICAL, false);
-        mRecyclerView.setLayoutManager(gridLayoutManager);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getContext()));
+        recyclerView.setLayoutManager(gridLayoutManager);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.addItemDecoration(new SimpleDividerItemDecoration(getContext()));
         mBookList = new ArrayList<>();
-        mBookAdapter = new BookAdapter(getContext(), mBookList);
-        mRecyclerView.setAdapter(mBookAdapter);
+        mBookAdapter = new LibraryAdapter(getContext(), mBookList);
+        recyclerView.setAdapter(mBookAdapter);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                llNoInternetConnecttion.setVisibility(View.GONE);
+                llNoInternetConnection.setVisibility(View.GONE);
                 mSwipeRefreshLayout.setVisibility(View.VISIBLE);
                 mPresenter.getListBook();
             }
         });
 
-        llNoInternetConnecttion = (LinearLayout) view.findViewById(R.id.ll_no_internet_connection);
+        llNoInternetConnection = (LinearLayout) view.findViewById(R.id.ll_no_internet_connection);
         view.findViewById(R.id.btn_try_again).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                llNoInternetConnecttion.setVisibility(View.GONE);
+                llNoInternetConnection.setVisibility(View.GONE);
                 mSwipeRefreshLayout.setVisibility(View.VISIBLE);
                 ((BaseActivity) getActivity()).showProgressDialog("");
                 mPresenter.getListBook();
@@ -110,7 +109,7 @@ public class LibraryFragment extends BaseFragment implements LibraryView {
             mSwipeRefreshLayout.setRefreshing(false);
             ((BaseActivity) getActivity()).dissmissProgressDialog();
             if (message.equalsIgnoreCase(getString(R.string.no_connection_message))) {
-                llNoInternetConnecttion.setVisibility(View.VISIBLE);
+                llNoInternetConnection.setVisibility(View.VISIBLE);
                 mSwipeRefreshLayout.setVisibility(View.GONE);
             } else {
                 ((BaseActivity) getActivity()).showAlertDialog("Error", message);

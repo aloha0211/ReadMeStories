@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 //import ominext.com.readmestories.BR;
+import ominext.com.readmestories.BR;
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.activities.BaseActivity;
 import ominext.com.readmestories.activities.ReadingBookActivity;
@@ -44,8 +45,8 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.BookView
     @Override
     public void onBindViewHolder(BookViewHolder holder, int position) {
         Book book = mBooks.get(position);
-//        holder.mBinding.setVariable(BR.book, book);
-//        holder.mBinding.setVariable(BR.handlers, this);
+        holder.mBinding.setVariable(BR.book, book);
+        holder.mBinding.setVariable(BR.handlers, this);
         holder.mBinding.executePendingBindings();
     }
 
@@ -56,28 +57,38 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.BookView
 
     public void onBookClick(View view, Book book) {
         ((BaseActivity) mContext).showProgressDialog(mContext.getString(R.string.loading_data));
-        mBook = book;
-        mFileDownloadedCount = 0;
+        mSelectedBook = book;
+        mFileDownloadedIndex = 0;
         mTotalFile = book.getContent().size() + 2;
-        for (int i = 1; i <= book.getContent().size(); i++) {
-            Utils.download(mContext, book.getId() + "/" + Constant.AUDIO, i + Constant.MP3_EXTENSION, mListener);
-        }
-        Utils.download(mContext, book.getId() + "/" + Constant.AUDIO, Constant.BACK_COVER + Constant.MP3_EXTENSION, mListener);
+        // firstly, download audio file
         Utils.download(mContext, book.getId() + "/" + Constant.AUDIO, Constant.COVER + Constant.MP3_EXTENSION, mListener);
     }
 
-    private int mFileDownloadedCount;
+    private int mFileDownloadedIndex;
     private int mTotalFile;
-    private Book mBook;
+    private Book mSelectedBook;
 
     private DownloadFileListener mListener = new DownloadFileListener() {
         @Override
         public void onDownloadSuccessful(String audioPath) {
-            mFileDownloadedCount++;
-            if (mFileDownloadedCount == mTotalFile) {
+            mFileDownloadedIndex++;
+            if (mFileDownloadedIndex < mTotalFile - 1){
+                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.AUDIO, mFileDownloadedIndex + Constant.MP3_EXTENSION, mListener);
+            } else if (mFileDownloadedIndex == mTotalFile - 1) {
+                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.AUDIO, Constant.BACK_COVER + Constant.MP3_EXTENSION, mListener);
+            } else if (mFileDownloadedIndex == mTotalFile) {
+                // download audio finished, start downloading image
+                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.IMAGE, Constant.COVER, mListener);
+            } else if (mFileDownloadedIndex < 2 * mTotalFile - 1) {
+                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.IMAGE, String.valueOf(mFileDownloadedIndex - mTotalFile), mListener);
+            } else if (mFileDownloadedIndex == 2 * mTotalFile - 1) {
+                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.IMAGE, Constant.BACK_COVER, mListener);
+            } else if (mFileDownloadedIndex == 2 * mTotalFile) {
+                // download all files finished
                 Intent intent = new Intent(mContext, ReadingBookActivity.class);
                 Bundle data = new Bundle();
-                data.putParcelable(Constant.KEY_BOOK, mBook);
+                data.putParcelable(Constant.KEY_BOOK, mSelectedBook);
+                intent.putExtra(Constant.IS_FROM_ASSET, false);
                 intent.putExtra(Constant.KEY_DATA, data);
                 mContext.startActivity(intent);
                 ((BaseActivity) mContext).dissmissProgressDialog();

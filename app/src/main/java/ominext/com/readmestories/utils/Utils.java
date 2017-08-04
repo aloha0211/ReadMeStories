@@ -29,6 +29,7 @@ import java.util.List;
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.listeners.DownloadFileListener;
 import ominext.com.readmestories.models.Book;
+import ominext.com.readmestories.utils.network.Connectivity;
 
 import static ominext.com.readmestories.utils.Constant.ASSET_FILE_NAME;
 
@@ -38,7 +39,7 @@ import static ominext.com.readmestories.utils.Constant.ASSET_FILE_NAME;
 
 public class Utils {
 
-    public static void loadImage(final ImageView imageView, String bookId, String fileName) {
+    public static void loadImageFromFirebase(final ImageView imageView, String bookId, String fileName) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         final StorageReference imageRef = storageRef.child(bookId + "/" + Constant.IMAGE + "/" + fileName);
@@ -58,7 +59,7 @@ public class Utils {
         });
     }
 
-    public static void loadLocalImage(final ImageView imageView, String bookId, String fileName) {
+    public static void loadImageFromAssets(final ImageView imageView, String bookId, String fileName) {
         try {
             InputStream is = imageView.getContext().getAssets().open(bookId + "/" + Constant.IMAGE + "/" + fileName);
             imageView.setImageDrawable(Drawable.createFromStream(is, null));
@@ -67,63 +68,90 @@ public class Utils {
         }
     }
 
-    private static boolean isConnected;
+    public static void loadImageFromCache(final ImageView imageView, String bookId, String fileName) {
+        try {
+            File cDir = imageView.getContext().getCacheDir();
+            String filePath = cDir.getPath() + "/" + bookId + "/" + Constant.IMAGE + "/" + fileName;
+            InputStream is = imageView.getContext().getAssets().open(bookId + "/" + Constant.IMAGE + "/" + fileName);
+            imageView.setImageDrawable(Drawable.createFromPath(filePath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void download(Context context, String filePath, String fileName, final DownloadFileListener listener) {
+
         File cDir = context.getCacheDir();
-        File cachingFolder = new File(cDir.getPath() + "/" + filePath);
-        cachingFolder.mkdirs();
-        final File tempFile = new File(cachingFolder, fileName);
-        if (tempFile.exists()) {
-            listener.onDownloadSuccessful(tempFile.getPath());
-        } else {
-            try {
-                tempFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageRef = storage.getReference();
-//            StorageReference storageRef = storage.getReferenceFromUrl("gs://readmestories-2c388.appspot.com");
-            StorageReference pathReference = storageRef.child(filePath + "/" + fileName);
-            isConnected = false;
-            final FileDownloadTask downloadTask = pathReference.getFile(tempFile);
-            final OnSuccessListener onSuccessListener = new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    // Successfully downloaded data to local file
-                    isConnected = true;
-                    listener.onDownloadSuccessful(tempFile.getPath());
-                }
-            };
-            final OnFailureListener onFailureListener = new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    isConnected = true;
-                    // Handle failed download
-                    listener.onDownloadFailed();
-                    tempFile.delete();
-                }
-            };
-            downloadTask.addOnSuccessListener(onSuccessListener);
-            downloadTask.addOnFailureListener(onFailureListener);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (!isConnected) {
-                        downloadTask.removeOnFailureListener(onFailureListener);
-                        downloadTask.removeOnSuccessListener(onSuccessListener);
-                        listener.onDownloadFailed();
-                        tempFile.delete();
-                    }
-                }
-            }, 30000);
+        final File cacheFolder = new File(cDir.getPath() + "/" + filePath);
+        cacheFolder.mkdirs();
+
+        if (!Connectivity.isConnected(context)) {
+            listener.onDownloadFailed();
+            cacheFolder.delete();
+            return;
         }
+
+        final File tempFile = new File(cacheFolder, fileName);
+        if (tempFile.exists()) {
+            tempFile.delete();
+        }
+
+        try {
+            tempFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+//            StorageReference storageRef = storage.getReferenceFromUrl("gs://readmestories-2c388.appspot.com");
+        StorageReference pathReference = storageRef.child(filePath + "/" + fileName);
+
+        final boolean[] isConnected = {false};
+
+        final FileDownloadTask downloadTask = pathReference.getFile(tempFile);
+        final OnSuccessListener onSuccessListener = new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                // Successfully downloaded data to local file
+                isConnected[0] = true;
+                listener.onDownloadSuccessful(tempFile.getPath());
+            }
+        };
+        final OnFailureListener onFailureListener = new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                isConnected[0] = true;
+                // Handle failed download
+                listener.onDownloadFailed();
+                cacheFolder.delete();
+            }
+        };
+        downloadTask.addOnSuccessListener(onSuccessListener);
+        downloadTask.addOnFailureListener(onFailureListener);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!isConnected[0]) {
+                    downloadTask.removeOnFailureListener(onFailureListener);
+                    downloadTask.removeOnSuccessListener(onSuccessListener);
+                    listener.onDownloadFailed();
+                    cacheFolder.delete();
+                }
+            }
+        }, 30000);
+    }
+
+    public static void deleteCacheFile(Context context, String filePath) {
+        File cDir = context.getCacheDir();
+        File cacheFile = new File(cDir.getPath() + "/" + filePath);
+        cacheFile.delete();
     }
 
     public static List<Book> getLocalBooks(Context context) {
         String jsonData = loadAssetText(context, ASSET_FILE_NAME);
-        Type type = new TypeToken<ArrayList<Book>>() {}.getType();
+        Type type = new TypeToken<ArrayList<Book>>() {
+        }.getType();
         return new Gson().<ArrayList<Book>>fromJson(jsonData, type);
     }
 

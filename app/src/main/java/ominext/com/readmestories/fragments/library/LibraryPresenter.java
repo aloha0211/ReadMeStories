@@ -16,6 +16,7 @@ import java.util.List;
 
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.models.Book;
+import ominext.com.readmestories.utils.network.Connectivity;
 
 /**
  * Created by LuongHH on 6/23/2017.
@@ -33,6 +34,10 @@ class LibraryPresenter {
 
     private boolean isConnected;
     void getListBook() {
+        if (!Connectivity.isConnected(mContext)) {
+            mView.onFailed(mContext.getString(R.string.no_connection_message));
+            return;
+        }
         isConnected = false;
         final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         final ValueEventListener eventListener = new ValueEventListener() {

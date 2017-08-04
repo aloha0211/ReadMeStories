@@ -12,6 +12,7 @@ import ominext.com.readmestories.fragments.ReadingBookFragment;
 import ominext.com.readmestories.listeners.OnStartedListener;
 import ominext.com.readmestories.models.Book;
 import ominext.com.readmestories.utils.Constant;
+import ominext.com.readmestories.utils.Utils;
 
 public class ReadingBookActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, View.OnClickListener {
 
@@ -19,6 +20,8 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
     private ReadingBookPagerAdapter mPagerAdapter;
 
     private int mLastPageIndex = 0;
+    private int mBookId;
+
     boolean isFirstTime;
     boolean isSettlingProcess;
     boolean isMediaPlayerStarted;  // for enable or disable play/pause button when media player has not started yet
@@ -31,6 +34,7 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
 
         Book book = getIntent().getBundleExtra(Constant.KEY_DATA).getParcelable(Constant.KEY_BOOK);
+        mBookId = book.getId();
         mPagerAdapter = new ReadingBookPagerAdapter(getSupportFragmentManager(), book, this, true, getIntent().getBooleanExtra(Constant.IS_FROM_ASSET, true));
         mViewPager.setAdapter(mPagerAdapter);
         findViewById(R.id.ll_root_view).setOnClickListener(this);
@@ -69,6 +73,7 @@ public class ReadingBookActivity extends AppCompatActivity implements ViewPager.
     @Override
     protected void onDestroy() {
         mPagerAdapter.getFragment(mViewPager.getCurrentItem()).release();
+        Utils.deleteCacheFile(this, String.valueOf(mBookId));
         super.onDestroy();
     }
 
