@@ -23,6 +23,8 @@ import ominext.com.readmestories.R;
 import ominext.com.readmestories.models.Book;
 import ominext.com.readmestories.utils.Utils;
 
+import static ominext.com.readmestories.utils.Utils.StreamToString;
+
 /**
  * Created by LuongHH on 6/21/2017.
  */
@@ -80,23 +82,6 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
 //                mContext.startActivity(intent);
 //            }
 //        }, 500);
-    }
-
-    public static String StreamToString(InputStream in) throws IOException {
-        if (in == null) {
-            return "";
-        }
-        Writer writer = new StringWriter();
-        char[] buffer = new char[1024];
-        try {
-            Reader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            int n;
-            while ((n = reader.read(buffer)) != -1) {
-                writer.write(buffer, 0, n);
-            }
-        } finally {
-        }
-        return writer.toString();
     }
 
     class BookViewHolder extends RecyclerView.ViewHolder {

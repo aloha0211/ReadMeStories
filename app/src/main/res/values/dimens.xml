@@ -7,4 +7,5 @@
     <dimen name="fab_margin">16dp</dimen>
 
     <dimen name="item_book_height">@dimen/_192sdp</dimen>
+    <dimen name="item_category_height">@dimen/_128sdp</dimen>
 </resources>

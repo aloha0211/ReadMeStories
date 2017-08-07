@@ -27,6 +27,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,10 +47,30 @@ import static ominext.com.readmestories.utils.Constant.ASSET_FILE_NAME;
 
 public class Utils {
 
-    public static void loadImageFromFirebase(final ImageView imageView, String bookId, String fileName) {
+    public static void loadImageByBookId(final ImageView imageView, String bookId, String fileName) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        final StorageReference imageRef = storageRef.child(bookId + "/" + Constant.IMAGE + "/" + fileName);
+        final StorageReference imageRef = storageRef.child(Constant.STORY + "/" + bookId + "/" + Constant.IMAGE + "/" + fileName);
+        imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.with(imageView.getContext().getApplicationContext())
+                        .load(uri)
+                        .placeholder(R.drawable.background)
+                        .into(imageView);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e("Firebase", "Load Image failed: " + e.getMessage());
+            }
+        });
+    }
+
+    public static void loadImageByCategory(final ImageView imageView, String categoryImageName) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        final StorageReference imageRef = storageRef.child(Constant.CATEGORY + "/" +Constant.IMAGE + "/" + categoryImageName);
         imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
@@ -106,7 +129,7 @@ public class Utils {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
 //            StorageReference storageRef = storage.getReferenceFromUrl("gs://readmestories-2c388.appspot.com");
-        StorageReference pathReference = storageRef.child(filePath + "/" + fileName);
+        StorageReference pathReference = storageRef.child(Constant.STORY + "/" + filePath + "/" + fileName);
 
         final boolean[] isConnected = {false};
 
@@ -223,5 +246,22 @@ public class Utils {
             contentList.add(content.getElementsByClass("valign").get(0).text());
         }
         return new Book(Integer.parseInt(bookIdText), "", contentList, timeFrame);
+    }
+
+    public static String StreamToString(InputStream in) throws IOException {
+        if (in == null) {
+            return "";
+        }
+        Writer writer = new StringWriter();
+        char[] buffer = new char[1024];
+        try {
+            Reader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            int n;
+            while ((n = reader.read(buffer)) != -1) {
+                writer.write(buffer, 0, n);
+            }
+        } finally {
+        }
+        return writer.toString();
     }
 }

@@ -10,6 +10,7 @@ import android.view.MenuItem;
 
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.fragments.MyBooksFragment;
+import ominext.com.readmestories.fragments.category.CategoryFragment;
 import ominext.com.readmestories.fragments.library.LibraryFragment;
 import ominext.com.readmestories.utils.Constant;
 import ominext.com.readmestories.utils.Utils;
@@ -64,7 +65,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             replaceFragment(MyBooksFragment.newInstance());
         } else if (id == R.id.nav_library) {
             setTitle(R.string.library);
-            replaceFragment(LibraryFragment.newInstance());
+            replaceFragment(CategoryFragment.newInstance());
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

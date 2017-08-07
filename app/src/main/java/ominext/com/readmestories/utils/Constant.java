@@ -16,8 +16,11 @@ public class Constant {
     public static final String BACK_COVER = "backCover";
     public static final String COVER = "cover";
     public static final String STORY = "story";
+    public static final String CATEGORY = "category";
 
     public static final String ID = "id";
     public static final String ASSET_FILE_NAME = "data.json";
     public static final String IS_FROM_ASSET = "is_from_asset";
+
+    public static final String DATA = "data";
 }

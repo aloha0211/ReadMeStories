@@ -5,11 +5,11 @@
 
     <data>
         <variable
-            name="book"
-            type="ominext.com.readmestories.models.Book"/>
+            name="category"
+            type="ominext.com.readmestories.models.Category"/>
         <variable
             name="handlers"
-            type="ominext.com.readmestories.adapters.BookAdapter"/>
+            type="ominext.com.readmestories.adapters.CategoryAdapter"/>
     </data>
 
     <android.support.v7.widget.CardView
@@ -24,17 +24,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:onClick="@{(v) -> handlers.onBookClick(v, book)}">
+            android:onClick="@{(v) -> handlers.onCategoryClick(v, category)}">
 
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/item_book_height"
+                android:layout_height="@dimen/item_category_height"
                 android:scaleType="fitXY"
-                android:tag="assets"
-                app:url="@{String.valueOf(book.getId().intValue())}"/>
+                app:url="@{category.getLargeTout()}"
+                android:tag="category"/>
 
             <TextView
-                android:id="@+id/tv_book_name"
+                android:id="@+id/tv_category_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="2"
@@ -44,7 +44,7 @@
                 android:paddingStart="@dimen/_8sdp"
                 android:paddingTop="@dimen/_8sdp"
                 android:paddingBottom="@dimen/_8sdp"
-                android:text="@{book.getTitle()}"
+                android:text="@{category.getTitle()}"
                 android:textColor="@color/azure"
                 android:textSize="@dimen/_12sdp"
                 android:textStyle="bold"
