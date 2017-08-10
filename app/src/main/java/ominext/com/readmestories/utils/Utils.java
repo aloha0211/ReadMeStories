@@ -15,7 +15,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.squareup.picasso.Picasso;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -37,6 +36,7 @@ import java.util.List;
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.listeners.DownloadFileListener;
 import ominext.com.readmestories.models.Book;
+import ominext.com.readmestories.models.GlideApp;
 import ominext.com.readmestories.utils.network.Connectivity;
 
 import static ominext.com.readmestories.utils.Constant.ASSET_FILE_NAME;
@@ -54,7 +54,7 @@ public class Utils {
         imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                Picasso.with(imageView.getContext().getApplicationContext())
+                GlideApp.with(imageView.getContext().getApplicationContext())
                         .load(uri)
                         .placeholder(R.drawable.background)
                         .into(imageView);
@@ -67,24 +67,11 @@ public class Utils {
         });
     }
 
-    public static void loadImageByCategory(final ImageView imageView, String categoryImageName) {
+    public static void loadImageByCategory(final ImageView imageView, String categoryImageName, OnSuccessListener<Uri> onSuccessListener, OnFailureListener onFailureListener) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        final StorageReference imageRef = storageRef.child(Constant.CATEGORY + "/" +Constant.IMAGE + "/" + categoryImageName);
-        imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Picasso.with(imageView.getContext().getApplicationContext())
-                        .load(uri)
-                        .placeholder(R.drawable.background)
-                        .into(imageView);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e("Firebase", "Load Image failed: " + e.getMessage());
-            }
-        });
+        final StorageReference imageRef = storageRef.child(Constant.CATEGORY + "/" + Constant.IMAGE + "/" + categoryImageName);
+        imageRef.getDownloadUrl().addOnSuccessListener(onSuccessListener).addOnFailureListener(onFailureListener);
     }
 
     public static void loadImageFromAssets(final ImageView imageView, String bookId, String fileName) {
@@ -167,7 +154,8 @@ public class Utils {
     public static void deleteCacheDir(Context context, String filePath) {
         File cDir = context.getCacheDir();
         File cacheFile = new File(cDir.getPath() + "/" + filePath);
-        deleteDir(cacheFile);
+        if (cacheFile.exists())
+            deleteDir(cacheFile);
     }
 
     public static void deleteDir(File dir) {
@@ -229,11 +217,11 @@ public class Utils {
         int timeFrameBeginIndex = data.indexOf(keyText2) + keyText2.length();
         String timeFrameText = data.substring(timeFrameBeginIndex, data.indexOf(", []]", timeFrameBeginIndex));
         String[] timeFrameList = timeFrameText.split("],");
-        for (String item: timeFrameList) {
+        for (String item : timeFrameList) {
             String[] timeFrameItemList = item.substring(1, item.length() - 1).split(",");
             List<Double> doubleList = new ArrayList<>();
             doubleList.add(Double.valueOf(timeFrameItemList[0].substring(1)));
-            for (int i = 1 ; i < timeFrameItemList.length; i++) {
+            for (int i = 1; i < timeFrameItemList.length; i++) {
                 doubleList.add(Double.valueOf(timeFrameItemList[i]));
             }
             timeFrame.add(doubleList);

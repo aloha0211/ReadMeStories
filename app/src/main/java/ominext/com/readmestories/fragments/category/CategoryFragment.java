@@ -1,7 +1,9 @@
 package ominext.com.readmestories.fragments.category;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -10,6 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +39,8 @@ public class CategoryFragment extends BaseFragment implements CategoryView {
     private List<Category> mCategories;
 
     private CategoryPresenter mPresenter;
+
+    private int mUriPos;
 
     public CategoryFragment() {
         // Required empty public constructor
@@ -103,11 +110,25 @@ public class CategoryFragment extends BaseFragment implements CategoryView {
     @Override
     public void onSuccessful(List<Category> categories) {
         if (isAdded()) {
-            mSwipeRefreshLayout.setRefreshing(false);
-            ((BaseActivity) getActivity()).dismissProgressDialog();
             mCategories.clear();
             mCategories.addAll(categories);
-            mCategoryAdapter.notifyDataSetChanged();
+            mUriPos = 0;
+            mPresenter.getImageUri(mCategories.get(0).getLargeTout());
+        }
+    }
+
+    @Override
+    public void onLoadImageUriSuccessful(Uri uri) {
+        if (isAdded()) {
+            mCategories.get(mUriPos).setUri(uri);
+            mUriPos++;
+            if (mUriPos < mCategories.size())
+                mPresenter.getImageUri(mCategories.get(mUriPos).getLargeTout());
+            else {
+                mSwipeRefreshLayout.setRefreshing(false);
+                ((BaseActivity) getActivity()).dismissProgressDialog();
+                mCategoryAdapter.notifyDataSetChanged();
+            }
         }
     }
 

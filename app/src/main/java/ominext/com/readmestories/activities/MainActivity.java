@@ -39,6 +39,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        Utils.deleteCacheDir(this, Constant.STORY);
+    }
+
+
+    @Override
     protected void onDestroy() {
         Utils.deleteCacheDir(this, Constant.STORY);
         super.onDestroy();

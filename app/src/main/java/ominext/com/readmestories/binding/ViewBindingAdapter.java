@@ -21,8 +21,6 @@ public class ViewBindingAdapter {
             Utils.loadImageFromAssets(imageView, url, Constant.COVER);
         } else if (imageView.getTag().equals("firebase")){
             Utils.loadImageByBookId(imageView, url, Constant.COVER);
-        } else if (imageView.getTag().equals("category")) {
-            Utils.loadImageByCategory(imageView, url);
         }
     }
 }
