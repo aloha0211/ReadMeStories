@@ -22,5 +22,8 @@ public class Constant {
     public static final String ASSET_FILE_NAME = "data.json";
     public static final String IS_FROM_ASSET = "is_from_asset";
 
+    public static final String ASSETS = "assets";
+    public static final String FIREBASE = "firebase";
+
     public static final String DATA = "data";
 }

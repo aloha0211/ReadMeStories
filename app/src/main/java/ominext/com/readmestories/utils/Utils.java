@@ -67,11 +67,11 @@ public class Utils {
         });
     }
 
-    public static void loadImageByCategory(final ImageView imageView, String categoryImageName, OnSuccessListener<Uri> onSuccessListener, OnFailureListener onFailureListener) {
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        final StorageReference imageRef = storageRef.child(Constant.CATEGORY + "/" + Constant.IMAGE + "/" + categoryImageName);
-        imageRef.getDownloadUrl().addOnSuccessListener(onSuccessListener).addOnFailureListener(onFailureListener);
+    public static void loadImage(final ImageView imageView, String url) {
+        GlideApp.with(imageView.getContext().getApplicationContext())
+                .load(url)
+                .placeholder(R.drawable.background)
+                .into(imageView);
     }
 
     public static void loadImageFromAssets(final ImageView imageView, String bookId, String fileName) {

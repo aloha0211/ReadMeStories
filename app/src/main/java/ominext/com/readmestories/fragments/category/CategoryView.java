@@ -1,7 +1,5 @@
 package ominext.com.readmestories.fragments.category;
 
-import android.net.Uri;
-
 import java.util.List;
 
 import ominext.com.readmestories.models.Category;
@@ -13,8 +11,6 @@ import ominext.com.readmestories.models.Category;
 public interface CategoryView {
 
     void onSuccessful(List<Category> bookList);
-
-    void onLoadImageUriSuccessful(Uri uri);
 
     void onFailed(String message);
 }

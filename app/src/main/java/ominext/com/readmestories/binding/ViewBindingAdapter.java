@@ -3,9 +3,6 @@ package ominext.com.readmestories.binding;
 import android.databinding.BindingAdapter;
 import android.widget.ImageView;
 
-import com.squareup.picasso.Picasso;
-
-import ominext.com.readmestories.R;
 import ominext.com.readmestories.utils.Constant;
 import ominext.com.readmestories.utils.Utils;
 
@@ -15,11 +12,13 @@ import ominext.com.readmestories.utils.Utils;
 
 public class ViewBindingAdapter {
 
-    @BindingAdapter({"app:url"})
+    @BindingAdapter({"bind:url"})
     public static void loadImage(final ImageView imageView, String url) {
-        if (imageView.getTag().equals("assets")) {
+        if (imageView.getTag()== null) {
+            Utils.loadImage(imageView, url);
+        } else if (imageView.getTag().equals(Constant.ASSETS)) {
             Utils.loadImageFromAssets(imageView, url, Constant.COVER);
-        } else if (imageView.getTag().equals("firebase")){
+        } else if (imageView.getTag().equals(Constant.FIREBASE)) {
             Utils.loadImageByBookId(imageView, url, Constant.COVER);
         }
     }

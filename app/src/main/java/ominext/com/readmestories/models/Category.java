@@ -1,8 +1,5 @@
 package ominext.com.readmestories.models;
 
-import android.net.Uri;
-
-import com.google.firebase.database.Exclude;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -30,16 +27,6 @@ public class Category {
 
     @SerializedName("books")
     private List<BookResponse> books;
-
-    private Uri mUri;
-
-    public Uri getUri() {
-        return mUri;
-    }
-
-    public void setUri(Uri uri) {
-        mUri = uri;
-    }
 
     public int getCollectionId() {
         return collectionId;

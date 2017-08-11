@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:bind="http://schemas.android.com/apk/res-auto"
         android:layout_margin="@dimen/_3sdp">
 
     <data>
@@ -30,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/item_book_height"
                 android:scaleType="fitXY"
-                app:url="@{String.valueOf(book.getId().intValue())}"
+                bind:url="@{String.valueOf(book.getId().intValue())}"
                 android:tag=""/>
 
             <TextView
