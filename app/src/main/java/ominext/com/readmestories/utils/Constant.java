@@ -7,7 +7,9 @@ package ominext.com.readmestories.utils;
 public class Constant {
 
     public static final String KEY_BOOK = "book";
+    public static final String KEY_BOOKS = "books";
     public static final String KEY_DATA = "data";
+    public static final String KEY_TITLE = "title";
 
     public static final String AUDIO = "audio";
     public static final String IMAGE = "image";

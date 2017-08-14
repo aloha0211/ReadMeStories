@@ -8,28 +8,29 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ominext.com.readmestories.R;
-import ominext.com.readmestories.adapters.BookAdapter;
+import ominext.com.readmestories.adapters.BookByCategoryAdapter;
 import ominext.com.readmestories.adapters.SimpleDividerItemDecoration;
 import ominext.com.readmestories.models.Book;
-import ominext.com.readmestories.utils.Utils;
 
 import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
 
-public class MyBooksFragment extends BaseFragment {
+public class BooksByCategoryFragment extends BaseFragment {
 
-    private BookAdapter mBookAdapter;
+    private BookByCategoryAdapter mBookAdapter;
     private List<Book> mBookList;
+    RecyclerView rvMyBooks;
 
-    public MyBooksFragment() {
+    public BooksByCategoryFragment() {
         // Required empty public constructor
     }
 
-    public static MyBooksFragment newInstance() {
-        return new MyBooksFragment();
+    public static BooksByCategoryFragment newInstance(List<Book> books) {
+        BooksByCategoryFragment fragment = new BooksByCategoryFragment();
+        fragment.mBookList = books;
+        return fragment;
     }
 
     @Override
@@ -43,20 +44,12 @@ public class MyBooksFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.rv_my_books);
+        rvMyBooks = (RecyclerView) view.findViewById(R.id.rv_my_books);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2, VERTICAL, false);
-        recyclerView.setLayoutManager(gridLayoutManager);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new SimpleDividerItemDecoration(getContext()));
-        mBookList = new ArrayList<>();
-        mBookAdapter = new BookAdapter(getContext(), mBookList);
-        recyclerView.setAdapter(mBookAdapter);
-
-        getMyBooks();
-    }
-
-    private void getMyBooks() {
-        mBookList.addAll(Utils.getBooksFromAssets(getContext()));
-        mBookAdapter.notifyDataSetChanged();
+        rvMyBooks.setLayoutManager(gridLayoutManager);
+        rvMyBooks.setHasFixedSize(true);
+        rvMyBooks.addItemDecoration(new SimpleDividerItemDecoration(getContext()));
+        mBookAdapter = new BookByCategoryAdapter(getContext(), mBookList);
+        rvMyBooks.setAdapter(mBookAdapter);
     }
 }

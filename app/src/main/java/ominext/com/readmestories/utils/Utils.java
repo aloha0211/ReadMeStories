@@ -15,6 +15,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.squareup.picasso.Picasso;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -47,14 +48,14 @@ import static ominext.com.readmestories.utils.Constant.ASSET_FILE_NAME;
 
 public class Utils {
 
-    public static void loadImageByBookId(final ImageView imageView, String bookId, String fileName) {
+    public static void loadImageFromFirebase(final ImageView imageView, String bookId, String fileName) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         final StorageReference imageRef = storageRef.child(Constant.STORY + "/" + bookId + "/" + Constant.IMAGE + "/" + fileName);
         imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                GlideApp.with(imageView.getContext().getApplicationContext())
+                Picasso.with(imageView.getContext().getApplicationContext())
                         .load(uri)
                         .placeholder(R.drawable.background)
                         .into(imageView);
@@ -89,10 +90,10 @@ public class Utils {
         imageView.setImageDrawable(Drawable.createFromPath(filePath));
     }
 
-    public static void download(Context context, String filePath, String fileName, final DownloadFileListener listener) {
+    public static void download(Context context, String refPath, String storePath ,String fileName, final DownloadFileListener listener) {
 
         File cDir = context.getCacheDir();
-        File cacheFolder = new File(cDir.getPath() + "/" + Constant.STORY + "/" + filePath);
+        File cacheFolder = new File(cDir.getPath() + "/" + Constant.STORY + "/" + storePath);
         if (!cacheFolder.exists()) {
             cacheFolder.mkdirs();
         }
@@ -116,7 +117,7 @@ public class Utils {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
 //            StorageReference storageRef = storage.getReferenceFromUrl("gs://readmestories-2c388.appspot.com");
-        StorageReference pathReference = storageRef.child(Constant.STORY + "/" + filePath + "/" + fileName);
+        StorageReference pathReference = storageRef.child(Constant.STORY + "/" + refPath + "/" + fileName);
 
         final boolean[] isConnected = {false};
 
@@ -168,7 +169,7 @@ public class Utils {
         dir.delete();
     }
 
-    public static List<Book> getLocalBooks(Context context) {
+    public static List<Book> getBooksFromAssets(Context context) {
         String jsonData = loadAssetText(context, ASSET_FILE_NAME);
         Type type = new TypeToken<ArrayList<Book>>() {
         }.getType();

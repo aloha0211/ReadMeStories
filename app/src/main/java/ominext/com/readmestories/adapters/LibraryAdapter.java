@@ -61,7 +61,7 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.BookView
         mFileDownloadedIndex = 0;
         mTotalFile = book.getContent().size() + 2;
         // firstly, download audio file
-        Utils.download(mContext, book.getId() + "/" + Constant.AUDIO, Constant.COVER + Constant.MP3_EXTENSION, mListener);
+//        Utils.download(mContext, book.getId() + "/" + Constant.AUDIO, Constant.COVER + Constant.MP3_EXTENSION, mListener);
     }
 
     private int mFileDownloadedIndex;
@@ -73,16 +73,16 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.BookView
         public void onDownloadSuccessful(String audioPath) {
             mFileDownloadedIndex++;
             if (mFileDownloadedIndex < mTotalFile - 1){
-                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.AUDIO, mFileDownloadedIndex + Constant.MP3_EXTENSION, mListener);
+//                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.AUDIO, mFileDownloadedIndex + Constant.MP3_EXTENSION, mListener);
             } else if (mFileDownloadedIndex == mTotalFile - 1) {
-                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.AUDIO, Constant.BACK_COVER + Constant.MP3_EXTENSION, mListener);
+//                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.AUDIO, Constant.BACK_COVER + Constant.MP3_EXTENSION, mListener);
             } else if (mFileDownloadedIndex == mTotalFile) {
                 // download audio finished, start downloading image
-                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.IMAGE, Constant.COVER, mListener);
+//                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.IMAGE, Constant.COVER, mListener);
             } else if (mFileDownloadedIndex < 2 * mTotalFile - 1) {
-                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.IMAGE, String.valueOf(mFileDownloadedIndex - mTotalFile), mListener);
+//                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.IMAGE, String.valueOf(mFileDownloadedIndex - mTotalFile), mListener);
             } else if (mFileDownloadedIndex == 2 * mTotalFile - 1) {
-                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.IMAGE, Constant.BACK_COVER, mListener);
+//                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.IMAGE, Constant.BACK_COVER, mListener);
             } else if (mFileDownloadedIndex == 2 * mTotalFile) {
                 // download all files finished
                 Intent intent = new Intent(mContext, ReadingBookActivity.class);

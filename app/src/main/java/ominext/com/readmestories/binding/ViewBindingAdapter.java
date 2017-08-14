@@ -19,7 +19,7 @@ public class ViewBindingAdapter {
         } else if (imageView.getTag().equals(Constant.ASSETS)) {
             Utils.loadImageFromAssets(imageView, url, Constant.COVER);
         } else if (imageView.getTag().equals(Constant.FIREBASE)) {
-            Utils.loadImageByBookId(imageView, url, Constant.COVER);
+            Utils.loadImageFromFirebase(imageView, url, Constant.COVER);
         }
     }
 }

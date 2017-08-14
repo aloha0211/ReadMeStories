@@ -1,6 +1,7 @@
 package ominext.com.readmestories.activities;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -39,19 +40,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        Utils.deleteCacheDir(this, Constant.STORY);
-    }
-
-
-    @Override
-    protected void onDestroy() {
-        Utils.deleteCacheDir(this, Constant.STORY);
-        super.onDestroy();
-    }
-
-    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -63,7 +51,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 

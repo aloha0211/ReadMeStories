@@ -20,8 +20,6 @@ import ominext.com.readmestories.adapters.CategoryAdapter;
 import ominext.com.readmestories.adapters.SimpleDividerItemDecoration;
 import ominext.com.readmestories.fragments.BaseFragment;
 import ominext.com.readmestories.models.Category;
-import ominext.com.readmestories.utils.Constant;
-import ominext.com.readmestories.utils.Utils;
 
 import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
 
@@ -95,12 +93,6 @@ public class CategoryFragment extends BaseFragment implements CategoryView {
     }
 
     @Override
-    public void onDestroy() {
-        Utils.deleteCacheDir(getContext(), Constant.STORY);
-        super.onDestroy();
-    }
-
-    @Override
     public void onSuccessful(List<Category> categories) {
         if (isAdded()) {
             mSwipeRefreshLayout.setRefreshing(false);
@@ -108,6 +100,8 @@ public class CategoryFragment extends BaseFragment implements CategoryView {
             mCategories.clear();
             mCategories.addAll(categories);
             mCategoryAdapter.notifyDataSetChanged();
+            llNoInternetConnection.setVisibility(View.GONE);
+            mSwipeRefreshLayout.setVisibility(View.VISIBLE);
         }
     }
 

@@ -1,19 +1,27 @@
 package ominext.com.readmestories.adapters;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import ominext.com.readmestories.BR;
 import ominext.com.readmestories.R;
-import ominext.com.readmestories.databinding.ItemCategoryBinding;
+import ominext.com.readmestories.activities.BaseActivity;
+import ominext.com.readmestories.activities.CategoryBooksActivity;
+import ominext.com.readmestories.listeners.DownloadFileListener;
+import ominext.com.readmestories.models.Book;
+import ominext.com.readmestories.models.BookResponse;
 import ominext.com.readmestories.models.Category;
+import ominext.com.readmestories.models.GlideApp;
+import ominext.com.readmestories.utils.Constant;
+import ominext.com.readmestories.utils.Utils;
 
 /**
  * Created by LuongHH on 6/21/2017.
@@ -32,16 +40,25 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     @Override
     public CategoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(mContext).inflate(R.layout.item_category, parent, false);
-        ItemCategoryBinding binding = ItemCategoryBinding.bind(itemView);
-        return new CategoryViewHolder(binding.getRoot(), binding);
+        final CategoryViewHolder holder = new CategoryViewHolder(itemView);
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Category category = mCategories.get(holder.getAdapterPosition());
+                onCategoryClick(category);
+            }
+        });
+        return holder;
     }
 
     @Override
     public void onBindViewHolder(CategoryViewHolder holder, int position) {
         Category category = mCategories.get(position);
-        holder.mBinding.setCategory(category);
-        holder.mBinding.setHandlers(this);
-        holder.mBinding.executePendingBindings();
+        holder.tvCategoryName.setText(category.getTitle());
+        GlideApp.with(mContext)
+                .load(category.getLargeTout())
+                .placeholder(R.color.light_azure)
+                .into(holder.ivCategory);
     }
 
     @Override
@@ -49,17 +66,66 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         return mCategories == null ? 0 : mCategories.size();
     }
 
-    public void onCategoryClick(View view, Category category) {
-
+    private void onCategoryClick(Category category) {
+        ((BaseActivity) mContext).showProgressDialog(mContext.getString(R.string.loading_data));
+        mSelectedCategory = category;
+        mFileDownloadedIndex = 0;
+        mTotalFile = category.getBooks().size();
+        String refPath = mSelectedCategory.getBooks().get(0).getId() + "/" + Constant.IMAGE;
+        String storePath = Constant.CATEGORY + "/" + refPath;
+        Utils.download(mContext, refPath, storePath, Constant.COVER, mListener);
     }
+
+    private int mFileDownloadedIndex;
+    private int mTotalFile;
+    private Category mSelectedCategory;
+
+    private DownloadFileListener mListener = new DownloadFileListener() {
+        @Override
+        public void onDownloadSuccessful(String audioPath) {
+            mFileDownloadedIndex++;
+            if (mFileDownloadedIndex < mTotalFile) {
+                String refPath = mSelectedCategory.getBooks().get(mFileDownloadedIndex).getId() + "/" + Constant.IMAGE;
+                String storePath = Constant.CATEGORY + "/" + refPath;
+                Utils.download(mContext, refPath, storePath, Constant.COVER, mListener);
+            } else if (mFileDownloadedIndex == mTotalFile) {
+                // download all cover image files for all books finished
+                Intent intent = new Intent(mContext, CategoryBooksActivity.class);
+                ArrayList<Book> books = new ArrayList<>();
+                for (int i = 0; i < mSelectedCategory.getBooks().size(); i++) {
+                    BookResponse response = mSelectedCategory.getBooks().get(i);
+                    Book book = new Book();
+                    book.setId(response.getId());
+                    book.setTitle(response.getTitle());
+                    book.setAuthor(response.getAuthor());
+                    book.setIllustrator(response.getIllustrator());
+                    books.add(book);
+                }
+                intent.putExtra(Constant.KEY_TITLE, mSelectedCategory.getTitle());
+                intent.putParcelableArrayListExtra(Constant.KEY_BOOKS, books);
+                mContext.startActivity(intent);
+                ((BaseActivity) mContext).dismissProgressDialog();
+            }
+        }
+
+        @Override
+        public void onDownloadFailed() {
+            ((BaseActivity) mContext).dismissProgressDialog();
+            ((BaseActivity) mContext).showAlertDialog(mContext.getString(R.string.error), mContext.getString(R.string.load_data_err_msg));
+            Utils.deleteCacheDir(mContext, Constant.STORY + "/" + Constant.CATEGORY);
+        }
+    };
 
     class CategoryViewHolder extends RecyclerView.ViewHolder {
 
-        ItemCategoryBinding mBinding;
+        ImageView ivCategory;
+        TextView tvCategoryName;
 
-        CategoryViewHolder(View itemView, ItemCategoryBinding binding) {
+        CategoryViewHolder(View itemView) {
             super(itemView);
-            mBinding = binding;
+
+            ivCategory = (ImageView) itemView.findViewById(R.id.iv_category);
+            tvCategoryName = (TextView) itemView.findViewById(R.id.tv_category_name);
         }
     }
 }

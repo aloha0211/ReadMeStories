@@ -1,5 +1,6 @@
 package ominext.com.readmestories.models;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -27,6 +28,10 @@ public class Book implements Parcelable {
     @SerializedName("time_frame")
     @Expose
     private List<List<Double>> timeFrame = null;
+
+    private String author;
+
+    private String illustrator;
 
     public Book() {}
 
@@ -75,6 +80,22 @@ public class Book implements Parcelable {
 
     public void settime_frame(List<List<Double>> timeFrame) {
         this.timeFrame = timeFrame;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getIllustrator() {
+        return illustrator;
+    }
+
+    public void setIllustrator(String illustrator) {
+        this.illustrator = illustrator;
     }
 
     @Override
