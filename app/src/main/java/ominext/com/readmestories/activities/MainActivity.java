@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.fragments.MyBooksFragment;
 import ominext.com.readmestories.fragments.category.CategoryFragment;
-import ominext.com.readmestories.fragments.library.LibraryFragment;
 import ominext.com.readmestories.utils.Constant;
 import ominext.com.readmestories.utils.Utils;
 
@@ -37,6 +36,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setTitle(R.string.my_books);
 
         replaceFragment(MyBooksFragment.newInstance());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Utils.deleteCacheDir(this, Constant.STORY + "/" + Constant.TEMP);
+        Utils.deleteCacheDir(this, Constant.STORY + "/" + Constant.CATEGORY);
     }
 
     @Override

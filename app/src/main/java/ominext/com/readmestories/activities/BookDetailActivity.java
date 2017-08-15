@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -62,9 +61,9 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        Utils.deleteCacheDir(BookDetailActivity.this, Constant.TEMP);
+    protected void onResume() {
+        super.onResume();
+        Utils.deleteCacheDir(BookDetailActivity.this, Constant.STORY + "/" + Constant.TEMP);
     }
 
     @Override
@@ -99,9 +98,8 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
         htmlRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
-                String htmlContentStr = null;
                 try {
-                    htmlContentStr = new String(bytes, "UTF-8");
+                    String htmlContentStr = new String(bytes, "UTF-8");
                     Book result = Utils.parseHtml(htmlContentStr);
                     mBook.setContent(result.getContent());
                     mBook.settime_frame(result.gettime_frame());
@@ -143,6 +141,15 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
             } else if (mFileDownloadedIndex == mTotalFile - 1) {
                 Utils.download(BookDetailActivity.this, refPath, storePath, Constant.BACK_COVER + Constant.MP3_EXTENSION, mListener);
             } else if (mFileDownloadedIndex == mTotalFile) {
+                // download audio finished, start downloading image
+                refPath = mBook.getId().toString() + "/" + Constant.IMAGE;
+                storePath = Constant.TEMP + "/" + refPath;
+                Utils.download(BookDetailActivity.this, refPath, storePath, Constant.COVER, mListener);
+            } else if (mFileDownloadedIndex < 2 * mTotalFile - 1) {
+                Utils.download(BookDetailActivity.this, refPath, storePath, String.valueOf(mFileDownloadedIndex - mTotalFile), mListener);
+            } else if (mFileDownloadedIndex == 2 * mTotalFile - 1) {
+                Utils.download(BookDetailActivity.this, refPath, storePath, Constant.BACK_COVER, mListener);
+            } else if (mFileDownloadedIndex == 2 * mTotalFile) {
                 // download all files finished
                 Intent intent = new Intent(BookDetailActivity.this, ReadingBookActivity.class);
                 Bundle data = new Bundle();

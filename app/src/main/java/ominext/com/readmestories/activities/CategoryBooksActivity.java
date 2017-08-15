@@ -12,6 +12,7 @@ import ominext.com.readmestories.R;
 import ominext.com.readmestories.fragments.BooksByCategoryFragment;
 import ominext.com.readmestories.models.Book;
 import ominext.com.readmestories.utils.Constant;
+import ominext.com.readmestories.utils.Utils;
 
 public class CategoryBooksActivity extends BaseActivity {
 
@@ -30,6 +31,12 @@ public class CategoryBooksActivity extends BaseActivity {
         setTitle(data.getStringExtra(Constant.KEY_TITLE));
         List<Book> books = data.getParcelableArrayListExtra(Constant.KEY_BOOKS);
         replaceFragment(BooksByCategoryFragment.newInstance(books));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Utils.deleteCacheDir(this, Constant.STORY + "/" + Constant.TEMP);
     }
 
     @Override

@@ -29,6 +29,7 @@ public class Constant {
     public static final String ASSETS = "assets";
     public static final String FIREBASE = "firebase";
     public static final String TEMP = "temp";
+    public static final String SAVE = "save";
 
     public static final String DATA = "data";
 
