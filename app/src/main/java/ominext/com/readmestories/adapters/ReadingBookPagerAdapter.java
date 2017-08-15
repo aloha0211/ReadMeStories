@@ -22,23 +22,23 @@ public class ReadingBookPagerAdapter extends FragmentStatePagerAdapter {
     private View.OnClickListener mListener;
 
     private boolean isAutoRead;
-    private boolean isFromAsset;
+    private int readingMode;
 
-    public ReadingBookPagerAdapter(FragmentManager fm, Book book, View.OnClickListener listener, boolean isAutoRead, boolean isFromAsset) {
+    public ReadingBookPagerAdapter(FragmentManager fm, Book book, View.OnClickListener listener, boolean isAutoRead, int readingMode) {
         super(fm);
         this.mBook = book;
         this.mListener = listener;
         this.isAutoRead = isAutoRead;
-        this.isFromAsset = isFromAsset;
+        this.readingMode = readingMode;
     }
 
     @Override
     public Fragment getItem(int position) {
         ReadingBookFragment fragment;
         if (position == 0 || position == getCount() - 1) {
-            fragment = ReadingBookFragment.newInstance(position, mBook.getId(), getFileName(position), mListener, isFromAsset);
+            fragment = ReadingBookFragment.newInstance(position, mBook.getId(), getFileName(position), mListener, readingMode);
         } else {
-            fragment = ReadingBookFragment.newInstance(mBook.getId(), mBook.getContent().get(position - 1), getFileName(position), mBook.gettime_frame().get(position - 1), mListener, isFromAsset);
+            fragment = ReadingBookFragment.newInstance(mBook.getId(), mBook.getContent().get(position - 1), getFileName(position), mBook.gettime_frame().get(position - 1), mListener, readingMode);
         }
         fragment.setAutoRead(isAutoRead);
         return fragment;

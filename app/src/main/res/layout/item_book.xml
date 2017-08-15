@@ -30,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/item_book_height"
                 android:scaleType="fitXY"
-                android:tag="firebase"
+                android:tag="assets"
                 bind:url="@{String.valueOf(book.getId().intValue())}"/>
 
             <TextView

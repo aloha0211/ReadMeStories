@@ -84,9 +84,9 @@ public class Utils {
         }
     }
 
-    public static void loadImageFromCache(final ImageView imageView, String bookId, String fileName) {
+    public static void loadImageFromCache(final ImageView imageView,String path, String bookId, String fileName) {
         File cDir = imageView.getContext().getCacheDir();
-        String filePath = cDir.getPath() + "/" + Constant.STORY + "/" + bookId + "/" + Constant.IMAGE + "/" + fileName;
+        String filePath = cDir.getPath() + "/" + path + "/" + bookId + "/" + Constant.IMAGE + "/" + fileName;
         imageView.setImageDrawable(Drawable.createFromPath(filePath));
     }
 

@@ -29,6 +29,11 @@
             android:screenOrientation="landscape">
         </activity>
         <activity
+            android:name=".activities.BookDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
             android:name=".activities.CategoryBooksActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait">

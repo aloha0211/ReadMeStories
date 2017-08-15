@@ -48,6 +48,8 @@ public class Book implements Parcelable {
         content = in.createStringArrayList();
         timeFrame = new ArrayList<>();
         in.readList(timeFrame, Book.class.getClassLoader());
+        author = in.readString();
+        illustrator = in.readString();
     }
 
     public Integer getId() {
@@ -109,6 +111,8 @@ public class Book implements Parcelable {
         parcel.writeString(title);
         parcel.writeStringList(content);
         parcel.writeList(timeFrame);
+        parcel.writeString(author);
+        parcel.writeString(illustrator);
     }
 
     public static final Creator<Book> CREATOR = new Creator<Book>() {

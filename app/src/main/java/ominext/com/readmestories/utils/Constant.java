@@ -10,6 +10,7 @@ public class Constant {
     public static final String KEY_BOOKS = "books";
     public static final String KEY_DATA = "data";
     public static final String KEY_TITLE = "title";
+    public static final String KEY_READING_MODE = "reading_mode";
 
     public static final String AUDIO = "audio";
     public static final String IMAGE = "image";
@@ -19,6 +20,7 @@ public class Constant {
     public static final String COVER = "cover";
     public static final String STORY = "story";
     public static final String CATEGORY = "category";
+    public static final String HTML_FILE_NAME = "index.html";
 
     public static final String ID = "id";
     public static final String ASSET_FILE_NAME = "data.json";
@@ -26,6 +28,11 @@ public class Constant {
 
     public static final String ASSETS = "assets";
     public static final String FIREBASE = "firebase";
+    public static final String TEMP = "temp";
 
     public static final String DATA = "data";
+
+    public static final int MODE_FROM_ASSETS = 0;
+    public static final int MODE_FROM_CACHE_ADDED = 1;      // saved book to cache
+    public static final int MODE_FROM_CACHE_NOT_ADDED_YET = 2;  // temporary save book to cache
 }

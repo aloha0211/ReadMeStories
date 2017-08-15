@@ -6,6 +6,6 @@ package ominext.com.readmestories.listeners;
 
 public interface DownloadFileListener {
 
-    void onDownloadSuccessful(String audioPath);
+    void onDownloadSuccessful(String filePath);
     void onDownloadFailed();
 }

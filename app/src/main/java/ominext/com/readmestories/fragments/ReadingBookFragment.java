@@ -44,30 +44,30 @@ public class ReadingBookFragment extends BaseFragment {
     private View.OnClickListener mListener;
 
     private boolean isAutoRead = true;
-    private boolean isFromAsset;
+    private int readingMode;
 
     public ReadingBookFragment() {
         // Required empty public constructor
     }
 
-    public static ReadingBookFragment newInstance(int bookId, String content, String fileName, List<Double> timeFrame, View.OnClickListener listener, boolean isFromAsset) {
+    public static ReadingBookFragment newInstance(int bookId, String content, String fileName, List<Double> timeFrame, View.OnClickListener listener, int readingMode) {
         ReadingBookFragment fragment = new ReadingBookFragment();
         fragment.mContent = content;
         fragment.mTimeFrame = timeFrame;
         fragment.mBookId = bookId;
         fragment.mFileName = fileName;
         fragment.mListener = listener;
-        fragment.isFromAsset = isFromAsset;
+        fragment.readingMode = readingMode;
         return fragment;
     }
 
-    public static ReadingBookFragment newInstance(int pageIndex, int bookId, String fileName, View.OnClickListener listener, boolean isFromAsset) {
+    public static ReadingBookFragment newInstance(int pageIndex, int bookId, String fileName, View.OnClickListener listener, int readingMode) {
         ReadingBookFragment fragment = new ReadingBookFragment();
         fragment.mBookId = bookId;
         fragment.mPageIndex = pageIndex;
         fragment.mFileName = fileName;
         fragment.mListener = listener;
-        fragment.isFromAsset = isFromAsset;
+        fragment.readingMode = readingMode;
         return fragment;
     }
 
@@ -93,10 +93,12 @@ public class ReadingBookFragment extends BaseFragment {
 
         mPlayer = new Player();
 
-        if (isFromAsset) {
+        if (readingMode == Constant.MODE_FROM_ASSETS) {
             Utils.loadImageFromAssets(mIvContent, String.valueOf(mBookId), mFileName);
-        } else {
-            Utils.loadImageFromCache(mIvContent, String.valueOf(mBookId), mFileName);
+        } else if(readingMode == Constant.MODE_FROM_CACHE_ADDED) {
+            Utils.loadImageFromCache(mIvContent, Constant.STORY, String.valueOf(mBookId), mFileName);
+        } else if(readingMode == Constant.MODE_FROM_CACHE_NOT_ADDED_YET) {
+            Utils.loadImageFromCache(mIvContent, Constant.TEMP, String.valueOf(mBookId), mFileName);
         }
 
         if (mContent != null) {
@@ -180,7 +182,6 @@ public class ReadingBookFragment extends BaseFragment {
 
     public void startReading(final OnStartedListener onStartedListener) {
         if (isAutoRead) {
-            String audioPath = getContext().getCacheDir().getPath() + "/" + Constant.STORY + "/" + mBookId + "/" + Constant.AUDIO + "/" + mFileName + Constant.MP3_EXTENSION;
             MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
@@ -189,7 +190,8 @@ public class ReadingBookFragment extends BaseFragment {
                     }
                 }
             };
-            if (isFromAsset) {
+            String audioPath;
+            if (readingMode == Constant.MODE_FROM_ASSETS) {
                 try {
                     AssetFileDescriptor descriptor = getContext().getAssets().openFd(mBookId + "/" + Constant.AUDIO + "/" + mFileName + Constant.MP3_EXTENSION);
                     if (mContent == null) {
@@ -200,7 +202,15 @@ public class ReadingBookFragment extends BaseFragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            } else {
+            } else if (readingMode == Constant.MODE_FROM_CACHE_ADDED){
+                audioPath = getContext().getCacheDir().getPath() + "/" + Constant.STORY + "/" + mBookId + "/" + Constant.AUDIO + "/" + mFileName + Constant.MP3_EXTENSION;
+                if (mContent == null) {
+                    mPlayer.readBook(audioPath, onCompletionListener, onStartedListener);
+                } else {
+                    mPlayer.readBook(mTvContent, mContent, audioPath, mTimeFrame, onCompletionListener, onStartedListener);
+                }
+            } else if (readingMode == Constant.MODE_FROM_CACHE_NOT_ADDED_YET){
+                audioPath = getContext().getCacheDir().getPath() + "/" + Constant.TEMP + "/" + mBookId + "/" + Constant.AUDIO + "/" + mFileName + Constant.MP3_EXTENSION;
                 if (mContent == null) {
                     mPlayer.readBook(audioPath, onCompletionListener, onStartedListener);
                 } else {
