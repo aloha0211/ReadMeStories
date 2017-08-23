@@ -10,6 +10,10 @@ public class RealmDouble extends RealmObject {
 
     private double value;
 
+    public RealmDouble(double value) {
+        this.value = value;
+    }
+
     public double getValue() {
         return value;
     }

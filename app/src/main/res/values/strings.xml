@@ -8,6 +8,8 @@
     <string name="illustrator">illustrator</string>
     <string name="book_detail">Book detail</string>
     <string name="add_to_my_books">Add to My Books</string>
+    <string name="added_to_your_books">Added to your Books</string>
+    <string name="add_book">Add Book</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

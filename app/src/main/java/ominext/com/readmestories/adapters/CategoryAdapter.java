@@ -73,7 +73,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         mTotalFile = category.getBooks().size();
         String refPath = mSelectedCategory.getBooks().get(0).getId() + "/" + Constant.IMAGE;
         String storePath = Constant.CATEGORY + "/" + refPath;
-        Utils.download(mContext, refPath, storePath, Constant.COVER, mListener);
+        Utils.downloadToCacheFolder(mContext, refPath, storePath, Constant.COVER, mListener);
     }
 
     private int mFileDownloadedIndex;
@@ -87,9 +87,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             if (mFileDownloadedIndex < mTotalFile) {
                 String refPath = mSelectedCategory.getBooks().get(mFileDownloadedIndex).getId() + "/" + Constant.IMAGE;
                 String storePath = Constant.CATEGORY + "/" + refPath;
-                Utils.download(mContext, refPath, storePath, Constant.COVER, mListener);
+                Utils.downloadToCacheFolder(mContext, refPath, storePath, Constant.COVER, mListener);
             } else if (mFileDownloadedIndex == mTotalFile) {
-                // download all cover image files for all books finished
+                // downloadToCacheFolder all cover image files for all books finished
                 Intent intent = new Intent(mContext, CategoryBooksActivity.class);
                 ArrayList<Book> books = new ArrayList<>();
                 for (int i = 0; i < mSelectedCategory.getBooks().size(); i++) {

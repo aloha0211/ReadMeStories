@@ -90,7 +90,7 @@ public class Utils {
         imageView.setImageDrawable(Drawable.createFromPath(filePath));
     }
 
-    public static void download(Context context, String refPath, String storePath ,String fileName, final DownloadFileListener listener) {
+    public static void downloadToCacheFolder(Context context, String refPath, String storePath , String fileName, final DownloadFileListener listener) {
 
         File cDir = context.getCacheDir();
         File cacheFolder = new File(cDir.getPath() + "/" + Constant.STORY + "/" + storePath);
@@ -135,6 +135,68 @@ public class Utils {
             public void onFailure(@NonNull Exception exception) {
                 isConnected[0] = true;
                 // Handle failed download
+                listener.onDownloadFailed();
+            }
+        };
+        downloadTask.addOnSuccessListener(onSuccessListener);
+        downloadTask.addOnFailureListener(onFailureListener);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!isConnected[0]) {
+                    downloadTask.removeOnFailureListener(onFailureListener);
+                    downloadTask.removeOnSuccessListener(onSuccessListener);
+                    listener.onDownloadFailed();
+                }
+            }
+        }, 30000);
+    }
+
+    public static void downloadToInternalStorage(Context context, String refPath, String storePath , String fileName, final DownloadFileListener listener) {
+
+        File internalDir = context.getFilesDir();
+        File cacheFolder = new File(internalDir.getPath() + "/" + Constant.STORY + "/" + storePath);
+        if (!cacheFolder.exists()) {
+            cacheFolder.mkdirs();
+        }
+
+        if (!Connectivity.isConnected(context)) {
+            listener.onDownloadFailed();
+            return;
+        }
+
+        final File tempFile = new File(cacheFolder, fileName);
+        if (tempFile.exists()) {
+            tempFile.delete();
+        }
+
+        try {
+            tempFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+//            StorageReference storageRef = storage.getReferenceFromUrl("gs://readmestories-2c388.appspot.com");
+        StorageReference pathReference = storageRef.child(Constant.STORY + "/" + refPath + "/" + fileName);
+
+        final boolean[] isConnected = {false};
+
+        final FileDownloadTask downloadTask = pathReference.getFile(tempFile);
+        final OnSuccessListener onSuccessListener = new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                // Successfully downloaded data to local file
+                isConnected[0] = true;
+                listener.onDownloadSuccessful(tempFile.getPath());
+            }
+        };
+        final OnFailureListener onFailureListener = new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                isConnected[0] = true;
+                // Handle failed downloadToCacheFolder
                 listener.onDownloadFailed();
             }
         };

@@ -95,9 +95,9 @@ public class ReadingBookFragment extends BaseFragment {
 
         if (readingMode == Constant.MODE_FROM_ASSETS) {
             Utils.loadImageFromAssets(mIvContent, String.valueOf(mBookId), mFileName);
-        } else if(readingMode == Constant.MODE_FROM_CACHE_ADDED) {
+        } else if(readingMode == Constant.MODE_FROM_INTERNAL_STORAGE) {
             Utils.loadImageFromCache(mIvContent, Constant.STORY + "/" + Constant.SAVE, String.valueOf(mBookId), mFileName);
-        } else if(readingMode == Constant.MODE_FROM_CACHE_NOT_ADDED_YET) {
+        } else if(readingMode == Constant.MODE_FROM_CACHE) {
             Utils.loadImageFromCache(mIvContent, Constant.STORY + "/" + Constant.TEMP, String.valueOf(mBookId), mFileName);
         }
 
@@ -202,14 +202,14 @@ public class ReadingBookFragment extends BaseFragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            } else if (readingMode == Constant.MODE_FROM_CACHE_ADDED){
-                audioPath = getContext().getCacheDir().getPath() + "/" + Constant.STORY + "/" + Constant.SAVE + "/" + mBookId + "/" + Constant.AUDIO + "/" + mFileName + Constant.MP3_EXTENSION;
+            } else if (readingMode == Constant.MODE_FROM_INTERNAL_STORAGE){
+                audioPath = getContext().getFilesDir().getPath() + "/" + Constant.STORY + "/" + Constant.SAVE + "/" + mBookId + "/" + Constant.AUDIO + "/" + mFileName + Constant.MP3_EXTENSION;
                 if (mContent == null) {
                     mPlayer.readBook(audioPath, onCompletionListener, onStartedListener);
                 } else {
                     mPlayer.readBook(mTvContent, mContent, audioPath, mTimeFrame, onCompletionListener, onStartedListener);
                 }
-            } else if (readingMode == Constant.MODE_FROM_CACHE_NOT_ADDED_YET){
+            } else if (readingMode == Constant.MODE_FROM_CACHE){
                 audioPath = getContext().getCacheDir().getPath() + "/" + Constant.STORY + "/" + Constant.TEMP + "/" + mBookId + "/" + Constant.AUDIO + "/" + mFileName + Constant.MP3_EXTENSION;
                 if (mContent == null) {
                     mPlayer.readBook(audioPath, onCompletionListener, onStartedListener);

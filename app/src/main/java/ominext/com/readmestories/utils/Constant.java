@@ -34,6 +34,6 @@ public class Constant {
     public static final String DATA = "data";
 
     public static final int MODE_FROM_ASSETS = 0;
-    public static final int MODE_FROM_CACHE_ADDED = 1;      // saved book to cache
-    public static final int MODE_FROM_CACHE_NOT_ADDED_YET = 2;  // temporary save book to cache
+    public static final int MODE_FROM_INTERNAL_STORAGE = 1;      // saved book to internal storage
+    public static final int MODE_FROM_CACHE = 2;  // temporary save book to cache
 }

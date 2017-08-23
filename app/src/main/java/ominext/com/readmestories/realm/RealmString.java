@@ -10,6 +10,10 @@ public class RealmString extends RealmObject {
 
     private String value;
 
+    public RealmString(String value) {
+        this.value = value;
+    }
+
     public String getValue() {
         return value;
     }

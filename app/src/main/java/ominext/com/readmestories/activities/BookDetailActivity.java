@@ -17,9 +17,14 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.UnsupportedEncodingException;
 
+import io.realm.RealmList;
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.listeners.DownloadFileListener;
 import ominext.com.readmestories.models.Book;
+import ominext.com.readmestories.models.BookRealm;
+import ominext.com.readmestories.realm.RealmController;
+import ominext.com.readmestories.realm.RealmListDouble;
+import ominext.com.readmestories.realm.RealmString;
 import ominext.com.readmestories.utils.Constant;
 import ominext.com.readmestories.utils.Utils;
 import ominext.com.readmestories.utils.network.Connectivity;
@@ -27,6 +32,8 @@ import ominext.com.readmestories.utils.network.Connectivity;
 public class BookDetailActivity extends BaseActivity implements View.OnClickListener {
 
     private Book mBook;
+
+    private boolean isSavingBookToInternalStorage;  // false if download file and save to cache folder
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,9 +77,12 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
     public void onClick(View view) {
         if (view.getId() == R.id.btn_read) {
             showProgressDialog(getString(R.string.loading_data));
+            isSavingBookToInternalStorage = false;
             getBookContentFromFirebase();
         } else if (view.getId() == R.id.btn_add_to_my_books) {
-
+            showProgressDialog(getString(R.string.loading_data));
+            isSavingBookToInternalStorage = true;
+            getBookContentFromFirebase();
         }
     }
 
@@ -103,6 +113,23 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
                     Book result = Utils.parseHtml(htmlContentStr);
                     mBook.setContent(result.getContent());
                     mBook.settime_frame(result.gettime_frame());
+                    if (isSavingBookToInternalStorage) {
+                        BookRealm bookRealm = new BookRealm();
+                        bookRealm.setId(mBook.getId());
+                        bookRealm.setTitle(mBook.getTitle());
+                        RealmList<RealmString> contents = new RealmList<>();
+                        for (int i = 0; i < mBook.getContent().size(); i++) {
+                            contents.add(new RealmString(mBook.getContent().get(i)));
+                        }
+                        bookRealm.setContent(contents);
+                        RealmList<RealmListDouble> timeFrameList = new RealmList<>();
+                        for (int i = 0; i < mBook.gettime_frame().size(); i++) {
+                            RealmListDouble timeFrame = new RealmListDouble(mBook.gettime_frame().get(i));
+                            timeFrameList.add(timeFrame);
+                        }
+                        bookRealm.setTime_frame(timeFrameList);
+                        RealmController.with(BookDetailActivity.this).addBook(bookRealm);
+                    }
                     downloadBookAudio();
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
@@ -123,8 +150,12 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
         mFileDownloadedIndex = 0;
         mTotalFile = mBook.getContent().size() + 2;
         refPath = mBook.getId().toString() + "/" + Constant.AUDIO;
-        storePath = Constant.TEMP + "/" + refPath;
-        Utils.download(this, refPath, storePath, Constant.COVER + Constant.MP3_EXTENSION, mListener);
+        if (isSavingBookToInternalStorage) {
+            storePath = Constant.SAVE + "/" + refPath;
+        } else {
+            storePath = Constant.TEMP + "/" + refPath;
+        }
+        Utils.downloadToCacheFolder(this, refPath, storePath, Constant.COVER + Constant.MP3_EXTENSION, mListener);
     }
 
     private int mFileDownloadedIndex;
@@ -137,27 +168,31 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
         public void onDownloadSuccessful(String audioPath) {
             mFileDownloadedIndex++;
             if (mFileDownloadedIndex < mTotalFile - 1) {
-                Utils.download(BookDetailActivity.this, refPath, storePath, mFileDownloadedIndex + Constant.MP3_EXTENSION, mListener);
+                downloadFile(refPath, storePath, mFileDownloadedIndex + Constant.MP3_EXTENSION);
             } else if (mFileDownloadedIndex == mTotalFile - 1) {
-                Utils.download(BookDetailActivity.this, refPath, storePath, Constant.BACK_COVER + Constant.MP3_EXTENSION, mListener);
+                downloadFile(refPath, storePath, Constant.BACK_COVER + Constant.MP3_EXTENSION);
             } else if (mFileDownloadedIndex == mTotalFile) {
-                // download audio finished, start downloading image
+                // downloadToCacheFolder audio finished, start downloading image
                 refPath = mBook.getId().toString() + "/" + Constant.IMAGE;
                 storePath = Constant.TEMP + "/" + refPath;
-                Utils.download(BookDetailActivity.this, refPath, storePath, Constant.COVER, mListener);
+                downloadFile(refPath, storePath, Constant.COVER);
             } else if (mFileDownloadedIndex < 2 * mTotalFile - 1) {
-                Utils.download(BookDetailActivity.this, refPath, storePath, String.valueOf(mFileDownloadedIndex - mTotalFile), mListener);
+                downloadFile(refPath, storePath, String.valueOf(mFileDownloadedIndex - mTotalFile));
             } else if (mFileDownloadedIndex == 2 * mTotalFile - 1) {
-                Utils.download(BookDetailActivity.this, refPath, storePath, Constant.BACK_COVER, mListener);
+                downloadFile(refPath, storePath, Constant.BACK_COVER);
             } else if (mFileDownloadedIndex == 2 * mTotalFile) {
                 // download all files finished
-                Intent intent = new Intent(BookDetailActivity.this, ReadingBookActivity.class);
-                Bundle data = new Bundle();
-                data.putParcelable(Constant.KEY_BOOK, mBook);
-                intent.putExtra(Constant.KEY_READING_MODE, Constant.MODE_FROM_CACHE_NOT_ADDED_YET);
-                intent.putExtra(Constant.KEY_DATA, data);
-                BookDetailActivity.this.startActivity(intent);
                 dismissProgressDialog();
+                if (isSavingBookToInternalStorage) {
+                    showAlertDialog(getString(R.string.loading_data), getString(R.string.added_to_your_books));
+                } else {
+                    Intent intent = new Intent(BookDetailActivity.this, ReadingBookActivity.class);
+                    Bundle data = new Bundle();
+                    data.putParcelable(Constant.KEY_BOOK, mBook);
+                    intent.putExtra(Constant.KEY_READING_MODE, Constant.MODE_FROM_CACHE);
+                    intent.putExtra(Constant.KEY_DATA, data);
+                    BookDetailActivity.this.startActivity(intent);
+                }
             }
         }
 
@@ -168,4 +203,12 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
             Utils.deleteCacheDir(BookDetailActivity.this, Constant.TEMP);
         }
     };
+
+    private void downloadFile(String refPath, String storePath, String fileName) {
+        if (isSavingBookToInternalStorage) {
+            Utils.downloadToInternalStorage(BookDetailActivity.this, refPath, storePath, fileName, mListener);
+        } else {
+            Utils.downloadToCacheFolder(BookDetailActivity.this, refPath, storePath, fileName, mListener);
+        }
+    }
 }
