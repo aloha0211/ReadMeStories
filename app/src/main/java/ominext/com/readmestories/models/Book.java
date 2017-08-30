@@ -1,6 +1,5 @@
 package ominext.com.readmestories.models;
 
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -33,9 +32,10 @@ public class Book implements Parcelable {
 
     private String illustrator;
 
-    private Integer readingMode;
+    private int readingMode;
 
-    public Book() {}
+    public Book() {
+    }
 
     public Book(Integer id, String title, List<String> content, List<List<Double>> timeFrame) {
         this.id = id;
@@ -103,7 +103,7 @@ public class Book implements Parcelable {
         this.illustrator = illustrator;
     }
 
-    public Integer getReadingMode() {
+    public int getReadingMode() {
         return readingMode;
     }
 

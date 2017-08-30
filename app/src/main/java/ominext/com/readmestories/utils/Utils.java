@@ -93,7 +93,7 @@ public class Utils {
     }
 
     public static void loadImageFromInternalStorage(final ImageView imageView, String bookId, String fileName) {
-        String imageFilePath = imageView.getContext().getCacheDir().getPath() + "/"
+        String imageFilePath = imageView.getContext().getFilesDir().getPath() + "/"
                 + Constant.STORY + "/" + Constant.SAVE + "/" + bookId + "/" + Constant.IMAGE + "/" + fileName;
         imageView.setImageBitmap(BitmapFactory.decodeFile(imageFilePath));
     }
@@ -169,9 +169,9 @@ public class Utils {
     public static void downloadToInternalStorage(Context context, String refPath, String storePath , String fileName, final DownloadFileListener listener) {
 
         File internalDir = context.getFilesDir();
-        File cacheFolder = new File(internalDir.getPath() + "/" + Constant.STORY + "/" + storePath);
-        if (!cacheFolder.exists()) {
-            cacheFolder.mkdirs();
+        File savedDir = new File(internalDir.getPath() + "/" + Constant.STORY + "/" + storePath);
+        if (!savedDir.exists()) {
+            savedDir.mkdirs();
         }
 
         if (!Connectivity.isConnected(context)) {
@@ -179,7 +179,7 @@ public class Utils {
             return;
         }
 
-        final File tempFile = new File(cacheFolder, fileName);
+        final File tempFile = new File(savedDir, fileName);
         if (tempFile.exists()) {
             tempFile.delete();
         }

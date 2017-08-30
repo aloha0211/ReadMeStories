@@ -22,7 +22,7 @@ import ominext.com.readmestories.listeners.OnStartedListener;
 
 public class Player {
 
-    private static final long DELAY_TIME = 1000;
+    private static final long DELAY_TIME = 500;
 
     private MediaPlayer mMediaPlayer;
     private MediaPlayer.OnCompletionListener mListener;
@@ -47,8 +47,7 @@ public class Player {
 
         mTimeFrame = timeFrame;
         mListener = onCompletionListener;
-        final String[] contents = content.trim().replaceAll("-", " ").replaceAll("  ", " ").replaceAll("  ", " ").replaceAll(" \" ", " ").split(" ");
-
+        final String[] contents = content.trim().replaceAll("-", " ").replaceAll("  ", " ").replaceAll("  ", " ").replaceAll(" \" ", " ").replaceAll("\\..", " ").split(" ");
         mTimeIndex = 0;
         mTextSpanFromIndex = 0;
         isFirstRun = true;

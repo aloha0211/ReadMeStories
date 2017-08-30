@@ -16,9 +16,9 @@ public class ViewBindingAdapter {
     public static void loadImage(final ImageView imageView, String url) {
         if (imageView.getTag()== null) {
             Utils.loadImage(imageView, url);
-        } else if (imageView.getTag().equals(String.valueOf(Constant.MODE_FROM_ASSETS))) {
+        } else if (imageView.getTag().equals(Constant.MODE_FROM_ASSETS)) {
             Utils.loadImageFromAssets(imageView, url, Constant.COVER);
-        } else if (imageView.getTag().equals(String.valueOf(Constant.MODE_FROM_INTERNAL_STORAGE))) {
+        } else if (imageView.getTag().equals(Constant.MODE_FROM_INTERNAL_STORAGE)) {
             Utils.loadImageFromInternalStorage(imageView, url, Constant.COVER);
         } else if (imageView.getTag().equals(Constant.FIREBASE)) {
             Utils.loadImageFromFirebase(imageView, url, Constant.COVER);

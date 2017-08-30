@@ -96,7 +96,7 @@ public class ReadingBookFragment extends BaseFragment {
         if (readingMode == Constant.MODE_FROM_ASSETS) {
             Utils.loadImageFromAssets(mIvContent, String.valueOf(mBookId), mFileName);
         } else if(readingMode == Constant.MODE_FROM_INTERNAL_STORAGE) {
-            Utils.loadImageFromCache(mIvContent, Constant.STORY + "/" + Constant.SAVE, String.valueOf(mBookId), mFileName);
+            Utils.loadImageFromInternalStorage(mIvContent, String.valueOf(mBookId), mFileName);
         } else if(readingMode == Constant.MODE_FROM_CACHE) {
             Utils.loadImageFromCache(mIvContent, Constant.STORY + "/" + Constant.TEMP, String.valueOf(mBookId), mFileName);
         }

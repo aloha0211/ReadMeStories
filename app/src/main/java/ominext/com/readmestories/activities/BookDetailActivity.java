@@ -150,12 +150,8 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
         mFileDownloadedIndex = 0;
         mTotalFile = mBook.getContent().size() + 2;
         refPath = mBook.getId().toString() + "/" + Constant.AUDIO;
-        if (isSavingBookToInternalStorage) {
-            storePath = Constant.SAVE + "/" + refPath;
-        } else {
-            storePath = Constant.TEMP + "/" + refPath;
-        }
-        Utils.downloadToCacheFolder(this, refPath, storePath, Constant.COVER + Constant.MP3_EXTENSION, mListener);
+        storePath = isSavingBookToInternalStorage ? Constant.SAVE + "/" + refPath : Constant.TEMP + "/" + refPath;
+        downloadFile(refPath, storePath, Constant.COVER + Constant.MP3_EXTENSION);
     }
 
     private int mFileDownloadedIndex;
@@ -174,7 +170,7 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
             } else if (mFileDownloadedIndex == mTotalFile) {
                 // downloadToCacheFolder audio finished, start downloading image
                 refPath = mBook.getId().toString() + "/" + Constant.IMAGE;
-                storePath = Constant.TEMP + "/" + refPath;
+                storePath = isSavingBookToInternalStorage ? Constant.SAVE + "/" + refPath : Constant.TEMP + "/" + refPath;
                 downloadFile(refPath, storePath, Constant.COVER);
             } else if (mFileDownloadedIndex < 2 * mTotalFile - 1) {
                 downloadFile(refPath, storePath, String.valueOf(mFileDownloadedIndex - mTotalFile));
