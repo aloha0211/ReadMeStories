@@ -1,10 +1,12 @@
 package ominext.com.readmestories.utils;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -34,10 +36,16 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.RealmList;
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.listeners.DownloadFileListener;
 import ominext.com.readmestories.models.Book;
+import ominext.com.readmestories.models.BookRealm;
 import ominext.com.readmestories.models.GlideApp;
+import ominext.com.readmestories.realm.RealmController;
+import ominext.com.readmestories.realm.RealmDouble;
+import ominext.com.readmestories.realm.RealmListDouble;
+import ominext.com.readmestories.realm.RealmString;
 import ominext.com.readmestories.utils.network.Connectivity;
 
 import static ominext.com.readmestories.utils.Constant.ASSET_FILE_NAME;
@@ -82,6 +90,12 @@ public class Utils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void loadImageFromInternalStorage(final ImageView imageView, String bookId, String fileName) {
+        String imageFilePath = imageView.getContext().getCacheDir().getPath() + "/"
+                + Constant.STORY + "/" + Constant.SAVE + "/" + bookId + "/" + Constant.IMAGE + "/" + fileName;
+        imageView.setImageBitmap(BitmapFactory.decodeFile(imageFilePath));
     }
 
     public static void loadImageFromCache(final ImageView imageView,String path, String bookId, String fileName) {
@@ -235,7 +249,46 @@ public class Utils {
         String jsonData = loadAssetText(context, ASSET_FILE_NAME);
         Type type = new TypeToken<ArrayList<Book>>() {
         }.getType();
-        return new Gson().<ArrayList<Book>>fromJson(jsonData, type);
+        List<Book> books = new Gson().<ArrayList<Book>>fromJson(jsonData, type);
+        for (Book book: books) {
+            book.setReadingMode(Constant.MODE_FROM_ASSETS);
+        }
+        return books;
+    }
+
+    public static List<Book> getBooksFromRealm(Fragment fragment) {
+        List<BookRealm> localBooks = RealmController.with(fragment).getBooks();
+        List<Book> books = new ArrayList<>();
+        for (BookRealm localBook: localBooks) {
+            Book book = new Book(localBook.getId(), localBook.getTitle(), parseContent(localBook.getContent()), parseTimeFrame(localBook.getTime_frame()));
+            book.setReadingMode(Constant.MODE_FROM_INTERNAL_STORAGE);
+            books.add(book);
+        }
+        return books;
+    }
+
+    public static List<String> parseContent(RealmList<RealmString> content) {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < content.size(); i++) {
+            list.add(content.get(i).getValue());
+        }
+        return list;
+    }
+
+    public static List<List<Double>> parseTimeFrame(RealmList<RealmListDouble> timeFrame) {
+        List<List<Double>> lists = new ArrayList<>();
+        for (int i = 0; i < timeFrame.size(); i++) {
+            lists.add(parseListDouble(timeFrame.get(i).getValue()));
+        }
+        return lists;
+    }
+
+    public static List<Double> parseListDouble(RealmList<RealmDouble> value) {
+        List<Double> list = new ArrayList<>();
+        for (int i = 0; i < value.size(); i++) {
+            list.add(value.get(i).getValue());
+        }
+        return list;
     }
 
     private static String loadAssetText(Context context, String fileName) {

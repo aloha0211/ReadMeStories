@@ -130,7 +130,7 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
                         bookRealm.setTime_frame(timeFrameList);
                         RealmController.with(BookDetailActivity.this).addBook(bookRealm);
                     }
-                    downloadBookAudio();
+                    downloadBookAudioAndImage();
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                     dismissProgressDialog();
@@ -146,7 +146,7 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
         });
     }
 
-    private void downloadBookAudio() {
+    private void downloadBookAudioAndImage() {
         mFileDownloadedIndex = 0;
         mTotalFile = mBook.getContent().size() + 2;
         refPath = mBook.getId().toString() + "/" + Constant.AUDIO;
@@ -184,12 +184,12 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
                 // download all files finished
                 dismissProgressDialog();
                 if (isSavingBookToInternalStorage) {
-                    showAlertDialog(getString(R.string.loading_data), getString(R.string.added_to_your_books));
+                    showAlertDialog(getString(R.string.book_detail), getString(R.string.added_to_your_books));
                 } else {
                     Intent intent = new Intent(BookDetailActivity.this, ReadingBookActivity.class);
                     Bundle data = new Bundle();
+                    mBook.setReadingMode(Constant.MODE_FROM_CACHE);
                     data.putParcelable(Constant.KEY_BOOK, mBook);
-                    intent.putExtra(Constant.KEY_READING_MODE, Constant.MODE_FROM_CACHE);
                     intent.putExtra(Constant.KEY_DATA, data);
                     BookDetailActivity.this.startActivity(intent);
                 }

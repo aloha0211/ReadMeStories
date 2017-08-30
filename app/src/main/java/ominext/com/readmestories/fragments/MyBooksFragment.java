@@ -15,6 +15,7 @@ import ominext.com.readmestories.R;
 import ominext.com.readmestories.adapters.BookAdapter;
 import ominext.com.readmestories.adapters.SimpleDividerItemDecoration;
 import ominext.com.readmestories.models.Book;
+import ominext.com.readmestories.utils.Constant;
 import ominext.com.readmestories.utils.Utils;
 
 import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
@@ -57,6 +58,7 @@ public class MyBooksFragment extends BaseFragment {
 
     private void getMyBooks() {
         mBookList.addAll(Utils.getBooksFromAssets(getContext()));
+        mBookList.addAll(Utils.getBooksFromRealm(this));
         mBookAdapter.notifyDataSetChanged();
     }
 }

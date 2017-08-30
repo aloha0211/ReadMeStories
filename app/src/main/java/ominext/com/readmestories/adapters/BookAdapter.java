@@ -54,7 +54,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
     }
 
     public void onBookClick(View view, final Book book) {
-        ((BaseActivity) mContext).showProgressDialog(mContext.getString(R.string.loading_data));
+        ((BaseActivity) mContext).showProgressDialog("");
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -62,7 +62,6 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
                 Intent intent = new Intent(mContext, ReadingBookActivity.class);
                 Bundle data = new Bundle();
                 data.putParcelable(Constant.KEY_BOOK, book);
-                intent.putExtra(Constant.KEY_READING_MODE, Constant.MODE_FROM_ASSETS);
                 intent.putExtra(Constant.KEY_DATA, data);
                 mContext.startActivity(intent);
             }

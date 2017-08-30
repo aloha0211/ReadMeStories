@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-//import ominext.com.readmestories.BR;
 import ominext.com.readmestories.BR;
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.activities.BaseActivity;

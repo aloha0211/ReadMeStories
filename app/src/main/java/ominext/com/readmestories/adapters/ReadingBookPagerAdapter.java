@@ -24,12 +24,12 @@ public class ReadingBookPagerAdapter extends FragmentStatePagerAdapter {
     private boolean isAutoRead;
     private int readingMode;
 
-    public ReadingBookPagerAdapter(FragmentManager fm, Book book, View.OnClickListener listener, boolean isAutoRead, int readingMode) {
+    public ReadingBookPagerAdapter(FragmentManager fm, Book book, View.OnClickListener listener, boolean isAutoRead) {
         super(fm);
         this.mBook = book;
         this.mListener = listener;
         this.isAutoRead = isAutoRead;
-        this.readingMode = readingMode;
+        this.readingMode = book.getReadingMode();
     }
 
     @Override

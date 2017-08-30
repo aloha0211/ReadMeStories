@@ -4,7 +4,6 @@ import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
-import ominext.com.readmestories.realm.RealmDouble;
 
 /**
  * Created by LuongHH on 8/3/2017.
@@ -13,6 +12,8 @@ import ominext.com.readmestories.realm.RealmDouble;
 public class RealmListDouble extends RealmObject {
 
     private RealmList<RealmDouble> value;
+
+    public RealmListDouble() {}
 
     public RealmListDouble(List<Double> value) {
         this.value = new RealmList<>();

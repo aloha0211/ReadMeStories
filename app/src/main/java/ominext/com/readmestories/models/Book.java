@@ -33,6 +33,8 @@ public class Book implements Parcelable {
 
     private String illustrator;
 
+    private Integer readingMode;
+
     public Book() {}
 
     public Book(Integer id, String title, List<String> content, List<List<Double>> timeFrame) {
@@ -50,6 +52,7 @@ public class Book implements Parcelable {
         in.readList(timeFrame, Book.class.getClassLoader());
         author = in.readString();
         illustrator = in.readString();
+        readingMode = in.readInt();
     }
 
     public Integer getId() {
@@ -100,6 +103,14 @@ public class Book implements Parcelable {
         this.illustrator = illustrator;
     }
 
+    public Integer getReadingMode() {
+        return readingMode;
+    }
+
+    public void setReadingMode(int readingMode) {
+        this.readingMode = readingMode;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -113,6 +124,7 @@ public class Book implements Parcelable {
         parcel.writeList(timeFrame);
         parcel.writeString(author);
         parcel.writeString(illustrator);
+        parcel.writeInt(readingMode);
     }
 
     public static final Creator<Book> CREATOR = new Creator<Book>() {
