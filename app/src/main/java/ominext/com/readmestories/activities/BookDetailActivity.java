@@ -2,6 +2,7 @@ package ominext.com.readmestories.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -31,6 +32,8 @@ import ominext.com.readmestories.utils.network.Connectivity;
 
 public class BookDetailActivity extends BaseActivity implements View.OnClickListener {
 
+    TextView btnAddBook;
+
     private Book mBook;
 
     private boolean isSavingBookToInternalStorage;  // false if download file and save to cache folder
@@ -52,7 +55,7 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
         TextView tvAuthor = (TextView) findViewById(R.id.tv_book_author);
         TextView tvIllustrator = (TextView) findViewById(R.id.tv_book_illustrator);
         TextView btnRead = (TextView) findViewById(R.id.btn_read);
-        TextView btnAddBook = (TextView) findViewById(R.id.btn_add_to_my_books);
+        btnAddBook = (TextView) findViewById(R.id.btn_add_to_my_books);
         ImageView ivBook = (ImageView) findViewById(R.id.iv_book);
 
         Intent intent = getIntent();
@@ -65,6 +68,10 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
 
         btnRead.setOnClickListener(this);
         btnAddBook.setOnClickListener(this);
+        if (RealmController.with(this).getBook(mBook.getId()) != null) {
+            btnAddBook.setBackgroundResource(android.R.color.darker_gray);
+            btnAddBook.setEnabled(false);
+        }
     }
 
     @Override
@@ -76,9 +83,28 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.btn_read) {
-            showProgressDialog(getString(R.string.loading_data));
-            isSavingBookToInternalStorage = false;
-            getBookContentFromFirebase();
+            final BookRealm localBook = RealmController.with(this).getBook(mBook.getId());
+            if (localBook != null) {        // read book from internal storage
+                showProgressDialog("");
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Book book = new Book(mBook.getId(), mBook.getTitle(), Utils.parseContent(localBook.getContent()), Utils.parseTimeFrame(localBook.getTime_frame()));
+                        book.setReadingMode(Constant.MODE_FROM_INTERNAL_STORAGE);
+                        dismissProgressDialog();
+                        Intent intent = new Intent(BookDetailActivity.this, ReadingBookActivity.class);
+                        Bundle data = new Bundle();
+                        data.putParcelable(Constant.KEY_BOOK, book);
+                        intent.putExtra(Constant.KEY_DATA, data);
+                        BookDetailActivity.this.startActivity(intent);
+                    }
+                }, 500);
+            } else {                    // download book into cache folder and read
+                showProgressDialog(getString(R.string.loading_data));
+                isSavingBookToInternalStorage = false;
+                getBookContentFromFirebase();
+
+            }
         } else if (view.getId() == R.id.btn_add_to_my_books) {
             showProgressDialog(getString(R.string.loading_data));
             isSavingBookToInternalStorage = true;
@@ -180,7 +206,9 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
                 // download all files finished
                 dismissProgressDialog();
                 if (isSavingBookToInternalStorage) {
-                    showAlertDialog(getString(R.string.book_detail), getString(R.string.added_to_your_books));
+                    showAlertDialog(getString(R.string.book_detail), getString(R.string.added_to_your_books), R.color.green);
+                    btnAddBook.setBackgroundResource(android.R.color.darker_gray);
+                    btnAddBook.setEnabled(false);
                 } else {
                     Intent intent = new Intent(BookDetailActivity.this, ReadingBookActivity.class);
                     Bundle data = new Bundle();

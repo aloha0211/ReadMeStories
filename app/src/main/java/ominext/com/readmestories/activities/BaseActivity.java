@@ -2,6 +2,7 @@ package ominext.com.readmestories.activities;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -46,5 +47,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void showAlertDialog(String title, String content) {
         DialogUtils.showAlertDialog(this, title, content);
+    }
+
+    public void showAlertDialog(String title, String content, @ColorRes int resColor) {
+        DialogUtils.showAlertDialog(this, title, content, resColor);
     }
 }

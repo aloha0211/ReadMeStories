@@ -58,7 +58,7 @@ public class MyBooksFragment extends BaseFragment {
 
     private void getMyBooks() {
         mBookList.addAll(Utils.getBooksFromAssets(getContext()));
-        mBookList.addAll(Utils.getBooksFromRealm(this));
+        mBookList.addAll(Utils.getBooksFromRealm(getActivity()));
         mBookAdapter.notifyDataSetChanged();
     }
 }

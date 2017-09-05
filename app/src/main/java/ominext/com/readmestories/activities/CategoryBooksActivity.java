@@ -6,6 +6,10 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import ominext.com.readmestories.R;
@@ -30,6 +34,15 @@ public class CategoryBooksActivity extends BaseActivity {
         Intent data = getIntent();
         setTitle(data.getStringExtra(Constant.KEY_TITLE));
         List<Book> books = data.getParcelableArrayListExtra(Constant.KEY_BOOKS);
+        List<Book> localBooks = new ArrayList<>();
+        final List<Integer> bookIds = new ArrayList<>();
+        localBooks.addAll(Utils.getBooksFromAssets(this));
+        localBooks.addAll(Utils.getBooksFromRealm(this));
+        for (int i = 0; i < localBooks.size(); i++) {
+            bookIds.add(localBooks.get(i).getId());
+        }
+//        List<Book> bookList = Stream.of(books)
+//                .filter(e -> bookIds.contains(e.getId())).collect(Collectors.toList());
         replaceFragment(BooksByCategoryFragment.newInstance(books));
     }
 

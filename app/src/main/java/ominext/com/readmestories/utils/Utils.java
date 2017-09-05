@@ -1,5 +1,6 @@
 package ominext.com.readmestories.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -17,7 +18,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.squareup.picasso.Picasso;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -63,7 +63,7 @@ public class Utils {
         imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                Picasso.with(imageView.getContext().getApplicationContext())
+                GlideApp.with(imageView.getContext().getApplicationContext())
                         .load(uri)
                         .placeholder(R.drawable.background)
                         .into(imageView);
@@ -256,8 +256,8 @@ public class Utils {
         return books;
     }
 
-    public static List<Book> getBooksFromRealm(Fragment fragment) {
-        List<BookRealm> localBooks = RealmController.with(fragment).getBooks();
+    public static List<Book> getBooksFromRealm(Activity activity) {
+        List<BookRealm> localBooks = RealmController.with(activity).getBooks();
         List<Book> books = new ArrayList<>();
         for (BookRealm localBook: localBooks) {
             Book book = new Book(localBook.getId(), localBook.getTitle(), parseContent(localBook.getContent()), parseTimeFrame(localBook.getTime_frame()));

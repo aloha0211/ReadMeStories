@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.support.annotation.ColorRes;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -19,7 +21,7 @@ import ominext.com.readmestories.R;
 
 public class DialogUtils {
 
-    public static void showAlertDialog(final Context context, String title, String content, final View.OnClickListener onClickListener) {
+    public static void showAlertDialog(final Context context, String title, String content, @ColorRes int resColor, final View.OnClickListener onClickListener) {
 
         final Dialog dialog = new Dialog(context);
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -36,6 +38,9 @@ public class DialogUtils {
         }
         TextView tvMessage = (TextView) dialog.findViewById(R.id.message_text_view);
         tvMessage.setText(content);
+        if (resColor != 0) {
+            tvMessage.setTextColor(ContextCompat.getColor(context, resColor));
+        }
 
         dialog.getWindow().setLayout(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 
@@ -56,11 +61,15 @@ public class DialogUtils {
     }
 
     public static void showAlertDialog(Context context, String content, final View.OnClickListener onClickListener) {
-        showAlertDialog(context, null, content, onClickListener);
+        showAlertDialog(context, null, content, 0, onClickListener);
+    }
+
+    public static void showAlertDialog(Context context, String title, String content, @ColorRes int resColor) {
+        showAlertDialog(context, title, content, resColor, null);
     }
 
     public static void showAlertDialog(Context context, String title, String content) {
-        showAlertDialog(context, title, content, null);
+        showAlertDialog(context, title, content, 0, null);
     }
 
     public static void showAlertDialog(Context context, String content) {
