@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +16,7 @@ import java.util.List;
 import ominext.com.readmestories.BR;
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.activities.BaseActivity;
-import ominext.com.readmestories.activities.ReadingBookActivity;
+import ominext.com.readmestories.activities.BookDetailActivity;
 import ominext.com.readmestories.models.Book;
 import ominext.com.readmestories.utils.Constant;
 
@@ -26,17 +26,17 @@ import ominext.com.readmestories.utils.Constant;
 
 public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder> {
 
-    private Context mContext;
+    private Fragment mFragment;
     private List<Book> mBooks;
 
-    public BookAdapter(Context context, List<Book> list) {
-        this.mContext = context;
+    public BookAdapter(Fragment fragment, List<Book> list) {
+        this.mFragment = fragment;
         this.mBooks = list;
     }
 
     @Override
     public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(mContext).inflate(R.layout.item_book, parent, false);
+        View itemView = LayoutInflater.from(mFragment.getContext()).inflate(R.layout.item_book, parent, false);
         return new BookViewHolder(itemView);
     }
 
@@ -54,18 +54,11 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
     }
 
     public void onBookClick(View view, final Book book) {
-        ((BaseActivity) mContext).showProgressDialog("");
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                ((BaseActivity) mContext).dismissProgressDialog();
-                Intent intent = new Intent(mContext, ReadingBookActivity.class);
-                Bundle data = new Bundle();
-                data.putParcelable(Constant.KEY_BOOK, book);
-                intent.putExtra(Constant.KEY_DATA, data);
-                mContext.startActivity(intent);
-            }
-        }, 500);
+        Intent intent = new Intent(mFragment.getContext(), BookDetailActivity.class);
+        Bundle data = new Bundle();
+        data.putParcelable(Constant.KEY_BOOK, book);
+        intent.putExtra(Constant.KEY_DATA, data);
+        mFragment.startActivityForResult(intent, 100);
     }
 
     class BookViewHolder extends RecyclerView.ViewHolder {

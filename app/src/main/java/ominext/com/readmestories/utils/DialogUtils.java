@@ -75,4 +75,48 @@ public class DialogUtils {
     public static void showAlertDialog(Context context, String content) {
         showAlertDialog(context, null, content);
     }
+
+    public static void showConfirmationDialog(final Context context, String title, String content,
+                                              String positiveButtonText, String negativeButtonText,
+                                              final View.OnClickListener onClickListener) {
+        final Dialog dialog = new Dialog(context);
+        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        dialog.setContentView(R.layout.confirmation_dialog_layout);
+        dialog.setCancelable(false);
+        TextView tvTitle = (TextView) dialog.findViewById(R.id.title_text_view);
+        if (title == null) {
+            tvTitle.setVisibility(View.GONE);
+        } else {
+            tvTitle.setText(title);
+        }
+        TextView tvMessage = (TextView) dialog.findViewById(R.id.message_text_view);
+        tvMessage.setText(content);
+        dialog.getWindow().setLayout(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+        final Button btnOk = (Button) dialog.findViewById(R.id.btn_ok);
+        btnOk.setText(positiveButtonText);
+        final Button btnCancel = (Button) dialog.findViewById(R.id.btn_cancel);
+        btnCancel.setText(negativeButtonText);
+
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                onClickListener.onClick(btnOk);
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
 }

@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.utils.DialogUtils;
@@ -51,5 +52,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void showAlertDialog(String title, String content, @ColorRes int resColor) {
         DialogUtils.showAlertDialog(this, title, content, resColor);
+    }
+
+    public void showConfirmationDialog(String title, String content,
+                                       final View.OnClickListener onClickListener) {
+        DialogUtils.showConfirmationDialog(this, title, content, getString(R.string.ok), getString(R.string.cancel), onClickListener);
     }
 }

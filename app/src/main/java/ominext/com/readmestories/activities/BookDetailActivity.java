@@ -4,12 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -64,13 +66,25 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
         tvTitle.setText(mBook.getTitle());
         tvAuthor.setText(mBook.getAuthor());
         tvIllustrator.setText(mBook.getIllustrator());
-        Utils.loadImageFromCache(ivBook, Constant.STORY + "/" + Constant.CATEGORY, mBook.getId().toString(), Constant.COVER);
+        switch (mBook.getReadingMode()) {
+            case Constant.MODE_FROM_ASSETS:
+                Utils.loadImageFromAssets(ivBook, String.valueOf(mBook.getId()), Constant.COVER);
+                btnAddBook.setVisibility(View.GONE);
+                break;
+            case Constant.MODE_FROM_CACHE:
+                Utils.loadImageFromCache(ivBook, Constant.STORY + "/" + Constant.CATEGORY, mBook.getId().toString(), Constant.COVER);
+                break;
+            case Constant.MODE_FROM_INTERNAL_STORAGE:
+                Utils.loadImageFromCache(ivBook, Constant.STORY + "/" + Constant.CATEGORY, mBook.getId().toString(), Constant.COVER);
+                Utils.loadImageFromInternalStorage(ivBook, String.valueOf(mBook.getId()), Constant.COVER);
+                break;
+        }
 
         btnRead.setOnClickListener(this);
         btnAddBook.setOnClickListener(this);
         if (RealmController.with(this).getBook(mBook.getId()) != null) {
-            btnAddBook.setBackgroundResource(android.R.color.darker_gray);
-            btnAddBook.setEnabled(false);
+            btnAddBook.setText(R.string.remove_from_my_books);
+            btnAddBook.setTextColor(ContextCompat.getColor(BookDetailActivity.this, R.color.red));
         }
     }
 
@@ -83,42 +97,76 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.btn_read) {
-            final BookRealm localBook = RealmController.with(this).getBook(mBook.getId());
-            if (localBook != null) {        // read book from internal storage
-                showProgressDialog("");
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Book book = new Book(mBook.getId(), mBook.getTitle(), Utils.parseContent(localBook.getContent()), Utils.parseTimeFrame(localBook.getTime_frame()));
-                        book.setReadingMode(Constant.MODE_FROM_INTERNAL_STORAGE);
-                        dismissProgressDialog();
-                        Intent intent = new Intent(BookDetailActivity.this, ReadingBookActivity.class);
-                        Bundle data = new Bundle();
-                        data.putParcelable(Constant.KEY_BOOK, book);
-                        intent.putExtra(Constant.KEY_DATA, data);
-                        BookDetailActivity.this.startActivity(intent);
-                    }
-                }, 500);
-            } else {                    // download book into cache folder and read
-                showProgressDialog(getString(R.string.loading_data));
-                isSavingBookToInternalStorage = false;
-                getBookContentFromFirebase();
-
+            switch (mBook.getReadingMode()) {
+                case Constant.MODE_FROM_ASSETS:
+                    showProgressDialog("");
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            dismissProgressDialog();
+                            Intent intent = new Intent(BookDetailActivity.this, ReadingBookActivity.class);
+                            Bundle data = new Bundle();
+                            data.putParcelable(Constant.KEY_BOOK, mBook);
+                            intent.putExtra(Constant.KEY_DATA, data);
+                            BookDetailActivity.this.startActivity(intent);
+                        }
+                    }, 500);
+                    break;
+                case Constant.MODE_FROM_CACHE:                      // download book into cache folder and read
+                    showProgressDialog(getString(R.string.loading_data));
+                    isSavingBookToInternalStorage = false;
+                    getBookContentFromFirebase();
+                    break;
+                case Constant.MODE_FROM_INTERNAL_STORAGE:           // read book from internal storage
+                    showProgressDialog("");
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            dismissProgressDialog();
+                            Intent intent = new Intent(BookDetailActivity.this, ReadingBookActivity.class);
+                            Bundle data = new Bundle();
+                            data.putParcelable(Constant.KEY_BOOK, mBook);
+                            intent.putExtra(Constant.KEY_DATA, data);
+                            BookDetailActivity.this.startActivity(intent);
+                        }
+                    }, 500);
+                    break;
             }
         } else if (view.getId() == R.id.btn_add_to_my_books) {
-            showProgressDialog(getString(R.string.loading_data));
-            isSavingBookToInternalStorage = true;
-            getBookContentFromFirebase();
+            if (RealmController.with(this).getBook(mBook.getId()) == null) {        // add to my books
+                showProgressDialog(getString(R.string.loading_data));
+                isSavingBookToInternalStorage = true;
+                getBookContentFromFirebase();
+            } else {                                                                // remove from my books
+                showConfirmationDialog(getString(R.string.delete_book), getString(R.string.delete_book_message), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        RealmController.with(BookDetailActivity.this).deleteBook(mBook.getId());
+                        String storagePath = getFilesDir().getPath() + "/" + Constant.STORY + "/" + Constant.SAVE + "/" + mBook.getId();
+                        Utils.deleteInternalStorageDir(BookDetailActivity.this, storagePath);
+                        Toast.makeText(BookDetailActivity.this, getString(R.string.removed), Toast.LENGTH_LONG).show();
+                        btnAddBook.setText(R.string.add_to_my_books);
+                        btnAddBook.setTextColor(ContextCompat.getColor(BookDetailActivity.this, android.R.color.white));
+                    }
+                });
+            }
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
+            setResult(100);
             finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResult(100);
+        finish();
     }
 
     private void getBookContentFromFirebase() {
@@ -207,8 +255,9 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
                 dismissProgressDialog();
                 if (isSavingBookToInternalStorage) {
                     showAlertDialog(getString(R.string.book_detail), getString(R.string.added_to_your_books), R.color.green);
-                    btnAddBook.setBackgroundResource(android.R.color.darker_gray);
-                    btnAddBook.setEnabled(false);
+                    btnAddBook.setText(R.string.remove_from_my_books);
+                    btnAddBook.setTextColor(ContextCompat.getColor(BookDetailActivity.this, R.color.red));
+                    mBook.setReadingMode(Constant.MODE_FROM_INTERNAL_STORAGE);
                 } else {
                     Intent intent = new Intent(BookDetailActivity.this, ReadingBookActivity.class);
                     Bundle data = new Bundle();

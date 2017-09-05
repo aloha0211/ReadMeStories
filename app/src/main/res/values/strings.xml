@@ -8,8 +8,11 @@
     <string name="illustrator">illustrator</string>
     <string name="book_detail">Book detail</string>
     <string name="add_to_my_books">Add to My Books</string>
+    <string name="remove_from_my_books">Remove from My Books</string>
     <string name="added_to_your_books">Added to your Books</string>
     <string name="add_book">Add Book</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -20,4 +23,7 @@
     <string name="try_again">Try Again</string>
     <string name="load_data_err_msg">Failed to load data.</string>
     <string name="error">Error</string>
+    <string name="delete_book">Delete Book</string>
+    <string name="delete_book_message">Are you sure you want to delete this book?</string>
+    <string name="removed">Removed</string>
 </resources>

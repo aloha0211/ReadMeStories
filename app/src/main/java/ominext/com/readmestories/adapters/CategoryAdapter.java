@@ -99,6 +99,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
                     book.setTitle(response.getTitle());
                     book.setAuthor(response.getAuthor());
                     book.setIllustrator(response.getIllustrator());
+                    book.setReadingMode(Constant.MODE_FROM_CACHE);
                     books.add(book);
                 }
                 intent.putExtra(Constant.KEY_TITLE, mSelectedCategory.getTitle());

@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -98,13 +97,13 @@ public class Utils {
         imageView.setImageBitmap(BitmapFactory.decodeFile(imageFilePath));
     }
 
-    public static void loadImageFromCache(final ImageView imageView,String path, String bookId, String fileName) {
+    public static void loadImageFromCache(final ImageView imageView, String path, String bookId, String fileName) {
         File cDir = imageView.getContext().getCacheDir();
         String filePath = cDir.getPath() + "/" + path + "/" + bookId + "/" + Constant.IMAGE + "/" + fileName;
         imageView.setImageDrawable(Drawable.createFromPath(filePath));
     }
 
-    public static void downloadToCacheFolder(Context context, String refPath, String storePath , String fileName, final DownloadFileListener listener) {
+    public static void downloadToCacheFolder(Context context, String refPath, String storePath, String fileName, final DownloadFileListener listener) {
 
         File cDir = context.getCacheDir();
         File cacheFolder = new File(cDir.getPath() + "/" + Constant.STORY + "/" + storePath);
@@ -166,7 +165,7 @@ public class Utils {
         }, 30000);
     }
 
-    public static void downloadToInternalStorage(Context context, String refPath, String storePath , String fileName, final DownloadFileListener listener) {
+    public static void downloadToInternalStorage(Context context, String refPath, String storePath, String fileName, final DownloadFileListener listener) {
 
         File internalDir = context.getFilesDir();
         File savedDir = new File(internalDir.getPath() + "/" + Constant.STORY + "/" + storePath);
@@ -235,6 +234,13 @@ public class Utils {
             deleteDir(cacheFile);
     }
 
+    public static void deleteInternalStorageDir(Context context, String filePath) {
+        File cDir = context.getFilesDir();
+        File cacheFile = new File(cDir.getPath() + "/" + filePath);
+        if (cacheFile.exists())
+            deleteDir(cacheFile);
+    }
+
     public static void deleteDir(File dir) {
         if (dir != null && dir.isDirectory()) {
             String[] children = dir.list();
@@ -249,17 +255,13 @@ public class Utils {
         String jsonData = loadAssetText(context, ASSET_FILE_NAME);
         Type type = new TypeToken<ArrayList<Book>>() {
         }.getType();
-        List<Book> books = new Gson().<ArrayList<Book>>fromJson(jsonData, type);
-        for (Book book: books) {
-            book.setReadingMode(Constant.MODE_FROM_ASSETS);
-        }
-        return books;
+        return new Gson().<ArrayList<Book>>fromJson(jsonData, type);
     }
 
     public static List<Book> getBooksFromRealm(Activity activity) {
         List<BookRealm> localBooks = RealmController.with(activity).getBooks();
         List<Book> books = new ArrayList<>();
-        for (BookRealm localBook: localBooks) {
+        for (BookRealm localBook : localBooks) {
             Book book = new Book(localBook.getId(), localBook.getTitle(), parseContent(localBook.getContent()), parseTimeFrame(localBook.getTime_frame()));
             book.setReadingMode(Constant.MODE_FROM_INTERNAL_STORAGE);
             books.add(book);

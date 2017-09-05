@@ -16,22 +16,24 @@ import java.util.List;
 public class Book implements Parcelable {
 
     @SerializedName("id")
-    @Expose
     private Integer id;
+
     @SerializedName("title")
-    @Expose
     private String title;
+
     @SerializedName("content")
-    @Expose
     private List<String> content = null;
+
     @SerializedName("time_frame")
-    @Expose
     private List<List<Double>> timeFrame = null;
 
+    @SerializedName("author")
     private String author;
 
+    @SerializedName("illustrator")
     private String illustrator;
 
+    @SerializedName("readingMode")
     private int readingMode;
 
     public Book() {

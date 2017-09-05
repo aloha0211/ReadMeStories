@@ -1,5 +1,6 @@
 package ominext.com.readmestories.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
@@ -50,13 +51,20 @@ public class MyBooksFragment extends BaseFragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new SimpleDividerItemDecoration(getContext()));
         mBookList = new ArrayList<>();
-        mBookAdapter = new BookAdapter(getContext(), mBookList);
+        mBookAdapter = new BookAdapter(this, mBookList);
         recyclerView.setAdapter(mBookAdapter);
 
         getMyBooks();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        getMyBooks();
+    }
+
     private void getMyBooks() {
+        mBookList.clear();
         mBookList.addAll(Utils.getBooksFromAssets(getContext()));
         mBookList.addAll(Utils.getBooksFromRealm(getActivity()));
         mBookAdapter.notifyDataSetChanged();

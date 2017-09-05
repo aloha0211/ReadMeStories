@@ -6,9 +6,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import com.annimon.stream.Collectors;
-import com.annimon.stream.Stream;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +16,8 @@ import ominext.com.readmestories.utils.Constant;
 import ominext.com.readmestories.utils.Utils;
 
 public class CategoryBooksActivity extends BaseActivity {
+
+    private List<Book> mBooks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +32,11 @@ public class CategoryBooksActivity extends BaseActivity {
         }
         Intent data = getIntent();
         setTitle(data.getStringExtra(Constant.KEY_TITLE));
-        List<Book> books = data.getParcelableArrayListExtra(Constant.KEY_BOOKS);
+        mBooks = data.getParcelableArrayListExtra(Constant.KEY_BOOKS);
+        filterData();
+    }
+
+    private void filterData() {
         List<Book> localBooks = new ArrayList<>();
         final List<Integer> bookIds = new ArrayList<>();
         localBooks.addAll(Utils.getBooksFromAssets(this));
@@ -41,9 +44,20 @@ public class CategoryBooksActivity extends BaseActivity {
         for (int i = 0; i < localBooks.size(); i++) {
             bookIds.add(localBooks.get(i).getId());
         }
-//        List<Book> bookList = Stream.of(books)
-//                .filter(e -> bookIds.contains(e.getId())).collect(Collectors.toList());
-        replaceFragment(BooksByCategoryFragment.newInstance(books));
+        List<Book> bookList = new ArrayList<>();
+        for (int i = 0; i < mBooks.size(); i++) {
+            Book book = mBooks.get(i);
+            if (!bookIds.contains(book.getId())) {
+                bookList.add(book);
+            }
+        }
+        replaceFragment(BooksByCategoryFragment.newInstance(bookList));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        filterData();
     }
 
     @Override

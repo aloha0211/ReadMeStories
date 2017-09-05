@@ -13,6 +13,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import ominext.com.readmestories.R;
+import ominext.com.readmestories.activities.BaseActivity;
 import ominext.com.readmestories.activities.BookDetailActivity;
 import ominext.com.readmestories.models.Book;
 import ominext.com.readmestories.utils.Constant;
@@ -62,7 +63,7 @@ public class BookByCategoryAdapter extends RecyclerView.Adapter<BookByCategoryAd
         Bundle data = new Bundle();
         data.putParcelable(Constant.KEY_BOOK, book);
         intent.putExtra(Constant.KEY_DATA, data);
-        mContext.startActivity(intent);
+        ((BaseActivity)mContext).startActivityForResult(intent, 100);
     }
 
     class BookViewHolder extends RecyclerView.ViewHolder {
