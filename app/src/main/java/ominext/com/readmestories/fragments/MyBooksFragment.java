@@ -11,12 +11,12 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+//import java.util.function.Predicate;
 
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.adapters.BookAdapter;
 import ominext.com.readmestories.adapters.SimpleDividerItemDecoration;
 import ominext.com.readmestories.models.Book;
-import ominext.com.readmestories.utils.Constant;
 import ominext.com.readmestories.utils.Utils;
 
 import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
@@ -68,5 +68,13 @@ public class MyBooksFragment extends BaseFragment {
         mBookList.addAll(Utils.getBooksFromAssets(getContext()));
         mBookList.addAll(Utils.getBooksFromRealm(getActivity()));
         mBookAdapter.notifyDataSetChanged();
+    }
+
+    public void filterBook(final String name) {
+        mBookList.clear();
+        mBookList.addAll(Utils.getBooksFromAssets(getContext()));
+        mBookList.addAll(Utils.getBooksFromRealm(getActivity()));
+//        Predicate<Book> bookPredicate = b -> !b.getTitle().contains(name) && !b.getAuthor().contains(name);
+//        mBookList.removeIf(bookPredicate);
     }
 }
