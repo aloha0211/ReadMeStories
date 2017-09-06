@@ -263,6 +263,8 @@ public class Utils {
         List<Book> books = new ArrayList<>();
         for (BookRealm localBook : localBooks) {
             Book book = new Book(localBook.getId(), localBook.getTitle(), parseContent(localBook.getContent()), parseTimeFrame(localBook.getTime_frame()));
+            book.setAuthor(localBook.getAuthor());
+            book.setIllustrator(localBook.getIllustrator());
             book.setReadingMode(Constant.MODE_FROM_INTERNAL_STORAGE);
             books.add(book);
         }

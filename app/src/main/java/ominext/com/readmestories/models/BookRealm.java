@@ -21,6 +21,10 @@ public class BookRealm extends RealmObject {
 
     private RealmList<RealmListDouble> time_frame = null;
 
+    private String author;
+
+    private String illustrator;
+
     public BookRealm() {
     }
 
@@ -54,5 +58,21 @@ public class BookRealm extends RealmObject {
 
     public void setTime_frame(RealmList<RealmListDouble> time_frame) {
         this.time_frame = time_frame;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getIllustrator() {
+        return illustrator;
+    }
+
+    public void setIllustrator(String illustrator) {
+        this.illustrator = illustrator;
     }
 }

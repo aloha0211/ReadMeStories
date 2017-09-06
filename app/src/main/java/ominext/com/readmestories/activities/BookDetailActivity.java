@@ -138,7 +138,7 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
                 isSavingBookToInternalStorage = true;
                 getBookContentFromFirebase();
             } else {                                                                // remove from my books
-                showConfirmationDialog(getString(R.string.delete_book), getString(R.string.delete_book_message), new View.OnClickListener() {
+                showConfirmationDialog(getString(R.string.remove_book), getString(R.string.remove_book_message), new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         RealmController.with(BookDetailActivity.this).deleteBook(mBook.getId());
@@ -191,6 +191,8 @@ public class BookDetailActivity extends BaseActivity implements View.OnClickList
                         BookRealm bookRealm = new BookRealm();
                         bookRealm.setId(mBook.getId());
                         bookRealm.setTitle(mBook.getTitle());
+                        bookRealm.setAuthor(mBook.getAuthor());
+                        bookRealm.setIllustrator(mBook.getIllustrator());
                         RealmList<RealmString> contents = new RealmList<>();
                         for (int i = 0; i < mBook.getContent().size(); i++) {
                             contents.add(new RealmString(mBook.getContent().get(i)));

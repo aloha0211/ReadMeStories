@@ -23,7 +23,7 @@
     <string name="try_again">Try Again</string>
     <string name="load_data_err_msg">Failed to load data.</string>
     <string name="error">Error</string>
-    <string name="delete_book">Delete Book</string>
-    <string name="delete_book_message">Are you sure you want to delete this book?</string>
+    <string name="remove_book">Remove Book</string>
+    <string name="remove_book_message">Are you sure you want to remove this book?</string>
     <string name="removed">Removed</string>
 </resources>
