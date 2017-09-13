@@ -3,7 +3,6 @@ package ominext.com.readmestories.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -15,24 +14,29 @@ import java.util.List;
 
 public class Book implements Parcelable {
 
+    public static final Creator<Book> CREATOR = new Creator<Book>() {
+        @Override
+        public Book createFromParcel(Parcel in) {
+            return new Book(in);
+        }
+
+        @Override
+        public Book[] newArray(int size) {
+            return new Book[size];
+        }
+    };
     @SerializedName("id")
     private Integer id;
-
     @SerializedName("title")
     private String title;
-
     @SerializedName("content")
     private List<String> content = null;
-
     @SerializedName("time_frame")
     private List<List<Double>> timeFrame = null;
-
     @SerializedName("author")
     private String author;
-
     @SerializedName("illustrator")
     private String illustrator;
-
     @SerializedName("readingMode")
     private int readingMode;
 
@@ -128,16 +132,4 @@ public class Book implements Parcelable {
         parcel.writeString(illustrator);
         parcel.writeInt(readingMode);
     }
-
-    public static final Creator<Book> CREATOR = new Creator<Book>() {
-        @Override
-        public Book createFromParcel(Parcel in) {
-            return new Book(in);
-        }
-
-        @Override
-        public Book[] newArray(int size) {
-            return new Book[size];
-        }
-    };
 }

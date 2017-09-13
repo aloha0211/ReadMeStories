@@ -14,7 +14,7 @@ public class ViewBindingAdapter {
 
     @BindingAdapter({"bind:url"})
     public static void loadImage(final ImageView imageView, String url) {
-        if (imageView.getTag()== null) {
+        if (imageView.getTag() == null) {
             Utils.loadImage(imageView, url);
         } else if (imageView.getTag().equals(Constant.MODE_FROM_ASSETS)) {
             Utils.loadImageFromAssets(imageView, url, Constant.COVER);

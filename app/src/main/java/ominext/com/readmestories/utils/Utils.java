@@ -59,20 +59,10 @@ public class Utils {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         final StorageReference imageRef = storageRef.child(Constant.STORY + "/" + bookId + "/" + Constant.IMAGE + "/" + fileName);
-        imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                GlideApp.with(imageView.getContext().getApplicationContext())
-                        .load(uri)
-                        .placeholder(R.drawable.background)
-                        .into(imageView);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e("Firebase", "Load Image failed: " + e.getMessage());
-            }
-        });
+        imageRef.getDownloadUrl().addOnSuccessListener(uri -> GlideApp.with(imageView.getContext().getApplicationContext())
+                .load(uri)
+                .placeholder(R.drawable.background)
+                .into(imageView)).addOnFailureListener(e -> Log.e("Firebase", "Load Image failed: " + e.getMessage()));
     }
 
     public static void loadImage(final ImageView imageView, String url) {
@@ -135,32 +125,23 @@ public class Utils {
         final boolean[] isConnected = {false};
 
         final FileDownloadTask downloadTask = pathReference.getFile(tempFile);
-        final OnSuccessListener onSuccessListener = new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                // Successfully downloaded data to local file
-                isConnected[0] = true;
-                listener.onDownloadSuccessful(tempFile.getPath());
-            }
+        final OnSuccessListener onSuccessListener = (OnSuccessListener<FileDownloadTask.TaskSnapshot>) taskSnapshot -> {
+            // Successfully downloaded data to local file
+            isConnected[0] = true;
+            listener.onDownloadSuccessful(tempFile.getPath());
         };
-        final OnFailureListener onFailureListener = new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                isConnected[0] = true;
-                // Handle failed download
-                listener.onDownloadFailed();
-            }
+        final OnFailureListener onFailureListener = exception -> {
+            isConnected[0] = true;
+            // Handle failed download
+            listener.onDownloadFailed();
         };
         downloadTask.addOnSuccessListener(onSuccessListener);
         downloadTask.addOnFailureListener(onFailureListener);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!isConnected[0]) {
-                    downloadTask.removeOnFailureListener(onFailureListener);
-                    downloadTask.removeOnSuccessListener(onSuccessListener);
-                    listener.onDownloadFailed();
-                }
+        new Handler().postDelayed(() -> {
+            if (!isConnected[0]) {
+                downloadTask.removeOnFailureListener(onFailureListener);
+                downloadTask.removeOnSuccessListener(onSuccessListener);
+                listener.onDownloadFailed();
             }
         }, 30000);
     }
@@ -197,32 +178,23 @@ public class Utils {
         final boolean[] isConnected = {false};
 
         final FileDownloadTask downloadTask = pathReference.getFile(tempFile);
-        final OnSuccessListener onSuccessListener = new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                // Successfully downloaded data to local file
-                isConnected[0] = true;
-                listener.onDownloadSuccessful(tempFile.getPath());
-            }
+        final OnSuccessListener onSuccessListener = (OnSuccessListener<FileDownloadTask.TaskSnapshot>) taskSnapshot -> {
+            // Successfully downloaded data to local file
+            isConnected[0] = true;
+            listener.onDownloadSuccessful(tempFile.getPath());
         };
-        final OnFailureListener onFailureListener = new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                isConnected[0] = true;
-                // Handle failed downloadToCacheFolder
-                listener.onDownloadFailed();
-            }
+        final OnFailureListener onFailureListener = exception -> {
+            isConnected[0] = true;
+            // Handle failed downloadToCacheFolder
+            listener.onDownloadFailed();
         };
         downloadTask.addOnSuccessListener(onSuccessListener);
         downloadTask.addOnFailureListener(onFailureListener);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!isConnected[0]) {
-                    downloadTask.removeOnFailureListener(onFailureListener);
-                    downloadTask.removeOnSuccessListener(onSuccessListener);
-                    listener.onDownloadFailed();
-                }
+        new Handler().postDelayed(() -> {
+            if (!isConnected[0]) {
+                downloadTask.removeOnFailureListener(onFailureListener);
+                downloadTask.removeOnSuccessListener(onSuccessListener);
+                listener.onDownloadFailed();
             }
         }, 30000);
     }
@@ -244,8 +216,8 @@ public class Utils {
     public static void deleteDir(File dir) {
         if (dir != null && dir.isDirectory()) {
             String[] children = dir.list();
-            for (int i = 0; i < children.length; i++) {
-                deleteDir(new File(dir, children[i]));
+            for (String aChildren : children) {
+                deleteDir(new File(dir, aChildren));
             }
         }
         dir.delete();

@@ -1,6 +1,5 @@
 package ominext.com.readmestories.adapters;
 
-import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
@@ -15,7 +14,6 @@ import java.util.List;
 
 import ominext.com.readmestories.BR;
 import ominext.com.readmestories.R;
-import ominext.com.readmestories.activities.BaseActivity;
 import ominext.com.readmestories.activities.BookDetailActivity;
 import ominext.com.readmestories.models.Book;
 import ominext.com.readmestories.utils.Constant;

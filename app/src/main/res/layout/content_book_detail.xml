@@ -4,14 +4,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:orientation="vertical"
-    android:paddingTop="@dimen/_20sdp"
     android:paddingBottom="@dimen/_20sdp"
+    android:paddingEnd="@dimen/_10sdp"
     android:paddingLeft="@dimen/_10sdp"
-    android:paddingStart="@dimen/_10sdp"
     android:paddingRight="@dimen/_10sdp"
-    android:paddingEnd="@dimen/_10sdp">
+    android:paddingStart="@dimen/_10sdp"
+    android:paddingTop="@dimen/_20sdp"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,9 +30,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:orientation="vertical"
             android:paddingLeft="@dimen/_6sdp"
-            android:paddingStart="@dimen/_6sdp"
-            android:orientation="vertical">
+            android:paddingStart="@dimen/_6sdp">
 
             <TextView
                 android:id="@+id/tv_book_title"
@@ -40,8 +40,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:text="The Little Red Hen "
-                android:textSize="@dimen/_14sdp"
                 android:textColor="@color/colorAccent"
+                android:textSize="@dimen/_14sdp"
                 android:textStyle="bold"/>
 
             <TextView
@@ -49,8 +49,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:text="@string/author"
-                android:textSize="@dimen/_14sdp"
                 android:textColor="@android:color/black"
+                android:textSize="@dimen/_14sdp"
                 android:textStyle="bold"/>
 
             <TextView
@@ -59,16 +59,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:text="@string/author"
-                android:textSize="@dimen/_14sdp"
-                android:textColor="@android:color/black"/>
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/_14sdp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:text="@string/illustrator"
-                android:textSize="@dimen/_14sdp"
                 android:textColor="@android:color/black"
+                android:textSize="@dimen/_14sdp"
                 android:textStyle="bold"/>
 
             <TextView
@@ -77,8 +77,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:text="@string/illustrator"
-                android:textSize="@dimen/_14sdp"
-                android:textColor="@android:color/black"/>
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/_14sdp"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -87,22 +87,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_30sdp"
-        android:text="@string/read"
-        android:padding="@dimen/_10sdp"
-        android:textColor="@color/color_white"
-        android:textSize="@dimen/_16sdp"
+        android:background="@color/red"
         android:gravity="center_horizontal"
-        android:background="@color/red"/>
+        android:padding="@dimen/_10sdp"
+        android:text="@string/read"
+        android:textColor="@color/color_white"
+        android:textSize="@dimen/_16sdp"/>
 
     <TextView
         android:id="@+id/btn_add_to_my_books"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
-        android:text="@string/add_to_my_books"
-        android:padding="@dimen/_10sdp"
-        android:textColor="@color/color_white"
-        android:textSize="@dimen/_16sdp"
+        android:background="@color/azure"
         android:gravity="center_horizontal"
-        android:background="@color/azure"/>
+        android:padding="@dimen/_10sdp"
+        android:text="@string/add_to_my_books"
+        android:textColor="@color/color_white"
+        android:textSize="@dimen/_16sdp"/>
 </LinearLayout>

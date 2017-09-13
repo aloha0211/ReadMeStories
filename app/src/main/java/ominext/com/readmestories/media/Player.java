@@ -47,7 +47,7 @@ public class Player {
 
         mTimeFrame = timeFrame;
         mListener = onCompletionListener;
-        final String[] contents = content.trim().replaceAll("-", " ").replaceAll("  ", " ").replaceAll("  ", " ").replaceAll(" \" ", " ").replaceAll("\\..", " ").split(" ");
+        final String[] contents = content.trim().replaceAll("-", " ").replaceAll(" {2}", " ").replaceAll(" {2}", " ").replaceAll(" \" ", " ").replaceAll("\\..", " ").split(" ");
         mTimeIndex = 0;
         mTextSpanFromIndex = 0;
         isFirstRun = true;
@@ -102,7 +102,7 @@ public class Player {
 
         mTimeFrame = timeFrame;
         mListener = onCompletionListener;
-        final String[] contents = content.trim().replaceAll("-", " ").replaceAll("  ", " ").replaceAll("  ", " ").replaceAll(" \" ", " ").split(" ");
+        final String[] contents = content.trim().replaceAll("-", " ").replaceAll(" {2}", " ").replaceAll(" {2}", " ").replaceAll(" \" ", " ").split(" ");
 
         mTimeIndex = 0;
         mTextSpanFromIndex = 0;
@@ -153,13 +153,10 @@ public class Player {
     }
 
     public void readBook(@NonNull String audioPath, MediaPlayer.OnCompletionListener onCompletionListener, final OnStartedListener onStartedListener) {
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mMediaPlayer.start();
-                if (onStartedListener != null)
-                    onStartedListener.onStart();
-            }
+        mHandler.postDelayed(() -> {
+            mMediaPlayer.start();
+            if (onStartedListener != null)
+                onStartedListener.onStart();
         }, DELAY_TIME);
 
         mMediaPlayer = new MediaPlayer();
@@ -175,13 +172,10 @@ public class Player {
     }
 
     public void readBook(@NonNull AssetFileDescriptor descriptor, MediaPlayer.OnCompletionListener onCompletionListener, final OnStartedListener onStartedListener) {
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mMediaPlayer.start();
-                if (onStartedListener != null)
-                    onStartedListener.onStart();
-            }
+        mHandler.postDelayed(() -> {
+            mMediaPlayer.start();
+            if (onStartedListener != null)
+                onStartedListener.onStart();
         }, DELAY_TIME);
 
         mMediaPlayer = new MediaPlayer();

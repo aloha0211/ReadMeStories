@@ -58,7 +58,7 @@ public class BookByCategoryAdapter extends RecyclerView.Adapter<BookByCategoryAd
         Bundle data = new Bundle();
         data.putParcelable(Constant.KEY_BOOK, book);
         intent.putExtra(Constant.KEY_DATA, data);
-        ((BaseActivity)mContext).startActivityForResult(intent, 100);
+        ((BaseActivity) mContext).startActivityForResult(intent, 100);
     }
 
     class BookViewHolder extends RecyclerView.ViewHolder {

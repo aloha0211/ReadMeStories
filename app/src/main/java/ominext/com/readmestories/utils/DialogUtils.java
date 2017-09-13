@@ -21,7 +21,7 @@ import ominext.com.readmestories.R;
 
 public class DialogUtils {
 
-    public static void showAlertDialog(final Context context, String title, String content, @ColorRes int resColor, final View.OnClickListener onClickListener) {
+    private static void showAlertDialog(final Context context, String title, String content, @ColorRes int resColor, final View.OnClickListener onClickListener) {
 
         final Dialog dialog = new Dialog(context);
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -48,13 +48,10 @@ public class DialogUtils {
 
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        btnOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (onClickListener != null)
-                    onClickListener.onClick(btnOk);
-                dialog.dismiss();
-            }
+        btnOk.setOnClickListener(v -> {
+            if (onClickListener != null)
+                onClickListener.onClick(btnOk);
+            dialog.dismiss();
         });
 
         dialog.show();
@@ -102,20 +99,12 @@ public class DialogUtils {
 
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        btnOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-                onClickListener.onClick(btnOk);
-            }
+        btnOk.setOnClickListener(v -> {
+            dialog.dismiss();
+            onClickListener.onClick(btnOk);
         });
 
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
     }

@@ -1,42 +1,45 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/background"
-    android:paddingTop="@dimen/_6sdp"
     android:paddingBottom="@dimen/_6sdp"
+    android:paddingTop="@dimen/_6sdp"
     tools:context="ominext.com.readmestories.fragments.MyBooksFragment">
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_my_books"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:scrollbars="vertical"
-        android:clipToPadding="false"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_my_books"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:fitsSystemWindows="true"
+            android:scrollbars="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <LinearLayout
         android:id="@+id/ll_no_internet_connection"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_gravity="center"
+        android:orientation="vertical"
         android:visibility="gone">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/no_connection_message"
             android:textColor="@android:color/holo_red_dark"
-            android:textStyle="bold"
-            android:textSize="@dimen/_16sdp"/>
+            android:textSize="@dimen/_16sdp"
+            android:textStyle="bold"/>
+
         <Button
             android:id="@+id/btn_try_again"
             android:layout_width="wrap_content"

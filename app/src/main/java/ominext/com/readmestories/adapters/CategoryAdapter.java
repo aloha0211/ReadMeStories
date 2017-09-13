@@ -33,6 +33,30 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     private Context mContext;
     private List<Category> mCategories;
+    private int mFileDownloadedIndex;
+    private int mTotalFile;
+    private Category mSelectedCategory;
+    private DownloadFileListener mListener = new DownloadFileListener() {
+        @Override
+        public void onDownloadSuccessful(String audioPath) {
+            mFileDownloadedIndex++;
+            if (mFileDownloadedIndex < mTotalFile) {
+                String refPath = mSelectedCategory.getBooks().get(mFileDownloadedIndex).getId() + "/" + Constant.IMAGE;
+                String storePath = Constant.CATEGORY + "/" + refPath;
+                Utils.downloadToCacheFolder(mContext, refPath, storePath, Constant.COVER, mListener);
+            } else if (mFileDownloadedIndex == mTotalFile) {
+                // downloadToCacheFolder all cover image files for all books finished
+                startCategoryBooksActivity();
+            }
+        }
+
+        @Override
+        public void onDownloadFailed() {
+            ((BaseActivity) mContext).dismissProgressDialog();
+            ((BaseActivity) mContext).showAlertDialog(mContext.getString(R.string.error), mContext.getString(R.string.load_data_err_msg));
+            Utils.deleteCacheDir(mContext, Constant.STORY + "/" + Constant.CATEGORY);
+        }
+    };
 
     public CategoryAdapter(Context context, List<Category> list) {
         this.mContext = context;
@@ -74,7 +98,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         localBooks.addAll(Utils.getBooksFromAssets(mContext));
         localBooks.addAll(Utils.getBooksFromRealm((BaseActivity) mContext));
         Stream.of(localBooks).forEach(book -> bookIds.add(book.getId()));
-        List<BookResponse> bookList =  Stream.of(mSelectedCategory.getBooks()).filter(book -> !bookIds.contains(book.getId())).toList();
+        List<BookResponse> bookList = Stream.of(mSelectedCategory.getBooks()).filter(book -> !bookIds.contains(book.getId())).toList();
         mSelectedCategory.setBooks(bookList);
 
         mFileDownloadedIndex = 0;
@@ -87,32 +111,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             Utils.downloadToCacheFolder(mContext, refPath, storePath, Constant.COVER, mListener);
         }
     }
-
-    private int mFileDownloadedIndex;
-    private int mTotalFile;
-    private Category mSelectedCategory;
-
-    private DownloadFileListener mListener = new DownloadFileListener() {
-        @Override
-        public void onDownloadSuccessful(String audioPath) {
-            mFileDownloadedIndex++;
-            if (mFileDownloadedIndex < mTotalFile) {
-                String refPath = mSelectedCategory.getBooks().get(mFileDownloadedIndex).getId() + "/" + Constant.IMAGE;
-                String storePath = Constant.CATEGORY + "/" + refPath;
-                Utils.downloadToCacheFolder(mContext, refPath, storePath, Constant.COVER, mListener);
-            } else if (mFileDownloadedIndex == mTotalFile) {
-                // downloadToCacheFolder all cover image files for all books finished
-                startCategoryBooksActivity();
-            }
-        }
-
-        @Override
-        public void onDownloadFailed() {
-            ((BaseActivity) mContext).dismissProgressDialog();
-            ((BaseActivity) mContext).showAlertDialog(mContext.getString(R.string.error), mContext.getString(R.string.load_data_err_msg));
-            Utils.deleteCacheDir(mContext, Constant.STORY + "/" + Constant.CATEGORY);
-        }
-    };
 
     private void startCategoryBooksActivity() {
         Intent intent = new Intent(mContext, CategoryBooksActivity.class);

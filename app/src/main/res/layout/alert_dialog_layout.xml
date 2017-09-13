@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal"
+              android:baselineAligned="false">
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="10">
-
-
-    </LinearLayout>
+        android:layout_weight="10"/>
 
     <LinearLayout
         android:layout_width="0dp"
@@ -33,21 +31,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="Title"
                 android:textColor="#000000"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <TextView
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
                 android:id="@+id/message_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="4dp"
-                android:text="Message"
-                android:textColor="#2e2e2e" />
+                android:gravity="center_horizontal"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:textColor="#2e2e2e"/>
         </LinearLayout>
 
         <LinearLayout
@@ -59,16 +55,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/selector_bottom_corner"
-                android:text="OK"
-                android:textColor="#0078ff" />
+                android:text="@string/ok"
+                android:textColor="#0078ff"/>
         </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="10">
-
-
-    </LinearLayout>
+        android:layout_weight="10"/>
 </LinearLayout>

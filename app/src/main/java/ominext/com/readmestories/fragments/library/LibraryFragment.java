@@ -70,24 +70,18 @@ public class LibraryFragment extends BaseFragment implements LibraryView {
         recyclerView.setAdapter(mBookAdapter);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                llNoInternetConnection.setVisibility(View.GONE);
-                mSwipeRefreshLayout.setVisibility(View.VISIBLE);
-                mPresenter.getListBook();
-            }
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            llNoInternetConnection.setVisibility(View.GONE);
+            mSwipeRefreshLayout.setVisibility(View.VISIBLE);
+            mPresenter.getListBook();
         });
 
         llNoInternetConnection = (LinearLayout) view.findViewById(R.id.ll_no_internet_connection);
-        view.findViewById(R.id.btn_try_again).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                llNoInternetConnection.setVisibility(View.GONE);
-                mSwipeRefreshLayout.setVisibility(View.VISIBLE);
-                ((BaseActivity) getActivity()).showProgressDialog("");
-                mPresenter.getListBook();
-            }
+        view.findViewById(R.id.btn_try_again).setOnClickListener(v -> {
+            llNoInternetConnection.setVisibility(View.GONE);
+            mSwipeRefreshLayout.setVisibility(View.VISIBLE);
+            ((BaseActivity) getActivity()).showProgressDialog("");
+            mPresenter.getListBook();
         });
 
         ((BaseActivity) getActivity()).showProgressDialog("");

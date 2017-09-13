@@ -22,13 +22,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private ProgressDialog mDialog;
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-
-    protected void replaceFragment(Fragment fragment) {
+    void replaceFragment(Fragment fragment) {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.fr_container, fragment);
@@ -50,12 +44,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         DialogUtils.showAlertDialog(this, title, content);
     }
 
-    public void showAlertDialog(String title, String content, @ColorRes int resColor) {
+    void showAlertDialog(String title, String content, @ColorRes int resColor) {
         DialogUtils.showAlertDialog(this, title, content, resColor);
     }
 
-    public void showConfirmationDialog(String title, String content,
-                                       final View.OnClickListener onClickListener) {
+    void showConfirmationDialog(String title, String content,
+                                final View.OnClickListener onClickListener) {
         DialogUtils.showConfirmationDialog(this, title, content, getString(R.string.ok), getString(R.string.cancel), onClickListener);
     }
 }

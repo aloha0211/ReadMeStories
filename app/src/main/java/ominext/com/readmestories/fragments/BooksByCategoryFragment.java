@@ -24,9 +24,8 @@ import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
 
 public class BooksByCategoryFragment extends BaseFragment {
 
-    private BookByCategoryAdapter mBookAdapter;
+    private RecyclerView rvMyBooks;
     private List<Book> mBookList;
-    RecyclerView rvMyBooks;
 
     public BooksByCategoryFragment() {
         // Required empty public constructor
@@ -68,7 +67,7 @@ public class BooksByCategoryFragment extends BaseFragment {
         List<Book> books = new ArrayList<>();
         Predicate<Book> bookPredicate = b -> b.getTitle().toUpperCase().contains(name.toUpperCase());
         books.addAll(Stream.of(filteredLocalBooks).filter(bookPredicate).toList());
-        mBookAdapter = new BookByCategoryAdapter(getContext(), books);
-        rvMyBooks.setAdapter(mBookAdapter);
+        BookByCategoryAdapter bookAdapter = new BookByCategoryAdapter(getContext(), books);
+        rvMyBooks.setAdapter(bookAdapter);
     }
 }

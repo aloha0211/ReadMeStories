@@ -29,6 +29,43 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.BookView
 
     private Context mContext;
     private List<Book> mBooks;
+    private int mFileDownloadedIndex;
+    private int mTotalFile;
+    private Book mSelectedBook;
+    private DownloadFileListener mListener = new DownloadFileListener() {
+        @Override
+        public void onDownloadSuccessful(String audioPath) {
+            mFileDownloadedIndex++;
+            if (mFileDownloadedIndex < mTotalFile - 1) {
+//                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.AUDIO, mFileDownloadedIndex + Constant.MP3_EXTENSION, mListener);
+            } else if (mFileDownloadedIndex == mTotalFile - 1) {
+//                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.AUDIO, Constant.BACK_COVER + Constant.MP3_EXTENSION, mListener);
+            } else if (mFileDownloadedIndex == mTotalFile) {
+                // download audio finished, start downloading image
+//                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.IMAGE, Constant.COVER, mListener);
+            } else if (mFileDownloadedIndex < 2 * mTotalFile - 1) {
+//                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.IMAGE, String.valueOf(mFileDownloadedIndex - mTotalFile), mListener);
+            } else if (mFileDownloadedIndex == 2 * mTotalFile - 1) {
+//                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.IMAGE, Constant.BACK_COVER, mListener);
+            } else if (mFileDownloadedIndex == 2 * mTotalFile) {
+                // download all files finished
+                Intent intent = new Intent(mContext, ReadingBookActivity.class);
+                Bundle data = new Bundle();
+                data.putParcelable(Constant.KEY_BOOK, mSelectedBook);
+                intent.putExtra(Constant.IS_FROM_ASSET, false);
+                intent.putExtra(Constant.KEY_DATA, data);
+                mContext.startActivity(intent);
+                ((BaseActivity) mContext).dismissProgressDialog();
+            }
+        }
+
+        @Override
+        public void onDownloadFailed() {
+            ((BaseActivity) mContext).dismissProgressDialog();
+            ((BaseActivity) mContext).showAlertDialog(mContext.getString(R.string.error), mContext.getString(R.string.load_data_err_msg));
+            Utils.deleteCacheDir(mContext, Constant.STORY + "/" + mSelectedBook.getId());
+        }
+    };
 
     public LibraryAdapter(Context context, List<Book> list) {
         this.mContext = context;
@@ -62,45 +99,6 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.BookView
         // firstly, download audio file
 //        Utils.download(mContext, book.getId() + "/" + Constant.AUDIO, Constant.COVER + Constant.MP3_EXTENSION, mListener);
     }
-
-    private int mFileDownloadedIndex;
-    private int mTotalFile;
-    private Book mSelectedBook;
-
-    private DownloadFileListener mListener = new DownloadFileListener() {
-        @Override
-        public void onDownloadSuccessful(String audioPath) {
-            mFileDownloadedIndex++;
-            if (mFileDownloadedIndex < mTotalFile - 1){
-//                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.AUDIO, mFileDownloadedIndex + Constant.MP3_EXTENSION, mListener);
-            } else if (mFileDownloadedIndex == mTotalFile - 1) {
-//                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.AUDIO, Constant.BACK_COVER + Constant.MP3_EXTENSION, mListener);
-            } else if (mFileDownloadedIndex == mTotalFile) {
-                // download audio finished, start downloading image
-//                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.IMAGE, Constant.COVER, mListener);
-            } else if (mFileDownloadedIndex < 2 * mTotalFile - 1) {
-//                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.IMAGE, String.valueOf(mFileDownloadedIndex - mTotalFile), mListener);
-            } else if (mFileDownloadedIndex == 2 * mTotalFile - 1) {
-//                Utils.download(mContext, mSelectedBook.getId() + "/" + Constant.IMAGE, Constant.BACK_COVER, mListener);
-            } else if (mFileDownloadedIndex == 2 * mTotalFile) {
-                // download all files finished
-                Intent intent = new Intent(mContext, ReadingBookActivity.class);
-                Bundle data = new Bundle();
-                data.putParcelable(Constant.KEY_BOOK, mSelectedBook);
-                intent.putExtra(Constant.IS_FROM_ASSET, false);
-                intent.putExtra(Constant.KEY_DATA, data);
-                mContext.startActivity(intent);
-                ((BaseActivity) mContext).dismissProgressDialog();
-            }
-        }
-
-        @Override
-        public void onDownloadFailed() {
-            ((BaseActivity) mContext).dismissProgressDialog();
-            ((BaseActivity) mContext).showAlertDialog(mContext.getString(R.string.error), mContext.getString(R.string.load_data_err_msg));
-            Utils.deleteCacheDir(mContext, Constant.STORY + "/" + mSelectedBook.getId());
-        }
-    };
 
     class BookViewHolder extends RecyclerView.ViewHolder {
 

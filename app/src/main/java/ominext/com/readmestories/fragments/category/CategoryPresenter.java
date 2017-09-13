@@ -26,13 +26,13 @@ class CategoryPresenter {
 
     private Context mContext;
     private CategoryView mView;
+    private boolean isConnected;
 
     CategoryPresenter(Context context, CategoryView view) {
         mContext = context;
         mView = view;
     }
 
-    private boolean isConnected;
     void getCategories() {
         if (!Connectivity.isConnected(mContext)) {
             mView.onFailed(mContext.getString(R.string.no_connection_message));
@@ -62,13 +62,10 @@ class CategoryPresenter {
             }
         };
         database.addValueEventListener(eventListener);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!isConnected) {
-                    database.removeEventListener(eventListener);
-                    mView.onFailed(mContext.getString(R.string.load_data_err_msg));
-                }
+        new Handler().postDelayed(() -> {
+            if (!isConnected) {
+                database.removeEventListener(eventListener);
+                mView.onFailed(mContext.getString(R.string.load_data_err_msg));
             }
         }, 30000);
     }

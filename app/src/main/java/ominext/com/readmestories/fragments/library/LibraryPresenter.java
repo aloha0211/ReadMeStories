@@ -26,13 +26,13 @@ class LibraryPresenter {
 
     private Context mContext;
     private LibraryView mView;
+    private boolean isConnected;
 
     LibraryPresenter(Context context, LibraryView view) {
         mContext = context;
         mView = view;
     }
 
-    private boolean isConnected;
     void getListBook() {
         if (!Connectivity.isConnected(mContext)) {
             mView.onFailed(mContext.getString(R.string.no_connection_message));
@@ -62,13 +62,10 @@ class LibraryPresenter {
             }
         };
         database.addValueEventListener(eventListener);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!isConnected) {
-                    database.removeEventListener(eventListener);
-                    mView.onFailed(mContext.getString(R.string.no_connection_message));
-                }
+        new Handler().postDelayed(() -> {
+            if (!isConnected) {
+                database.removeEventListener(eventListener);
+                mView.onFailed(mContext.getString(R.string.no_connection_message));
             }
         }, 30000);
     }

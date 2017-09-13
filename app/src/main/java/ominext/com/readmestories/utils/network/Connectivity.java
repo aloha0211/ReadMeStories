@@ -22,7 +22,7 @@ public class Connectivity {
      * @param context
      * @return
      */
-    public static NetworkInfo getNetworkInfo(Context context) {
+    private static NetworkInfo getNetworkInfo(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.getActiveNetworkInfo();
@@ -91,7 +91,7 @@ public class Connectivity {
      * @param subType
      * @return
      */
-    public static boolean isConnectionFast(int type, int subType) {
+    private static boolean isConnectionFast(int type, int subType) {
         if (type == ConnectivityManager.TYPE_WIFI) {
             return true;
         } else if (type == ConnectivityManager.TYPE_MOBILE) {
@@ -164,7 +164,7 @@ public class Connectivity {
                 case TelephonyManager.NETWORK_TYPE_UMTS:
                     return TypeSpeedNetwork.MEDIUM; // ~ 400-7000 kbps
                 /*
-				 * Above API level 7, make sure to set android:targetSdkVersion
+                 * Above API level 7, make sure to set android:targetSdkVersion
 				 * to appropriate level to use these
 				 */
                 case TelephonyManager.NETWORK_TYPE_EHRPD: // API level 11
@@ -237,8 +237,7 @@ public class Connectivity {
 
     public static String getMobileLabel(Context context) {
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        String name = telephonyManager.getNetworkOperatorName();
-        return name;
+        return telephonyManager.getNetworkOperatorName();
 
     }
 }

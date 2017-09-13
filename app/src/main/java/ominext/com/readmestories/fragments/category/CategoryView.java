@@ -8,7 +8,7 @@ import ominext.com.readmestories.models.Category;
  * Created by LuongHH on 6/23/2017.
  */
 
-public interface CategoryView {
+interface CategoryView {
 
     void onSuccessful(List<Category> bookList);
 

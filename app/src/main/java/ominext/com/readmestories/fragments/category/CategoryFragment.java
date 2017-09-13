@@ -68,24 +68,18 @@ public class CategoryFragment extends BaseFragment implements CategoryView {
         recyclerView.setAdapter(mCategoryAdapter);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                llNoInternetConnection.setVisibility(View.GONE);
-                mSwipeRefreshLayout.setVisibility(View.VISIBLE);
-                mPresenter.getCategories();
-            }
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            llNoInternetConnection.setVisibility(View.GONE);
+            mSwipeRefreshLayout.setVisibility(View.VISIBLE);
+            mPresenter.getCategories();
         });
 
         llNoInternetConnection = (LinearLayout) view.findViewById(R.id.ll_no_internet_connection);
-        view.findViewById(R.id.btn_try_again).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                llNoInternetConnection.setVisibility(View.GONE);
-                mSwipeRefreshLayout.setVisibility(View.VISIBLE);
-                ((BaseActivity) getActivity()).showProgressDialog("");
-                mPresenter.getCategories();
-            }
+        view.findViewById(R.id.btn_try_again).setOnClickListener(view1 -> {
+            llNoInternetConnection.setVisibility(View.GONE);
+            mSwipeRefreshLayout.setVisibility(View.VISIBLE);
+            ((BaseActivity) getActivity()).showProgressDialog("");
+            mPresenter.getCategories();
         });
 
         ((BaseActivity) getActivity()).showProgressDialog("");

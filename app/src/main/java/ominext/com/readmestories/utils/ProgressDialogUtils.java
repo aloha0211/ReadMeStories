@@ -3,8 +3,6 @@ package ominext.com.readmestories.utils;
 import android.app.ProgressDialog;
 import android.content.Context;
 
-import ominext.com.readmestories.R;
-
 /**
  * Created by Vinh on 10/28/2016.
  */
@@ -19,7 +17,7 @@ public class ProgressDialogUtils {
         return create(context, message, false);
     }
 
-    public static ProgressDialog create(Context context, String message, Boolean cancelable) {
+    private static ProgressDialog create(Context context, String message, Boolean cancelable) {
         ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage(message);

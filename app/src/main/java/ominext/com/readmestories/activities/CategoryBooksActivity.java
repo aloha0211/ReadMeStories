@@ -12,9 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
-import com.annimon.stream.Stream;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import ominext.com.readmestories.R;
@@ -24,8 +21,6 @@ import ominext.com.readmestories.utils.Constant;
 import ominext.com.readmestories.utils.Utils;
 
 public class CategoryBooksActivity extends BaseActivity implements SearchView.OnQueryTextListener {
-
-    private List<Book> mBooks;
 
     private SearchView mSearchView;
 
@@ -42,8 +37,8 @@ public class CategoryBooksActivity extends BaseActivity implements SearchView.On
         }
         Intent data = getIntent();
         setTitle(data.getStringExtra(Constant.KEY_TITLE));
-        mBooks = data.getParcelableArrayListExtra(Constant.KEY_BOOKS);
-        replaceFragment(BooksByCategoryFragment.newInstance(mBooks));
+        List<Book> books = data.getParcelableArrayListExtra(Constant.KEY_BOOKS);
+        replaceFragment(BooksByCategoryFragment.newInstance(books));
     }
 
     @Override

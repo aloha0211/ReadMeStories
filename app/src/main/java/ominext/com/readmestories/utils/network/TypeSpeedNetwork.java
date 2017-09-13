@@ -14,11 +14,11 @@ public enum TypeSpeedNetwork {
     HIGH(1);
 
 
+    private int value;
+
     TypeSpeedNetwork(int value) {
         this.value = value;
     }
-
-    private int value;
 
     public static TypeSpeedNetwork fromValue(int value) {
         TypeSpeedNetwork[] values = TypeSpeedNetwork.values();

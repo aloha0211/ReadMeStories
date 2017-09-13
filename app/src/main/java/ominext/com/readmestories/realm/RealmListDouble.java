@@ -13,7 +13,8 @@ public class RealmListDouble extends RealmObject {
 
     private RealmList<RealmDouble> value;
 
-    public RealmListDouble() {}
+    public RealmListDouble() {
+    }
 
     public RealmListDouble(List<Double> value) {
         this.value = new RealmList<>();
