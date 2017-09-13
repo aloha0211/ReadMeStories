@@ -78,7 +78,7 @@ public class MyBooksFragment extends BaseFragment {
         List<Book> books = new ArrayList<>();
         books.addAll(Utils.getBooksFromAssets(getContext()));
         books.addAll(Utils.getBooksFromRealm(getActivity()));
-        Predicate<Book> bookPredicate = b -> b.getTitle().toUpperCase().contains(name.toUpperCase()) || b.getAuthor().toUpperCase().contains(name.toUpperCase());
+        Predicate<Book> bookPredicate = b -> b.getTitle().toUpperCase().contains(name.toUpperCase());
         mBookList.clear();
         mBookList.addAll(Stream.of(books).filter(bookPredicate).toList());
         mBookAdapter.notifyDataSetChanged();

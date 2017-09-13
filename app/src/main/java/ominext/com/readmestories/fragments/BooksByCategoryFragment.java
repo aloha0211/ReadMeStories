@@ -8,12 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.annimon.stream.Stream;
+import com.annimon.stream.function.Predicate;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import ominext.com.readmestories.R;
 import ominext.com.readmestories.adapters.BookByCategoryAdapter;
 import ominext.com.readmestories.adapters.SimpleDividerItemDecoration;
 import ominext.com.readmestories.models.Book;
+import ominext.com.readmestories.utils.Utils;
 
 import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
 
@@ -49,7 +54,21 @@ public class BooksByCategoryFragment extends BaseFragment {
         rvMyBooks.setLayoutManager(gridLayoutManager);
         rvMyBooks.setHasFixedSize(true);
         rvMyBooks.addItemDecoration(new SimpleDividerItemDecoration(getContext()));
-        mBookAdapter = new BookByCategoryAdapter(getContext(), mBookList);
+        filterBook("");
+    }
+
+    public void filterBook(final String name) {
+        List<Book> localBooks = new ArrayList<>();
+        final List<Integer> bookIds = new ArrayList<>();
+        localBooks.addAll(Utils.getBooksFromAssets(getContext()));
+        localBooks.addAll(Utils.getBooksFromRealm(getActivity()));
+        Stream.of(localBooks).forEach(book -> bookIds.add(book.getId()));
+        List<Book> filteredLocalBooks = Stream.of(mBookList).filter(book -> !bookIds.contains(book.getId())).toList();
+
+        List<Book> books = new ArrayList<>();
+        Predicate<Book> bookPredicate = b -> b.getTitle().toUpperCase().contains(name.toUpperCase());
+        books.addAll(Stream.of(filteredLocalBooks).filter(bookPredicate).toList());
+        mBookAdapter = new BookByCategoryAdapter(getContext(), books);
         rvMyBooks.setAdapter(mBookAdapter);
     }
 }

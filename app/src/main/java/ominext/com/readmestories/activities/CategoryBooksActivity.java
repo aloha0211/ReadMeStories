@@ -2,9 +2,15 @@ package ominext.com.readmestories.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
 import com.annimon.stream.Stream;
 
@@ -17,9 +23,11 @@ import ominext.com.readmestories.models.Book;
 import ominext.com.readmestories.utils.Constant;
 import ominext.com.readmestories.utils.Utils;
 
-public class CategoryBooksActivity extends BaseActivity {
+public class CategoryBooksActivity extends BaseActivity implements SearchView.OnQueryTextListener {
 
     private List<Book> mBooks;
+
+    private SearchView mSearchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,23 +43,13 @@ public class CategoryBooksActivity extends BaseActivity {
         Intent data = getIntent();
         setTitle(data.getStringExtra(Constant.KEY_TITLE));
         mBooks = data.getParcelableArrayListExtra(Constant.KEY_BOOKS);
-        filterData();
-    }
-
-    private void filterData() {
-        List<Book> localBooks = new ArrayList<>();
-        final List<Integer> bookIds = new ArrayList<>();
-        localBooks.addAll(Utils.getBooksFromAssets(this));
-        localBooks.addAll(Utils.getBooksFromRealm(this));
-        Stream.of(localBooks).forEach(book -> bookIds.add(book.getId()));
-        List<Book> bookList = Stream.of(mBooks).filter(book -> !bookIds.contains(book.getId())).toList();
-        replaceFragment(BooksByCategoryFragment.newInstance(bookList));
+        replaceFragment(BooksByCategoryFragment.newInstance(mBooks));
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        filterData();
+        onQueryTextChange(mSearchView.getQuery().toString());
     }
 
     @Override
@@ -67,5 +65,34 @@ public class CategoryBooksActivity extends BaseActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuItem searchMenuItem = menu.findItem(R.id.action_search);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
+        int searchImgId = android.support.v7.appcompat.R.id.search_button;
+        ImageView v = (ImageView) mSearchView.findViewById(searchImgId);
+        v.setImageResource(R.drawable.ic_action_search);
+        mSearchView.setQueryHint(getString(R.string.search_for_books));
+        mSearchView.setOnQueryTextListener(this);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = fm.findFragmentById(R.id.fr_container);
+        if (fragment instanceof BooksByCategoryFragment) {
+            ((BooksByCategoryFragment) fragment).filterBook(newText);
+            return true;
+        }
+        return false;
     }
 }
