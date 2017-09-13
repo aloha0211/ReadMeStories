@@ -9,11 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.annimon.stream.Stream;
+import com.annimon.stream.function.Predicate;
+
 import java.util.ArrayList;
 import java.util.List;
-//import java.util.function.Predicate;
 
 import ominext.com.readmestories.R;
+import ominext.com.readmestories.activities.MainActivity;
 import ominext.com.readmestories.adapters.BookAdapter;
 import ominext.com.readmestories.adapters.SimpleDividerItemDecoration;
 import ominext.com.readmestories.models.Book;
@@ -60,7 +63,8 @@ public class MyBooksFragment extends BaseFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        getMyBooks();
+        String query = ((MainActivity) getActivity()).getSearchText();
+        filterBook(query);
     }
 
     private void getMyBooks() {
@@ -71,10 +75,12 @@ public class MyBooksFragment extends BaseFragment {
     }
 
     public void filterBook(final String name) {
+        List<Book> books = new ArrayList<>();
+        books.addAll(Utils.getBooksFromAssets(getContext()));
+        books.addAll(Utils.getBooksFromRealm(getActivity()));
+        Predicate<Book> bookPredicate = b -> b.getTitle().toUpperCase().contains(name.toUpperCase()) || b.getAuthor().toUpperCase().contains(name.toUpperCase());
         mBookList.clear();
-        mBookList.addAll(Utils.getBooksFromAssets(getContext()));
-        mBookList.addAll(Utils.getBooksFromRealm(getActivity()));
-//        Predicate<Book> bookPredicate = b -> !b.getTitle().contains(name) && !b.getAuthor().contains(name);
-//        mBookList.removeIf(bookPredicate);
+        mBookList.addAll(Stream.of(books).filter(bookPredicate).toList());
+        mBookAdapter.notifyDataSetChanged();
     }
 }

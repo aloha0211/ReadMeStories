@@ -20,6 +20,10 @@ android {
     dataBinding {
         enabled = true
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -41,7 +45,8 @@ dependencies {
     compile 'com.firebaseui:firebase-ui-storage:0.6.0'
     compile 'com.google.firebase:firebase-storage:10.0.1'
     compile 'com.google.firebase:firebase-database:10.0.1'
-    compile 'io.realm:realm-android:0.83.0+'
+    annotationProcessor  'io.realm:realm-android:0.87.4'
+    compile 'io.realm:realm-android:0.87.4'
     testCompile 'junit:junit:4.12'
     compile 'org.jsoup:jsoup:1.10.3'
     compile 'com.annimon:stream:1.1.8'

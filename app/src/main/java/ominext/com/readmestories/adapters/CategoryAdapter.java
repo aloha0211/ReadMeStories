@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.annimon.stream.Stream;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,12 +43,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     public CategoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(mContext).inflate(R.layout.item_category, parent, false);
         final CategoryViewHolder holder = new CategoryViewHolder(itemView);
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Category category = mCategories.get(holder.getAdapterPosition());
-                onCategoryClick(category);
-            }
+        itemView.setOnClickListener(view -> {
+            Category category = mCategories.get(holder.getAdapterPosition());
+            onCategoryClick(category);
         });
         return holder;
     }
@@ -69,11 +68,24 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     private void onCategoryClick(Category category) {
         ((BaseActivity) mContext).showProgressDialog(mContext.getString(R.string.loading_data));
         mSelectedCategory = category;
+
+        List<Book> localBooks = new ArrayList<>();
+        final List<Integer> bookIds = new ArrayList<>();
+        localBooks.addAll(Utils.getBooksFromAssets(mContext));
+        localBooks.addAll(Utils.getBooksFromRealm((BaseActivity) mContext));
+        Stream.of(localBooks).forEach(book -> bookIds.add(book.getId()));
+        List<BookResponse> bookList =  Stream.of(mSelectedCategory.getBooks()).filter(book -> !bookIds.contains(book.getId())).toList();
+        mSelectedCategory.setBooks(bookList);
+
         mFileDownloadedIndex = 0;
         mTotalFile = category.getBooks().size();
-        String refPath = mSelectedCategory.getBooks().get(0).getId() + "/" + Constant.IMAGE;
-        String storePath = Constant.CATEGORY + "/" + refPath;
-        Utils.downloadToCacheFolder(mContext, refPath, storePath, Constant.COVER, mListener);
+        if (mTotalFile == 0) {
+            startCategoryBooksActivity();
+        } else {
+            String refPath = mSelectedCategory.getBooks().get(0).getId() + "/" + Constant.IMAGE;
+            String storePath = Constant.CATEGORY + "/" + refPath;
+            Utils.downloadToCacheFolder(mContext, refPath, storePath, Constant.COVER, mListener);
+        }
     }
 
     private int mFileDownloadedIndex;
@@ -90,22 +102,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
                 Utils.downloadToCacheFolder(mContext, refPath, storePath, Constant.COVER, mListener);
             } else if (mFileDownloadedIndex == mTotalFile) {
                 // downloadToCacheFolder all cover image files for all books finished
-                Intent intent = new Intent(mContext, CategoryBooksActivity.class);
-                ArrayList<Book> books = new ArrayList<>();
-                for (int i = 0; i < mSelectedCategory.getBooks().size(); i++) {
-                    BookResponse response = mSelectedCategory.getBooks().get(i);
-                    Book book = new Book();
-                    book.setId(response.getId());
-                    book.setTitle(response.getTitle());
-                    book.setAuthor(response.getAuthor());
-                    book.setIllustrator(response.getIllustrator());
-                    book.setReadingMode(Constant.MODE_FROM_CACHE);
-                    books.add(book);
-                }
-                intent.putExtra(Constant.KEY_TITLE, mSelectedCategory.getTitle());
-                intent.putParcelableArrayListExtra(Constant.KEY_BOOKS, books);
-                mContext.startActivity(intent);
-                ((BaseActivity) mContext).dismissProgressDialog();
+                startCategoryBooksActivity();
             }
         }
 
@@ -116,6 +113,25 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             Utils.deleteCacheDir(mContext, Constant.STORY + "/" + Constant.CATEGORY);
         }
     };
+
+    private void startCategoryBooksActivity() {
+        Intent intent = new Intent(mContext, CategoryBooksActivity.class);
+        ArrayList<Book> books = new ArrayList<>();
+        for (int i = 0; i < mSelectedCategory.getBooks().size(); i++) {
+            BookResponse response = mSelectedCategory.getBooks().get(i);
+            Book book = new Book();
+            book.setId(response.getId());
+            book.setTitle(response.getTitle());
+            book.setAuthor(response.getAuthor());
+            book.setIllustrator(response.getIllustrator());
+            book.setReadingMode(Constant.MODE_FROM_CACHE);
+            books.add(book);
+        }
+        intent.putExtra(Constant.KEY_TITLE, mSelectedCategory.getTitle());
+        intent.putParcelableArrayListExtra(Constant.KEY_BOOKS, books);
+        mContext.startActivity(intent);
+        ((BaseActivity) mContext).dismissProgressDialog();
+    }
 
     class CategoryViewHolder extends RecyclerView.ViewHolder {
 

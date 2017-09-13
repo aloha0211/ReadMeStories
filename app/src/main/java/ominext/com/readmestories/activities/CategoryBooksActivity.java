@@ -6,6 +6,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.annimon.stream.Stream;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +29,7 @@ public class CategoryBooksActivity extends BaseActivity {
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar!=null) {
+        if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         Intent data = getIntent();
@@ -41,16 +43,8 @@ public class CategoryBooksActivity extends BaseActivity {
         final List<Integer> bookIds = new ArrayList<>();
         localBooks.addAll(Utils.getBooksFromAssets(this));
         localBooks.addAll(Utils.getBooksFromRealm(this));
-        for (int i = 0; i < localBooks.size(); i++) {
-            bookIds.add(localBooks.get(i).getId());
-        }
-        List<Book> bookList = new ArrayList<>();
-        for (int i = 0; i < mBooks.size(); i++) {
-            Book book = mBooks.get(i);
-            if (!bookIds.contains(book.getId())) {
-                bookList.add(book);
-            }
-        }
+        Stream.of(localBooks).forEach(book -> bookIds.add(book.getId()));
+        List<Book> bookList = Stream.of(mBooks).filter(book -> !bookIds.contains(book.getId())).toList();
         replaceFragment(BooksByCategoryFragment.newInstance(bookList));
     }
 

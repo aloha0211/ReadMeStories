@@ -37,12 +37,7 @@ public class BookByCategoryAdapter extends RecyclerView.Adapter<BookByCategoryAd
     public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(mContext).inflate(R.layout.item_book_by_category, parent, false);
         final BookViewHolder holder = new BookViewHolder(itemView);
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBookClick(mBooks.get(holder.getAdapterPosition()));
-            }
-        });
+        itemView.setOnClickListener(view -> onBookClick(mBooks.get(holder.getAdapterPosition())));
         return holder;
     }
 

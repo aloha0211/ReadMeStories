@@ -3,6 +3,8 @@ package ominext.com.readmestories.activities;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -106,6 +108,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public boolean onQueryTextChange(String newText) {
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = fm.findFragmentById(R.id.fr_container);
+        if (fragment instanceof MyBooksFragment) {
+            ((MyBooksFragment) fragment).filterBook(newText);
+            return true;
+        }
         return false;
+    }
+
+    public String getSearchText() {
+        return mSearchView.getQuery().toString();
     }
 }
