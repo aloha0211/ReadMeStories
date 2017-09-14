@@ -1,13 +1,13 @@
 package ominext.com.readmestories.media;
 
 import android.content.res.AssetFileDescriptor;
-import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.text.SpannableString;
-import android.text.style.BackgroundColorSpan;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.List;
 
 import ominext.com.readmestories.listeners.OnStartedListener;
+import ominext.com.readmestories.view.RoundedBackgroundSpan;
 
 /**
  * Created by LuongHH on 6/22/2017.
@@ -63,6 +64,7 @@ public class Player {
 
                     if (isFirstRun) {
                         mMediaPlayer.start();
+                        mMediaPlayer.setOnCompletionListener(onCompletionListener);
                         if (onStartedListener != null)
                             onStartedListener.onStart();
                         isFirstRun = false;
@@ -89,7 +91,6 @@ public class Player {
             mMediaPlayer.setDataSource(audioPath);
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.prepare();
-            mMediaPlayer.setOnCompletionListener(onCompletionListener);
             mDuration = mMediaPlayer.getDuration();
         } catch (IOException e) {
             e.printStackTrace();
@@ -119,6 +120,7 @@ public class Player {
 
                     if (isFirstRun) {
                         mMediaPlayer.start();
+                        mMediaPlayer.setOnCompletionListener(onCompletionListener);
                         if (onStartedListener != null)
                             onStartedListener.onStart();
                         isFirstRun = false;
@@ -143,9 +145,9 @@ public class Player {
         mMediaPlayer = new MediaPlayer();
         try {
             mMediaPlayer.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
+            descriptor.close();
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.prepare();
-            mMediaPlayer.setOnCompletionListener(onCompletionListener);
             mDuration = mMediaPlayer.getDuration();
         } catch (IOException e) {
             e.printStackTrace();
@@ -155,6 +157,7 @@ public class Player {
     public void readBook(@NonNull String audioPath, MediaPlayer.OnCompletionListener onCompletionListener, final OnStartedListener onStartedListener) {
         mHandler.postDelayed(() -> {
             mMediaPlayer.start();
+            mMediaPlayer.setOnCompletionListener(onCompletionListener);
             if (onStartedListener != null)
                 onStartedListener.onStart();
         }, DELAY_TIME);
@@ -164,7 +167,6 @@ public class Player {
             mMediaPlayer.setDataSource(audioPath);
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.prepare();
-            mMediaPlayer.setOnCompletionListener(onCompletionListener);
             mDuration = mMediaPlayer.getDuration();
         } catch (IOException e) {
             e.printStackTrace();
@@ -174,6 +176,7 @@ public class Player {
     public void readBook(@NonNull AssetFileDescriptor descriptor, MediaPlayer.OnCompletionListener onCompletionListener, final OnStartedListener onStartedListener) {
         mHandler.postDelayed(() -> {
             mMediaPlayer.start();
+            mMediaPlayer.setOnCompletionListener(onCompletionListener);
             if (onStartedListener != null)
                 onStartedListener.onStart();
         }, DELAY_TIME);
@@ -181,9 +184,9 @@ public class Player {
         mMediaPlayer = new MediaPlayer();
         try {
             mMediaPlayer.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
+            descriptor.close();
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.prepare();
-            mMediaPlayer.setOnCompletionListener(onCompletionListener);
             mDuration = mMediaPlayer.getDuration();
         } catch (IOException e) {
             e.printStackTrace();
@@ -191,9 +194,11 @@ public class Player {
     }
 
     private void spanTextView(@NonNull TextView textView, @NonNull String content, int startIndex, int endIndex) {
-        SpannableString textSpan = new SpannableString(content);
-        textSpan.setSpan(new BackgroundColorSpan(Color.RED), startIndex, endIndex, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
-        textView.setText(textSpan);
+        SpannableStringBuilder stringBuilder = new SpannableStringBuilder(content);
+        stringBuilder.setSpan(new RoundedBackgroundSpan(), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        textView.setText(stringBuilder);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+        textView.setClickable(true);
     }
 
     public void release() {

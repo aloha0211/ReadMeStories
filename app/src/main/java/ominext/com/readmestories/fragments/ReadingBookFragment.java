@@ -43,7 +43,7 @@ public class ReadingBookFragment extends BaseFragment {
     private List<Double> mTimeFrame;
     private View.OnClickListener mListener;
 
-    private boolean isAutoRead = true;
+    private boolean isAutoReadNextPage = true;
     private int readingMode;
 
     public ReadingBookFragment() {
@@ -71,8 +71,8 @@ public class ReadingBookFragment extends BaseFragment {
         return fragment;
     }
 
-    public void setAutoRead(boolean autoRead) {
-        isAutoRead = autoRead;
+    public void setAutoReadNextPage(boolean autoReadNextPage) {
+        isAutoReadNextPage = autoReadNextPage;
     }
 
     @Override
@@ -125,7 +125,7 @@ public class ReadingBookFragment extends BaseFragment {
     }
 
     public void onPlayClick() {
-        if (isClickable && isAutoRead) {
+        if (isClickable && isAutoReadNextPage) {
             isClickable = false;
             mPlayButton.setVisibility(View.VISIBLE);
             if (!isOnStatePausing) {
@@ -181,7 +181,7 @@ public class ReadingBookFragment extends BaseFragment {
     }
 
     public void startReading(final OnStartedListener onStartedListener) {
-        if (isAutoRead) {
+        if (isAutoReadNextPage) {
             MediaPlayer.OnCompletionListener onCompletionListener = mediaPlayer -> {
                 if (isAdded()) {
                     ((ReadingBookActivity) getActivity()).onCompletionReadingPage(mediaPlayer, mFileName);
@@ -218,18 +218,18 @@ public class ReadingBookFragment extends BaseFragment {
     }
 
     public void pauseReading() {
-        if (isAutoRead)
+        if (isAutoReadNextPage)
             mPlayer.pause();
     }
 
     public void resumeReading() {
-        if (isAutoRead && !mPlayer.resume()) {
+        if (isAutoReadNextPage && !mPlayer.resume()) {
             startReading(null);
         }
     }
 
     public void stopReading() {
-        if (isAutoRead) {
+        if (isAutoReadNextPage) {
             mTvContent.setText(mContent);
             mPlayer.stop();
         }
@@ -248,7 +248,7 @@ public class ReadingBookFragment extends BaseFragment {
     }
 
     public void release() {
-        if (isAutoRead)
+        if (isAutoReadNextPage)
             mPlayer.release();
     }
 }

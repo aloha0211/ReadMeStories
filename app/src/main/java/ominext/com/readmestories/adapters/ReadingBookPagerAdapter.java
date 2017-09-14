@@ -21,14 +21,14 @@ public class ReadingBookPagerAdapter extends FragmentStatePagerAdapter {
     private SparseArrayCompat<ReadingBookFragment> mSparseArray = new SparseArrayCompat<>();
     private View.OnClickListener mListener;
 
-    private boolean isAutoRead;
+    private boolean isAutoReadNextPage;
     private int readingMode;
 
-    public ReadingBookPagerAdapter(FragmentManager fm, Book book, View.OnClickListener listener, boolean isAutoRead) {
+    public ReadingBookPagerAdapter(FragmentManager fm, Book book, View.OnClickListener listener, boolean isAutoReadNextPage) {
         super(fm);
         this.mBook = book;
         this.mListener = listener;
-        this.isAutoRead = isAutoRead;
+        this.isAutoReadNextPage = isAutoReadNextPage;
         this.readingMode = book.getReadingMode();
     }
 
@@ -40,7 +40,7 @@ public class ReadingBookPagerAdapter extends FragmentStatePagerAdapter {
         } else {
             fragment = ReadingBookFragment.newInstance(mBook.getId(), mBook.getContent().get(position - 1), getFileName(position), mBook.gettime_frame().get(position - 1), mListener, readingMode);
         }
-        fragment.setAutoRead(isAutoRead);
+        fragment.setAutoReadNextPage(isAutoReadNextPage);
         return fragment;
     }
 
