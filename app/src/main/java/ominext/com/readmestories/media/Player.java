@@ -84,14 +84,15 @@ public class Player {
             }
         };
 
-        mHandler.postDelayed(mSpanTextRunnable, DELAY_TIME + (long) (timeFrame.get(0) * 1000));
-
         mMediaPlayer = new MediaPlayer();
         try {
             mMediaPlayer.setDataSource(audioPath);
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.prepare();
-            mDuration = mMediaPlayer.getDuration();
+            mMediaPlayer.setOnPreparedListener(mp -> {
+                mHandler.postDelayed(mSpanTextRunnable, DELAY_TIME + (long) (timeFrame.get(0) * 1000));
+                mDuration = mMediaPlayer.getDuration();
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -140,46 +141,41 @@ public class Player {
             }
         };
 
-        mHandler.postDelayed(mSpanTextRunnable, DELAY_TIME + (long) (timeFrame.get(0) * 1000));
-
         mMediaPlayer = new MediaPlayer();
         try {
             mMediaPlayer.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
             descriptor.close();
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.prepare();
-            mDuration = mMediaPlayer.getDuration();
+            mMediaPlayer.setOnPreparedListener(mp -> {
+                mHandler.postDelayed(mSpanTextRunnable, DELAY_TIME + (long) (timeFrame.get(0) * 1000));
+                mDuration = mMediaPlayer.getDuration();
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void readBook(@NonNull String audioPath, MediaPlayer.OnCompletionListener onCompletionListener, final OnStartedListener onStartedListener) {
-        mHandler.postDelayed(() -> {
-            mMediaPlayer.start();
-            mMediaPlayer.setOnCompletionListener(onCompletionListener);
-            if (onStartedListener != null)
-                onStartedListener.onStart();
-        }, DELAY_TIME);
 
         mMediaPlayer = new MediaPlayer();
         try {
             mMediaPlayer.setDataSource(audioPath);
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.prepare();
-            mDuration = mMediaPlayer.getDuration();
+            mMediaPlayer.setOnPreparedListener(mp -> mHandler.postDelayed(() -> {
+                mMediaPlayer.start();
+                mMediaPlayer.setOnCompletionListener(onCompletionListener);
+                if (onStartedListener != null)
+                    onStartedListener.onStart();
+                mDuration = mMediaPlayer.getDuration();
+            }, DELAY_TIME));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void readBook(@NonNull AssetFileDescriptor descriptor, MediaPlayer.OnCompletionListener onCompletionListener, final OnStartedListener onStartedListener) {
-        mHandler.postDelayed(() -> {
-            mMediaPlayer.start();
-            mMediaPlayer.setOnCompletionListener(onCompletionListener);
-            if (onStartedListener != null)
-                onStartedListener.onStart();
-        }, DELAY_TIME);
 
         mMediaPlayer = new MediaPlayer();
         try {
@@ -187,7 +183,13 @@ public class Player {
             descriptor.close();
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.prepare();
-            mDuration = mMediaPlayer.getDuration();
+            mMediaPlayer.setOnPreparedListener(mp -> mHandler.postDelayed(() -> {
+                mMediaPlayer.start();
+                mMediaPlayer.setOnCompletionListener(onCompletionListener);
+                if (onStartedListener != null)
+                    onStartedListener.onStart();
+                mDuration = mMediaPlayer.getDuration();
+            }, DELAY_TIME));
         } catch (IOException e) {
             e.printStackTrace();
         }
